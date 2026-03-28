@@ -29,13 +29,12 @@ export function HomePage({ locale, messages }: HomePageProps) {
   const heroSecondaryHref = getLocalizedPath(locale, siteConfig.ctaRoutes.projects.chrp);
   const heroBackdrop = siteConfig.visuals.backgrounds.publicSite.image;
 
-  const projects = projectOrder.map((projectId, index) => {
+  const projects = projectOrder.map((projectId) => {
     const project = siteConfig.projects[projectId];
     const copy = messages.projects.items[projectId];
 
     return {
       ...project,
-      orderLabel: (index + 1).toString().padStart(2, "0"),
       asset: siteConfig.assetPlaceholders.projects[projectId],
       href: getLocalizedPath(locale, siteConfig.ctaRoutes.projects[projectId]),
       markPath: siteConfig.visuals.projects[projectId].markPath,
@@ -190,9 +189,6 @@ export function HomePage({ locale, messages }: HomePageProps) {
               <div className={`home-spotlight-card__visual home-spotlight-card__visual--${project.id}`}>
                 <div className="home-spotlight-card__visual-top">
                   <span className="project-tag">{project.categoryLabel}</span>
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/34">
-                    {project.orderLabel}
-                  </span>
                 </div>
 
                 <div className="home-spotlight-mark-shell">
@@ -345,4 +341,5 @@ export function HomePage({ locale, messages }: HomePageProps) {
     </main>
   );
 }
+
 
