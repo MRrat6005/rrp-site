@@ -153,11 +153,11 @@ export const siteConfig: SiteConfig = {
     },
     projects: {
       chrp: {
-        label: "CHRP project mark",
+        label: "CHRP project logo",
         shortLabel: "CH"
       },
       crown: {
-        label: "CROWN workspace mark",
+        label: "CROWN workspace logo",
         shortLabel: "CR"
       }
     }
@@ -222,23 +222,23 @@ export const siteConfig: SiteConfig = {
   },
   visuals: {
     brand: {
-      markPath: "/marks/rrp-mark.svg",
+      markPath: "/marks/rrp-mark.png",
       icons: {
-        icon: "/marks/rrp-favicon.svg",
-        shortcut: "/marks/rrp-favicon.svg",
-        apple: "/marks/rrp-favicon.svg"
+        icon: "/marks/rrp-favicon.png",
+        shortcut: "/marks/rrp-favicon.png",
+        apple: "/marks/rrp-favicon.png"
       }
     },
     backgrounds: {
       publicSite: {
-        image: "/backgrounds/rrp-public-aurora.svg",
+        image: "/backgrounds/rrp-public-aurora.png",
         overlayOpacity: 0.62,
         position: "center top",
         size: "cover",
         gradientStrength: 0.74
       },
       dashboardEntry: {
-        image: "/backgrounds/rrp-dashboard-entry.svg",
+        image: "/backgrounds/rrp-dashboard-entry.png",
         overlayOpacity: 0.74,
         position: "center center",
         size: "cover",
@@ -247,7 +247,7 @@ export const siteConfig: SiteConfig = {
     },
     projects: {
       chrp: {
-        markPath: "/marks/chrp-mark.svg",
+        markPath: "/marks/chrp-mark.png",
         theme: {
           surfaceTop: "rgba(11, 24, 34, 0.78)",
           surfaceBottom: "rgba(7, 13, 20, 0.92)",
@@ -264,7 +264,7 @@ export const siteConfig: SiteConfig = {
         }
       },
       crown: {
-        markPath: "/marks/crown-mark.svg",
+        markPath: "/marks/crown-mark.png",
         theme: {
           surfaceTop: "rgba(25, 25, 29, 0.82)",
           surfaceBottom: "rgba(10, 10, 13, 0.94)",
