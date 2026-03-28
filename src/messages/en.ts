@@ -21,45 +21,45 @@ export const enMessages = {
   },
   home: {
     eyebrow: "Royal Rats Productions",
-    title: "RRP. The public entry point into CHRP and CROWN.",
+    title: "RRP. The team behind RP projects and systems.",
     subtitle:
-      "A restrained front door to the Royal Rats Productions ecosystem. The homepage introduces the brand first, then routes visitors clearly toward CHRP or the internal CROWN workspace.",
+      "Royal Rats Productions develops CHRP and CROWN as separate directions. CHRP focuses on roleplay, world, atmosphere, and community; CROWN focuses on modules, settings, control, and management.",
     primaryCta: "Open CROWN",
-    secondaryCta: "Explore CHRP",
-    frameEyebrow: "The public RRP layer",
-    frameTitle: "Two distinct routes without blurred roles.",
+    secondaryCta: "Open CHRP",
+    frameEyebrow: "RRP directions",
+    frameTitle: "CHRP and CROWN serve different roles.",
     frameBody:
-      "CHRP remains the direction of world and community. CROWN leads into a stricter working environment. The homepage presents both sides calmly and without extra noise.",
+      "The homepage keeps both directions clearly separated: CHRP presents the roleplay world and community, while CROWN leads to the system side of management and control.",
     directionsEyebrow: "Directions",
-    directionsTitle: "CHRP and CROWN should be read as separate directions.",
+    directionsTitle: "One team. Two distinct directions.",
     directionsIntro:
-      "One direction is built around atmosphere and presence. The other holds structure, access, and internal coordination.",
-    brandEyebrow: "RRP",
-    brandTitle: "RRP sets the frame while CHRP and CROWN lead in different directions.",
+      "CHRP focuses on roleplay, setting, atmosphere, and community life. CROWN focuses on modules, settings, access, and day-to-day project management.",
+    brandEyebrow: "The RRP team",
+    brandTitle: "RRP is the creative team behind CHRP, CROWN, and related RP systems.",
     brandBody:
-      "The public side of RRP should stay coherent and calm. It explains the brand briefly, then helps visitors choose between the atmospheric CHRP direction and the working CROWN environment.",
-    finalEyebrow: "Next route",
-    finalTitle: "Choose the route that fits what you need now.",
+      "RRP develops projects and internal solutions tied to RP directions. On the homepage, its role is simple: show who stands behind the work and guide visitors to the right direction.",
+    finalEyebrow: "Next step",
+    finalTitle: "Open the direction you need.",
     finalBody:
-      "Go to CHRP if you want the world and community side. Open CROWN if you need entry into the internal working layer.",
+      "Choose CHRP for world, atmosphere, and community. Open CROWN for modules, settings, and management.",
     notes: [
       {
-        title: "RRP as the frame",
-        body: "The brand holds the public tone and structure together without blending the roles of its directions."
+        title: "RRP",
+        body: "The team develops projects, systems, and supporting solutions for RP directions."
       },
       {
-        title: "CHRP as the public world",
-        body: "CHRP speaks through atmosphere, lore, and community while remaining its own direction inside RRP."
+        title: "CHRP",
+        body: "The community-facing direction centered on roleplay, worldbuilding, atmosphere, and player presence."
       },
       {
-        title: "CROWN as the working layer",
-        body: "CROWN handles access, coordination, and internal routes without turning the public site into an operations panel."
+        title: "CROWN",
+        body: "The system-facing direction centered on modules, settings, access, and operational management."
       }
     ],
     stats: [
-      { label: "Focus", value: "Public entry and two directions" },
+      { label: "Focus", value: "RP projects and systems" },
       { label: "Routes", value: "CHRP and CROWN" },
-      { label: "Tone", value: "Restrained and official" }
+      { label: "Role", value: "Creative team" }
     ]
   },
   about: {
