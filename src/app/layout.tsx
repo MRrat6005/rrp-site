@@ -3,17 +3,9 @@ import type { ReactNode } from "react";
 
 import "@/app/globals.css";
 import { siteConfig } from "@/config/site.config";
-import { getSiteMetadataIcons } from "@/lib/site-metadata";
+import { getSharedPreviewMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.siteUrl),
-  title: {
-    default: siteConfig.brand.fullName,
-    template: `%s | ${siteConfig.brand.fullName}`
-  },
-  description: siteConfig.description,
-  icons: getSiteMetadataIcons()
-};
+export const metadata: Metadata = getSharedPreviewMetadata();
 
 interface RootLayoutProps {
   children: ReactNode;

@@ -31,6 +31,14 @@ function toIconDescriptor(path: AssetPath) {
   };
 }
 
+function getPreviewImage(path: AssetPath) {
+  if (!path) {
+    return undefined;
+  }
+
+  return [{ url: path }];
+}
+
 export function getSiteMetadataIcons(): Metadata["icons"] {
   const { icons } = siteConfig.visuals.brand;
 
@@ -38,5 +46,35 @@ export function getSiteMetadataIcons(): Metadata["icons"] {
     icon: toIconDescriptor(icons.icon),
     shortcut: toIconDescriptor(icons.shortcut),
     apple: toIconDescriptor(icons.apple)
+  };
+}
+
+export function getSharedPreviewMetadata(): Metadata {
+  const { preview } = siteConfig;
+  const previewImage = getPreviewImage(preview.ogImage);
+
+  return {
+    metadataBase: new URL(siteConfig.siteUrl),
+    title: {
+      default: preview.defaultTitle,
+      template: `%s | ${preview.siteName}`
+    },
+    description: preview.defaultDescription,
+    applicationName: preview.siteName,
+    icons: getSiteMetadataIcons(),
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: preview.siteName,
+      title: preview.defaultTitle,
+      description: preview.defaultDescription,
+      images: previewImage
+    },
+    twitter: {
+      card: preview.twitterCard,
+      title: preview.twitterTitle ?? preview.defaultTitle,
+      description: preview.twitterDescription ?? preview.defaultDescription,
+      images: previewImage
+    }
   };
 }

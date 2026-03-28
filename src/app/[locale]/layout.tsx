@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { siteConfig } from "@/config/site.config";
 import { getMessages, resolveLocale } from "@/lib/i18n";
+import { getSharedPreviewMetadata } from "@/lib/site-metadata";
 import { SiteShell } from "@/ui/layout/site-shell";
 
 interface LocaleLayoutProps {
@@ -16,6 +18,10 @@ export function generateStaticParams() {
 }
 
 export const dynamicParams = false;
+
+export function generateMetadata(): Metadata {
+  return getSharedPreviewMetadata();
+}
 
 export default function LocaleLayout({
   children,

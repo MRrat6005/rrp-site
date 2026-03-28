@@ -64,6 +64,18 @@ export interface SiteIconConfig {
   apple: AssetPath;
 }
 
+export type PreviewTwitterCard = "summary" | "summary_large_image" | "app" | "player";
+
+export interface PreviewConfig {
+  defaultTitle: string;
+  defaultDescription: string;
+  siteName: string;
+  ogImage: AssetPath;
+  twitterCard: PreviewTwitterCard;
+  twitterTitle?: string;
+  twitterDescription?: string;
+}
+
 export interface ProjectThemeConfig {
   surfaceTop: string;
   surfaceBottom: string;
@@ -100,6 +112,7 @@ export interface SiteConfig {
   siteUrl: string;
   defaultLocale: Locale;
   locales: readonly Locale[];
+  preview: PreviewConfig;
   assetPlaceholders: {
     brand: AssetPlaceholder;
     projects: Record<ProjectId, AssetPlaceholder>;
@@ -146,6 +159,17 @@ export const siteConfig: SiteConfig = {
   siteUrl: "https://royalratsproductions.ru",
   defaultLocale: "ru",
   locales,
+  preview: {
+    defaultTitle: "Royal Rats Productions",
+    defaultDescription:
+      "Royal Rats Productions is the public home for CHRP and CROWN, presenting the studio, projects, documentation, and contact points in one place.",
+    siteName: "Royal Rats Productions",
+    ogImage: "/backgrounds/rrp-public-aurora.png",
+    twitterCard: "summary_large_image",
+    twitterTitle: "Royal Rats Productions",
+    twitterDescription:
+      "Explore Royal Rats Productions, including CHRP, CROWN, public documentation, and official contact surfaces."
+  },
   assetPlaceholders: {
     brand: {
       label: "Royal Rats Productions",
@@ -314,3 +338,4 @@ export function getProjectThemeStyle(projectId: ProjectId): ThemeStyle {
     "--tile-glow": theme.tileGlow
   };
 }
+
