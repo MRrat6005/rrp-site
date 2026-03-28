@@ -4,9 +4,9 @@
 
 :root {
   color-scheme: dark;
-  --background: #06080e;
-  --surface: rgba(11, 14, 23, 0.78);
-  --surface-strong: rgba(16, 20, 32, 0.92);
+  --background: #05070c;
+  --surface: rgba(9, 12, 19, 0.8);
+  --surface-strong: rgba(14, 18, 28, 0.94);
   --text: #e8eef7;
   --muted: #92a0b7;
   --font-sans: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
@@ -26,9 +26,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(122, 172, 255, 0.12), transparent 28%),
-    radial-gradient(circle at 80% 0%, rgba(141, 243, 209, 0.08), transparent 24%),
-    linear-gradient(180deg, #06080e 0%, #090b12 45%, #0a0d16 100%);
+    radial-gradient(circle at top left, rgba(122, 172, 255, 0.1), transparent 26%),
+    radial-gradient(circle at 84% 8%, rgba(141, 243, 209, 0.06), transparent 18%),
+    linear-gradient(180deg, #05070c 0%, #080a10 46%, #0b0e16 100%);
   color: var(--text);
   font-family: var(--font-sans);
 }
@@ -42,8 +42,16 @@ body::before {
     linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-position: center center;
   background-size: 96px 96px;
-  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
-  opacity: 0.2;
+  mask-image: radial-gradient(circle at center, black 28%, transparent 80%);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 6, 11, 0.08), rgba(4, 6, 11, 0.32));
   pointer-events: none;
 }
 
@@ -54,27 +62,35 @@ a {
 
 @layer components {
   .glass-panel {
-    @apply rounded-[1.75rem] border border-white/10 bg-[rgba(10,13,20,0.84)] p-6 shadow-halo;
+    @apply rounded-[1.75rem] border border-white/10 bg-[rgba(10,13,20,0.84)] p-6 shadow-halo backdrop-blur-xl;
   }
 
   .section-frame {
-    @apply relative rounded-[2rem] border border-white/10 bg-[rgba(10,13,20,0.68)] p-7 shadow-halo sm:p-8 lg:p-10;
+    @apply relative rounded-[2rem] border border-white/10 bg-[rgba(10,13,20,0.72)] p-7 shadow-halo backdrop-blur-xl sm:p-8 lg:p-10;
+  }
+
+  .menu-sheet {
+    @apply rounded-[2rem] border border-white/10 bg-[rgba(8,11,18,0.96)] p-4 shadow-halo backdrop-blur-2xl;
   }
 
   .button-primary {
-    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:opacity-90;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:opacity-90;
   }
 
   .button-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-ink transition hover:border-white/20 hover:bg-white/[0.06];
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-ink transition hover:border-white/20 hover:bg-white/[0.06];
   }
 
   .nav-link {
     @apply inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm text-muted transition hover:border-white/10 hover:bg-white/[0.04] hover:text-ink;
   }
 
+  .nav-link-active {
+    @apply border-white/10 bg-white/[0.05] text-ink;
+  }
+
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.28em] text-white/45;
+    @apply text-[11px] font-semibold uppercase tracking-[0.3em] text-white/40;
   }
 
   .display-title {
@@ -82,3 +98,4 @@ a {
     @apply text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl;
   }
 }
+

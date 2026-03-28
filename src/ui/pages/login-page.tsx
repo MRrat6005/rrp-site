@@ -14,13 +14,13 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 sm:px-8 lg:px-10 lg:py-14">
       <section className="section-frame grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.85fr)]">
         <div className="space-y-5">
-          <p className="eyebrow">Entry</p>
+          <p className="eyebrow">{siteConfig.brand.dashboardBrand}</p>
           <h1 className="display-title">{messages.login.title}</h1>
           <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg">
             {messages.login.intro}
           </p>
           <Link
-            href={getLocalizedPath(locale, siteConfig.dashboardSegment)}
+            href={getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard)}
             className="button-primary"
           >
             {messages.nav.openDashboard}

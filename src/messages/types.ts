@@ -1,4 +1,8 @@
-import type { ProjectId } from "@/config/site.config";
+import type {
+  ContactChannelId,
+  FooterRouteKey,
+  ProjectId
+} from "@/config/site.config";
 
 export interface LabeledValue {
   label: string;
@@ -8,6 +12,21 @@ export interface LabeledValue {
 export interface SectionCopy {
   title: string;
   body: string;
+}
+
+export interface PageAsideCopy {
+  eyebrow: string;
+  title: string;
+  body: string;
+  items?: readonly LabeledValue[];
+}
+
+export interface StructuredPageCopy {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  sections: readonly SectionCopy[];
+  aside: PageAsideCopy;
 }
 
 export interface SiteMessages {
@@ -23,57 +42,47 @@ export interface SiteMessages {
     close: string;
     backToSite: string;
   };
+  common: {
+    projectDirections: string;
+    specs: string;
+    contactChannels: string;
+    currentLocale: string;
+  };
   home: {
     eyebrow: string;
     title: string;
     subtitle: string;
     primaryCta: string;
     secondaryCta: string;
-    spotlightTitle: string;
-    spotlightBody: string;
+    frameEyebrow: string;
+    frameTitle: string;
+    frameBody: string;
+    directionsEyebrow: string;
+    directionsTitle: string;
+    directionsIntro: string;
+    notes: readonly SectionCopy[];
     stats: readonly LabeledValue[];
-    pillars: readonly SectionCopy[];
   };
-  about: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
-  };
-  faq: {
-    title: string;
-    intro: string;
-    items: readonly SectionCopy[];
-  };
-  docs: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
-  };
+  about: StructuredPageCopy;
+  faq: StructuredPageCopy;
+  docs: StructuredPageCopy;
   login: {
     title: string;
     intro: string;
     panelTitle: string;
     panelBody: string;
   };
-  privacy: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
-  };
-  filePolicy: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
-  };
-  terms: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
-  };
-  contacts: {
-    title: string;
-    intro: string;
-    sections: readonly SectionCopy[];
+  privacy: StructuredPageCopy;
+  filePolicy: StructuredPageCopy;
+  terms: StructuredPageCopy;
+  contacts: StructuredPageCopy & {
+    channels: Record<
+      ContactChannelId,
+      {
+        label: string;
+        note: string;
+      }
+    >;
   };
   servers: {
     title: string;
@@ -85,17 +94,18 @@ export interface SiteMessages {
     items: Record<
       ProjectId,
       {
+        navDescription: string;
+        categoryLabel: string;
         tagline: string;
         summary: string;
+        sections: readonly SectionCopy[];
         specs: readonly LabeledValue[];
+        surface: PageAsideCopy;
       }
     >;
   };
-  footer: {
-    privacy: string;
-    filePolicy: string;
-    terms: string;
-    contacts: string;
+  footer: Record<FooterRouteKey, string> & {
+    subtitle: string;
     copyright: string;
   };
   redirect: {
@@ -104,4 +114,3 @@ export interface SiteMessages {
     fallback: string;
   };
 }
-

@@ -13,14 +13,15 @@ export default function DocsPage({ params }: DocsPageProps) {
 
   return (
     <SimpleSectionPage
-      eyebrow="Docs"
+      eyebrow={messages.docs.eyebrow}
       title={messages.docs.title}
       intro={messages.docs.intro}
       sections={messages.docs.sections}
+      aside={messages.docs.aside}
       actions={[
         {
-          href: getLocalizedPath(locale, "login"),
-          label: messages.login.title,
+          href: getLocalizedPath(locale, "contacts"),
+          label: messages.footer.contacts,
           variant: "secondary"
         },
         {

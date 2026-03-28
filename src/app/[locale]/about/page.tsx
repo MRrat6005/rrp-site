@@ -13,10 +13,11 @@ export default function AboutPage({ params }: AboutPageProps) {
 
   return (
     <SimpleSectionPage
-      eyebrow="About"
+      eyebrow={messages.about.eyebrow}
       title={messages.about.title}
       intro={messages.about.intro}
       sections={messages.about.sections}
+      aside={messages.about.aside}
       actions={[
         {
           href: getLocalizedPath(locale, "docs"),

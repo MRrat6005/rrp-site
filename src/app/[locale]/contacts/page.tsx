@@ -1,5 +1,5 @@
 import { getMessages, resolveLocale } from "@/lib/i18n";
-import { SimpleSectionPage } from "@/ui/pages/simple-section-page";
+import { ContactsPage } from "@/ui/pages/contacts-page";
 
 interface ContactsPageProps {
   params: {
@@ -7,16 +7,9 @@ interface ContactsPageProps {
   };
 }
 
-export default function ContactsPage({ params }: ContactsPageProps) {
+export default function ContactsRoutePage({ params }: ContactsPageProps) {
   const locale = resolveLocale(params.locale);
   const messages = getMessages(locale);
 
-  return (
-    <SimpleSectionPage
-      eyebrow="Contact"
-      title={messages.contacts.title}
-      intro={messages.contacts.intro}
-      sections={messages.contacts.sections}
-    />
-  );
+  return <ContactsPage locale={locale} messages={messages} />;
 }

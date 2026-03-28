@@ -2,187 +2,270 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { siteConfig, type Locale } from "@/config/site.config";
 import {
-  getAlternateLocale,
+  projectOrder,
+  siteConfig,
+  type Locale
+} from "@/config/site.config";
+import {
   getLocalizedPath,
   swapLocaleInPath
 } from "@/lib/i18n";
 import type { SiteMessages } from "@/messages/types";
+import { LogoTile } from "@/ui/common/logo-tile";
 
 interface SiteHeaderProps {
   locale: Locale;
   messages: SiteMessages;
 }
 
+function isCurrentPath(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SiteHeader({ locale, messages }: SiteHeaderProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? `/${locale}`;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
-  const alternateLocale = getAlternateLocale(locale);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setIsMenuOpen(false);
     setIsProjectsOpen(false);
   }, [pathname]);
 
-  const navigationLinks = siteConfig.navigation.map((item) => ({
+  useEffect(() => {
+    if (!isMenuOpen && !isProjectsOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setIsProjectsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        setIsProjectsOpen(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMenuOpen, isProjectsOpen]);
+
+  const headerLinks = siteConfig.navigation.header.map((item) => ({
+    ...item,
     href: getLocalizedPath(locale, item.segment),
     label: messages.nav[item.key]
   }));
 
-  const projectLinks = siteConfig.projects.map((project) => ({
-    href: getLocalizedPath(locale, `projects/${project.slug}`),
-    mark: project.mark,
-    title: project.title,
-    description: messages.projects.items[project.id].tagline
+  const projectLinks = projectOrder.map((projectId) => {
+    const project = siteConfig.projects[projectId];
+
+    return {
+      ...project,
+      asset: siteConfig.assetPlaceholders.projects[projectId],
+      href: getLocalizedPath(locale, siteConfig.ctaRoutes.projects[projectId]),
+      description: messages.projects.items[projectId].navDescription,
+      categoryLabel: messages.projects.items[projectId].categoryLabel
+    };
+  });
+
+  const localeLinks = siteConfig.locales.map((targetLocale) => ({
+    locale: targetLocale,
+    href: swapLocaleInPath(pathname, targetLocale)
   }));
 
-  const localeHref = swapLocaleInPath(pathname || `/${locale}`, alternateLocale);
+  const dashboardHref = getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard);
+  const isProjectsRoute = pathname.includes("/projects/");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(6,8,14,0.78)] backdrop-blur-xl">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.16),transparent_34%),radial-gradient(circle_at_top_right,rgba(141,243,209,0.10),transparent_28%)]" />
-      <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-4 sm:px-8 lg:px-10">
-        <Link
-          href={getLocalizedPath(locale)}
-          className="flex items-center gap-3"
-        >
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-white/5 [font-family:var(--font-display)] text-sm font-semibold tracking-[0.24em] text-ink shadow-halo">
-            RRP
-          </span>
-          <span className="space-y-0.5">
-            <span className="block [font-family:var(--font-display)] text-sm font-semibold uppercase tracking-[0.32em] text-white/80">
-              {siteConfig.name}
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(6,8,14,0.78)] backdrop-blur-2xl"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.12),transparent_24%),radial-gradient(circle_at_top_right,rgba(141,243,209,0.08),transparent_20%)]" />
+      <div className="relative mx-auto w-full max-w-7xl px-6 py-4 sm:px-8 lg:px-10">
+        <div className="grid items-center gap-4 lg:grid-cols-[minmax(18rem,24rem)_1fr_auto]">
+          <Link href={getLocalizedPath(locale)} className="flex min-w-0 items-center gap-4">
+            <LogoTile
+              shortLabel={siteConfig.assetPlaceholders.brand.shortLabel}
+              label={siteConfig.assetPlaceholders.brand.label}
+            />
+            <span className="min-w-0">
+              <span className="block truncate [font-family:var(--font-display)] text-[1.05rem] font-semibold tracking-[0.01em] text-ink sm:text-lg">
+                {siteConfig.brand.fullName}
+              </span>
+              <span className="block truncate text-xs text-muted">
+                {siteConfig.brand.shortName} / {siteConfig.brand.domain}
+              </span>
             </span>
-            <span className="block text-xs text-muted">
-              Static foundation
-            </span>
-          </span>
-        </Link>
+          </Link>
 
-        <nav className="hidden items-center gap-2 lg:flex">
-          <div className="relative">
-            <button
-              type="button"
-              className="nav-link"
-              onClick={() => setIsProjectsOpen((current) => !current)}
-            >
-              {messages.nav.projects}
-            </button>
-            {isProjectsOpen ? (
-              <div className="absolute left-0 top-[calc(100%+1rem)] w-[30rem] rounded-3xl border border-white/10 bg-[rgba(10,13,20,0.96)] p-3 shadow-halo">
-                <div className="grid gap-3">
-                  {projectLinks.map((project) => (
-                    <Link
-                      key={project.href}
-                      href={project.href}
-                      className="group flex items-start gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 transition hover:border-white/15 hover:bg-white/[0.04]"
-                    >
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-[linear-gradient(160deg,rgba(122,172,255,0.22),rgba(255,255,255,0.04))] [font-family:var(--font-display)] text-sm font-semibold tracking-[0.18em] text-ink">
-                        {project.mark}
-                      </span>
-                      <span className="space-y-1">
-                        <span className="block [font-family:var(--font-display)] text-sm font-semibold text-ink">
-                          {project.title}
-                        </span>
-                        <span className="block text-sm leading-6 text-muted">
-                          {project.description}
-                        </span>
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+          <div className="hidden items-center justify-start gap-2 lg:flex">
+            {siteConfig.featureFlags.showProjectsDropdown ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-expanded={isProjectsOpen}
+                  className={`nav-link ${isProjectsRoute || isProjectsOpen ? "nav-link-active" : ""}`}
+                  onClick={() => setIsProjectsOpen((current) => !current)}
+                >
+                  {messages.nav.projects}
+                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.22em] text-white/62">
+                    {projectLinks.length}
+                  </span>
+                </button>
+                {isProjectsOpen ? (
+                  <div className="absolute left-0 top-[calc(100%+1rem)] w-[min(34rem,calc(100vw-5rem))] rounded-[1.75rem] border border-white/10 bg-[rgba(8,11,18,0.98)] p-3 shadow-halo backdrop-blur-2xl">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {projectLinks.map((project) => (
+                        <Link
+                          key={project.id}
+                          href={project.href}
+                          className="group rounded-[1.4rem] border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/16 hover:bg-white/[0.05]"
+                        >
+                          <div className="flex items-start gap-3">
+                            <LogoTile
+                              shortLabel={project.asset.shortLabel}
+                              label={project.asset.label}
+                              size="sm"
+                            />
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="[font-family:var(--font-display)] text-sm font-semibold text-ink">
+                                  {project.title}
+                                </p>
+                                <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.22em] text-white/55">
+                                  {project.categoryLabel}
+                                </span>
+                              </div>
+                              <p className="mt-2 text-sm leading-6 text-muted">
+                                {project.description}
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
-          </div>
 
-          {navigationLinks.map((item) => (
-            <Link key={item.href} href={item.href} className="nav-link">
-              {item.label}
-            </Link>
-          ))}
-
-          <Link href={localeHref} className="nav-link">
-            {messages.nav.switchLanguage}
-            <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-white/70">
-              {alternateLocale}
-            </span>
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href={getLocalizedPath(locale, siteConfig.dashboardSegment)}
-            className="hidden rounded-full border border-white/10 bg-white px-5 py-2.5 text-sm font-medium text-slate-950 transition hover:opacity-90 lg:inline-flex"
-          >
-            {messages.nav.openDashboard}
-          </Link>
-          <button
-            type="button"
-            className="inline-flex rounded-full border border-white/10 px-4 py-2 text-sm text-ink lg:hidden"
-            onClick={() => setIsMenuOpen((current) => !current)}
-          >
-            {isMenuOpen ? messages.nav.close : messages.nav.menu}
-          </button>
-        </div>
-      </div>
-
-      {isMenuOpen ? (
-        <div className="relative border-t border-white/10 bg-[rgba(7,9,15,0.96)] px-6 py-4 lg:hidden">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-3">
-              <p className="px-2 pb-2 text-xs uppercase tracking-[0.22em] text-white/45">
-                {messages.nav.projects}
-              </p>
-              <div className="grid gap-2">
-                {projectLinks.map((project) => (
-                  <Link
-                    key={project.href}
-                    href={project.href}
-                    className="flex items-start gap-3 rounded-2xl border border-white/5 px-3 py-3 transition hover:border-white/15"
-                  >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xs font-semibold tracking-[0.18em] text-ink">
-                      {project.mark}
-                    </span>
-                    <span>
-                      <span className="block text-sm font-semibold text-ink">
-                        {project.title}
-                      </span>
-                      <span className="block text-sm text-muted">
-                        {project.description}
-                      </span>
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {navigationLinks.map((item) => (
+            {headerLinks.map((item) => (
               <Link
-                key={item.href}
+                key={item.key}
                 href={item.href}
-                className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-ink transition hover:border-white/20"
+                className={`nav-link ${isCurrentPath(pathname, item.href) ? "nav-link-active" : ""}`}
               >
                 {item.label}
               </Link>
             ))}
 
-            <Link
-              href={localeHref}
-              className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-ink transition hover:border-white/20"
-            >
-              {messages.nav.switchLanguage}: {alternateLocale.toUpperCase()}
-            </Link>
+            <div className="ml-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1">
+              {localeLinks.map((item) => (
+                <Link
+                  key={item.locale}
+                  href={item.href}
+                  aria-label={`${messages.nav.switchLanguage}: ${item.locale.toUpperCase()}`}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] transition ${item.locale === locale ? "bg-white text-slate-950" : "text-white/62 hover:text-ink"}`}
+                >
+                  {item.locale}
+                </Link>
+              ))}
+            </div>
+          </div>
 
-            <Link
-              href={getLocalizedPath(locale, siteConfig.dashboardSegment)}
-              className="rounded-2xl bg-white px-4 py-3 text-sm font-medium text-slate-950"
-            >
-              {messages.nav.openDashboard}
+          <div className="flex items-center justify-end gap-3">
+            <Link href={dashboardHref} className="button-primary shadow-[0_12px_36px_rgba(255,255,255,0.12)]">
+              <span>{messages.nav.openDashboard}</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.26em] text-slate-600 sm:inline">
+                {siteConfig.brand.dashboardBrand}
+              </span>
             </Link>
+            <button
+              type="button"
+              className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-ink transition hover:border-white/20 hover:bg-white/[0.06] lg:hidden"
+              onClick={() => setIsMenuOpen((current) => !current)}
+            >
+              {isMenuOpen ? messages.nav.close : messages.nav.menu}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {isMenuOpen && siteConfig.featureFlags.useMobileMenuSheet ? (
+        <div className="relative border-t border-white/10 px-4 pb-4 lg:hidden sm:px-6">
+          <div className="mx-auto max-w-7xl">
+            <div className="menu-sheet">
+              <div className="grid gap-5">
+                <div className="grid gap-3">
+                  <p className="eyebrow px-1">{messages.nav.projects}</p>
+                  {projectLinks.map((project) => (
+                    <Link
+                      key={project.id}
+                      href={project.href}
+                      className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/16 hover:bg-white/[0.05]"
+                    >
+                      <div className="flex items-start gap-3">
+                        <LogoTile
+                          shortLabel={project.asset.shortLabel}
+                          label={project.asset.label}
+                          size="sm"
+                        />
+                        <div>
+                          <p className="[font-family:var(--font-display)] text-sm font-semibold text-ink">
+                            {project.title}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-muted">
+                            {project.description}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="grid gap-2">
+                  {headerLinks.map((item) => (
+                    <Link
+                      key={item.key}
+                      href={item.href}
+                      className={`rounded-[1.2rem] border px-4 py-3 text-sm transition ${isCurrentPath(pathname, item.href) ? "border-white/18 bg-white/[0.05] text-ink" : "border-white/10 bg-white/[0.02] text-muted hover:border-white/16 hover:text-ink"}`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
+                  <p className="eyebrow">{messages.nav.switchLanguage}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {localeLinks.map((item) => (
+                      <Link
+                        key={item.locale}
+                        href={item.href}
+                        className={`rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] ${item.locale === locale ? "bg-white text-slate-950" : "border border-white/10 text-ink"}`}
+                      >
+                        {item.locale}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}

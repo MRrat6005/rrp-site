@@ -7,8 +7,8 @@ import { siteConfig } from "@/config/site.config";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
   title: {
-    default: siteConfig.legalName,
-    template: `%s | ${siteConfig.legalName}`
+    default: siteConfig.brand.fullName,
+    template: `%s | ${siteConfig.brand.fullName}`
   },
   description: siteConfig.description
 };

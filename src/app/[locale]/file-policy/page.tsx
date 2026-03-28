@@ -1,4 +1,4 @@
-import { getMessages, resolveLocale } from "@/lib/i18n";
+import { getMessages, getLocalizedPath, resolveLocale } from "@/lib/i18n";
 import { SimpleSectionPage } from "@/ui/pages/simple-section-page";
 
 interface FilePolicyPageProps {
@@ -13,10 +13,22 @@ export default function FilePolicyPage({ params }: FilePolicyPageProps) {
 
   return (
     <SimpleSectionPage
-      eyebrow="Policy"
+      eyebrow={messages.filePolicy.eyebrow}
       title={messages.filePolicy.title}
       intro={messages.filePolicy.intro}
       sections={messages.filePolicy.sections}
+      aside={messages.filePolicy.aside}
+      actions={[
+        {
+          href: getLocalizedPath(locale, "docs"),
+          label: messages.nav.docs,
+          variant: "secondary"
+        },
+        {
+          href: getLocalizedPath(locale, "contacts"),
+          label: messages.footer.contacts
+        }
+      ]}
     />
   );
 }
