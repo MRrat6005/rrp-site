@@ -6,7 +6,7 @@ export const enMessages = {
     projects: "Projects",
     about: "About",
     faq: "FAQ",
-    docs: "Docs",
+    docs: "Materials",
     openDashboard: "Open Dashboard",
     switchLanguage: "Language",
     menu: "Menu",
@@ -14,384 +14,384 @@ export const enMessages = {
     backToSite: "Back to site"
   },
   common: {
-    projectDirections: "Project directions",
-    specs: "Specs",
+    projectDirections: "Main directions",
+    specs: "Key details",
     contactChannels: "Contact channels",
     currentLocale: "Current locale"
   },
   home: {
-    eyebrow: "Creative team and public shell",
-    title: "Royal Rats Productions builds quiet worlds, tools, and control surfaces.",
+    eyebrow: "The RRP creative team",
+    title: "Royal Rats Productions brings worlds, projects, and workspaces into one calm public surface.",
     subtitle:
-      "RRP is presented here as a creative ecosystem: one direction shaped around community roleplay, another around the dashboard workspace that keeps everything aligned behind the scenes.",
+      "This is the clearest way into RRP: CHRP carries the roleplay and community direction, while CROWN holds the internal workspace and project systems behind it.",
     primaryCta: "Open Dashboard",
-    secondaryCta: "Read Docs",
-    frameEyebrow: "Studio note",
-    frameTitle: "Dark, static, and built to hold real projects without feeling like a template.",
+    secondaryCta: "View materials",
+    frameEyebrow: "How RRP is framed",
+    frameTitle: "The public site should feel clear and deliberate, not crowded.",
     frameBody:
-      "The shell stays export-safe for GitHub Pages, keeps bilingual routing intact, and leaves room for authored copy instead of borrowed startup patterns.",
-    directionsEyebrow: "Main directions",
-    directionsTitle: "Two different surfaces, one shared language.",
+      "That is why the layout leaves more room to breathe, uses a steadier hierarchy, and keeps the dark tone without leaning on noise or decorative pressure.",
+    directionsEyebrow: "Two directions",
+    directionsTitle: "CHRP and CROWN do different work, but belong to the same language.",
     directionsIntro:
-      "CHRP and CROWN are framed as the two visible directions inside the RRP ecosystem: one outward-facing and community-shaped, one operational and workspace-driven.",
+      "One direction is community-facing and shaped by atmosphere. The other keeps order, access, and internal coordination behind the scenes.",
     notes: [
       {
-        title: "Hand-built composition",
-        body: "Spacing, borders, and typography carry most of the identity. The interface avoids loud gradients, ornamental iconography, and stock SaaS rhythms."
+        title: "Less noise",
+        body: "The interface now feels lighter: fewer heavy frames, fewer utility accents, and more room for the actual directions to lead the page."
       },
       {
-        title: "Static by intent",
-        body: "Everything on the public side remains compatible with Next.js static export, locale pre-rendering, and GitHub Pages delivery."
+        title: "Human copy",
+        body: "The public text reads like it belongs to a real team. It avoids startup filler, technical throat-clearing, and generic landing-page phrasing."
       },
       {
-        title: "Prepared for growth",
-        body: "Brand metadata, project routes, footer structure, contacts placeholders, and CTA targets are centralized so the shell can evolve without reworking the layout."
+        title: "Built to grow",
+        body: "The shell still leaves space for future material, direction pages, and a fuller CROWN workspace without changing the site’s structure."
       }
     ],
     stats: [
-      { label: "Locale routing", value: "RU / EN" },
-      { label: "Main directions", value: "CHRP + CROWN" },
-      { label: "Delivery mode", value: "Static export" }
+      { label: "Focus", value: "Creative work and systems" },
+      { label: "Directions", value: "CHRP and CROWN" },
+      { label: "Format", value: "Public site and dashboard entry" }
     ]
   },
   about: {
     eyebrow: "About RRP",
-    title: "A small ecosystem with room for atmosphere, systems, and operations.",
+    title: "RRP is a creative team holding together project worlds, working discipline, and a careful public presence.",
     intro:
-      "Royal Rats Productions is framed here less like a company brochure and more like a carefully maintained front door for a creative team and its connected projects.",
+      "This is not framed as a corporate brochure or a legal façade. It is a calm front door into the RRP ecosystem, showing how the public side, the internal workspace, and the broader team voice fit together.",
     sections: [
       {
-        title: "Creative posture",
-        body: "The public shell speaks in a restrained voice. It leaves room for tone, lore, process, and documentation without collapsing into either corporate copy or marketing noise."
+        title: "Creative foundation",
+        body: "RRP is presented as a team rather than a faceless brand. That keeps atmosphere, project character, and reader respect at the center of the public site."
       },
       {
-        title: "Shared structure",
-        body: "The same dark visual language ties together public pages, project entries, and the dashboard path, so the site feels authored as one system instead of assembled from parts."
+        title: "Shared system",
+        body: "CHRP, CROWN, and the supporting public pages live inside one visual environment, so the site feels authored as a whole even when each direction serves a different role."
       },
       {
-        title: "Operational discipline",
-        body: "Routing, links, and content models are kept predictable. That makes the shell easy to expand while preserving static delivery constraints."
+        title: "Working discipline",
+        body: "Routes, pages, and copy stay simple and predictable. That makes the shell easier to extend without rebuilding the foundation later."
       }
     ],
     aside: {
-      eyebrow: "Why this shell",
-      title: "Designed to feel maintained, not generated.",
-      body: "The structure is intentionally calm: clear hierarchy, a durable dark palette, and enough detail to feel public-ready before final production copy arrives.",
+      eyebrow: "What matters",
+      title: "The site should already feel maintained and alive.",
+      body: "RRP is presented without corporate theater and without startup noise. The goal is clarity, restraint, and the sense that a real team stands behind the work.",
       items: [
         { label: "Position", value: "Creative team" },
-        { label: "Surface", value: "Public + dashboard" },
-        { label: "Tone", value: "Quiet / premium" }
+        { label: "Surfaces", value: "Public site and CROWN" },
+        { label: "Tone", value: "Restrained and confident" }
       ]
     }
   },
   faq: {
     eyebrow: "FAQ",
-    title: "Short answers for the questions visitors are most likely to ask first.",
+    title: "Short answers to the questions most visitors ask first.",
     intro:
-      "This section is still a first-pass layer, but it already reflects the technical and editorial boundaries of the site instead of using filler copy.",
+      "This section exists to orient people quickly. It explains what the site is for, where the main directions live, and what this public shell is meant to do right now.",
     sections: [
       {
-        title: "Is the public site fully static?",
-        body: "Yes. The public shell is built for Next.js static export and GitHub Pages delivery, with no backend dependencies introduced here."
+        title: "Is this a fully public site?",
+        body: "Yes. The public side of RRP works as a standalone external surface, with a home page, supporting materials, direction pages, and an entry point into CROWN."
       },
       {
-        title: "Why are there two locales in the URL?",
-        body: "Russian and English are both preserved as explicit route segments so the static build stays predictable and the language context is always visible."
+        title: "Why are there two locales?",
+        body: "Russian and English are both visible so visitors can open the site in the right language without losing context or relying on hidden switching."
       },
       {
-        title: "What is CHRP in this structure?",
-        body: "CHRP is framed as the community and roleplay direction inside the RRP ecosystem. Its public page acts as a focused entry point rather than a generic product card."
+        title: "What is CHRP?",
+        body: "CHRP is the roleplay and community direction inside RRP. It carries the outward-facing atmosphere of the project and the public point of entry for that side of the ecosystem."
       },
       {
-        title: "What is CROWN in this structure?",
-        body: "CROWN is presented as the dashboard and control workspace. On the public side it works as the operational counterpart to the community-facing surface."
+        title: "What is CROWN?",
+        body: "CROWN is the dashboard and internal workspace. On the public site it is framed as a distinct direction and remains the main CTA."
       },
       {
-        title: "Can this deploy on a custom domain?",
-        body: "Yes. The project keeps static export compatibility and now includes a public/CNAME file for the custom domain flow."
+        title: "Will the site keep growing?",
+        body: "Yes. The foundation is already shaped to accept more material, richer direction pages, and more CROWN detail without changing the overall shell."
       },
       {
-        title: "Does this shell include auth or server logic?",
-        body: "No. The site intentionally stops at the public shell and dashboard entry surfaces without introducing backend, auth, or server dependencies."
+        title: "Is RRP a company site?",
+        body: "No. RRP is framed here as a creative team with its own projects, internal systems, and public-facing voice."
       }
     ],
     aside: {
       eyebrow: "Reading guide",
-      title: "Built to answer practical questions quickly.",
-      body: "The FAQ keeps to routing, deployment, positioning, and project boundaries, which are the parts most likely to matter before deeper docs are written.",
+      title: "These are the questions that help visitors orient themselves fastest.",
+      body: "The FAQ stays away from filler. Its job is to make the role of the site, CHRP, and CROWN immediately understandable.",
       items: [
-        { label: "Audience", value: "Visitors / contributors" },
-        { label: "Focus", value: "Routing / purpose" },
-        { label: "State", value: "First-pass copy" }
+        { label: "Audience", value: "Visitors and participants" },
+        { label: "Focus", value: "Purpose and structure" },
+        { label: "Format", value: "Short answers" }
       ]
     }
   },
   docs: {
-    eyebrow: "Docs",
-    title: "A restrained place for setup notes, project context, and deployment references.",
+    eyebrow: "Materials",
+    title: "This is where supporting material can explain the RRP directions and their wider context.",
     intro:
-      "The docs section is structured as a calm technical layer. It is ready for real instructions without needing a different layout language from the rest of the site.",
+      "The section does not try to behave like a heavy documentation hub. It is a calmer layer of notes, references, and orientation that can expand with the site over time.",
     sections: [
       {
-        title: "Foundation",
-        body: "The site runs on Next.js App Router with Tailwind and static export enabled, keeping the public shell lightweight and predictable."
+        title: "Shared context",
+        body: "This is the right place for plain-language explanations around RRP, CHRP, and CROWN, so visitors can quickly understand how the directions differ and connect."
       },
       {
-        title: "Content model",
-        body: "Brand metadata, route segments, project definitions, and CTA targets live in the typed site config, while locale-specific copy stays in the message files."
+        title: "Working notes",
+        body: "As the site grows, this section can hold concise guides, editorial notes, and supporting material without needing a separate tone or layout system."
       },
       {
-        title: "Deployment",
-        body: "GitHub Pages remains the target. Repository base paths are still supported, and the custom-domain path now resolves through the project CNAME file."
+        title: "A useful anchor",
+        body: "Materials help the website feel like a maintained environment around a team and its projects, rather than a one-screen showcase with nowhere else to go."
       }
     ],
     aside: {
-      eyebrow: "What lives here",
-      title: "Operational notes without a heavy documentation framework.",
-      body: "This page is meant to hold setup guidance, publishing notes, and editorial references while staying visually aligned with the rest of the site.",
+      eyebrow: "Section role",
+      title: "The materials should add clarity, not weight.",
+      body: "If someone wants to understand RRP quickly, this section should offer real context in a quiet, readable form instead of turning into a technical dump.",
       items: [
-        { label: "Build target", value: "Static export" },
-        { label: "Hosting", value: "GitHub Pages" },
-        { label: "Config style", value: "Typed / centralized" }
+        { label: "Purpose", value: "Context and notes" },
+        { label: "Tone", value: "Calm and direct" },
+        { label: "Format", value: "Short materials" }
       ]
     }
   },
   login: {
     title: "Login",
     intro:
-      "Authentication remains a placeholder doorway only. The public shell stays static and avoids shipping backend logic in this foundation.",
-    panelTitle: "Access placeholder",
+      "This remains an entry point only. The public site does not pretend to be the full application and keeps the external layer separate from internal access.",
+    panelTitle: "Workspace access",
     panelBody:
-      "This area can later connect to SSO, invite flows, or external identity without changing the public-facing shell."
+      "Later on, this area can connect to a real access system for CROWN without changing the character or structure of the public site."
   },
   privacy: {
     eyebrow: "Privacy",
-    title: "A first-pass privacy page prepared for later policy language.",
+    title: "This page can later hold a clear explanation of how RRP handles data on the public side.",
     intro:
-      "The current copy stays deliberately restrained: enough structure for publication, without pretending legal text already exists where it does not.",
+      "For now it is an honest placeholder rather than a performance of finished legal language. The route already belongs to the site and can mature gradually.",
     sections: [
       {
-        title: "Scope",
-        body: "This page is where collection boundaries, contact data handling, and site-level analytics notes can be documented once final policy wording is approved."
+        title: "What can live here",
+        body: "Later versions can describe contact forms, messages, analytics, or any other data visitors may leave on the public surface."
       },
       {
-        title: "Storage",
-        body: "Retention windows, storage locations, and deletion expectations can be added here without changing the shared shell or route map."
+        title: "Why the route exists now",
+        body: "Even before the final text is ready, it matters that the site has a visible place for transparent rules instead of an afterthought in the footer."
       },
       {
-        title: "Transparency",
-        body: "The structure is intentionally plain so later legal text can remain readable instead of being hidden inside decorative layout patterns."
+        title: "How it should read",
+        body: "The page should stay plain and legible so important wording remains easy to absorb without decorative distraction."
       }
     ],
     aside: {
       eyebrow: "Status",
-      title: "Structured now, finalized later.",
-      body: "The legal pages are already part of the public route map so they can mature gradually instead of appearing as an afterthought.",
+      title: "The structure is ready; the final text can follow when needed.",
+      body: "If a fuller policy is added later, it already has a proper route and a public-facing place inside the same shell.",
       items: [
-        { label: "Page type", value: "Legal placeholder" },
-        { label: "Tone", value: "Clear / minimal" },
-        { label: "Purpose", value: "Public readiness" }
+        { label: "Type", value: "Future policy page" },
+        { label: "Style", value: "Readable and calm" },
+        { label: "Role", value: "Public transparency" }
       ]
     }
   },
   filePolicy: {
-    eyebrow: "File policy",
-    title: "A public note on how uploaded or shared files may eventually be handled.",
+    eyebrow: "Files",
+    title: "This route leaves space for file-handling rules if those scenarios become part of the public site or CROWN.",
     intro:
-      "This first-pass version creates a stable place for future storage and moderation rules without inventing details that are not defined yet.",
+      "There is no invented policy language here. The page simply reserves a clear place for practical rules if file flows later become part of the ecosystem.",
     sections: [
       {
-        title: "Accepted material",
-        body: "Use this space later for file classes, size limits, and moderation expectations tied to community or dashboard workflows."
+        title: "What could be clarified",
+        body: "A later version could cover accepted formats, size limits, storage expectations, and removal flow for uploaded or shared material."
       },
       {
-        title: "Handling rules",
-        body: "Storage zones, review ownership, and removal procedures can be added here as the operational model becomes more concrete."
+        title: "Why it matters early",
+        body: "A public site feels more complete when it already has room for important rules, even before those rules need to be fully written out."
       },
       {
-        title: "Publication fit",
-        body: "Keeping the route public now makes the site feel complete, while still leaving room for future policy detail."
+        title: "What should stay true",
+        body: "Even if this page grows later, it should remain brief, legible, and aligned with the rest of the site instead of falling into dry utility language."
       }
     ],
     aside: {
       eyebrow: "Intent",
-      title: "A placeholder with real structure.",
-      body: "The page avoids legal theater. It simply reserves the place where file handling expectations will live when they are ready to be published."
+      title: "A normal place for future rules, without unnecessary theater.",
+      body: "If RRP later opens public file flows, the relevant expectations will already have a natural place in the site structure."
     }
   },
   terms: {
     eyebrow: "Terms",
-    title: "A compact route for future rules, boundaries, and public operating terms.",
+    title: "This page can later hold the general terms for using the public side of RRP and its related directions.",
     intro:
-      "Like the other legal pages, this section is intentionally modest. It establishes where final terms will live without overstating what is already defined.",
+      "Right now it is an honest placeholder route. It shows that rules belong in the structure, without pretending final wording already exists.",
     sections: [
       {
-        title: "Use boundaries",
-        body: "Later revisions can describe acceptable use, participation boundaries, and project-specific rules for public and dashboard-facing surfaces."
+        title: "General boundaries",
+        body: "Future revisions can define basic expectations around the site, shared materials, and the separate directions inside the RRP ecosystem."
       },
       {
-        title: "Change handling",
-        body: "This is the right place to note how updated terms are announced, versioned, and made effective over time."
+        title: "Changes over time",
+        body: "If the rules evolve, this route gives them a clean place for versioning and public updates without turning the site into bureaucracy."
       },
       {
-        title: "Shared language",
-        body: "The visual treatment stays consistent with the rest of the site so the legal area feels integrated rather than attached on the side."
+        title: "One shared language",
+        body: "Even semi-formal pages should still feel like part of the same website, so the public shell does not fracture into unrelated tones."
       }
     ],
     aside: {
       eyebrow: "Route role",
-      title: "A quiet placeholder that still belongs in the main shell.",
-      body: "Bringing terms into the same visual system keeps the public website cohesive even before final legal copy is complete.",
+      title: "A quiet service page inside the same public environment.",
+      body: "When the final text arrives, it will already have the right place and presentation inside the broader RRP shell.",
       items: [
         { label: "Surface", value: "Public route" },
         { label: "Purpose", value: "Future terms" },
-        { label: "Style", value: "Minimal / legible" }
+        { label: "Presentation", value: "Calm and clear" }
       ]
     }
   },
   contacts: {
     eyebrow: "Contacts",
-    title: "A small set of placeholder channels for the public-facing shell.",
+    title: "If you want to reach the RRP team, this page keeps the first routes clear and easy to read.",
     intro:
-      "The contacts page stays simple and deliberate. It reads like a maintained studio entry rather than a sales funnel or support center.",
+      "The contact page is not turned into a sales panel or a support maze. It exists to offer a respectful first point of contact for the team and its directions.",
     sections: [
       {
-        title: "General reach",
-        body: "Use the general inbox for broad questions about the site, project direction, or public documentation."
+        title: "General questions",
+        body: "Use the main inbox for questions about the site, the RRP directions, or the public-facing material."
       },
       {
-        title: "Studio notes",
-        body: "The studio channel can later hold press, collaboration, or worldbuilding-related correspondence once the team wants that surface public."
+        title: "Studio line",
+        body: "A separate address can carry conversations around creative direction, collaboration, and the more authored side of the work."
       },
       {
-        title: "Workspace route",
-        body: "The CROWN-facing placeholder keeps the operational path separate from the broader public voice of the site."
+        title: "CROWN route",
+        body: "The CROWN contact keeps the workspace side distinct from the broader public voice and makes it easier to reach the right part of the project."
       }
     ],
     aside: {
-      eyebrow: "Contact posture",
-      title: "Present, but intentionally low-noise.",
-      body: "This page favors a few clear channels and short expectations over a long list of corporate departments or canned sales language.",
+      eyebrow: "Contact tone",
+      title: "Short, clear, and low-friction.",
+      body: "If someone is writing to RRP for the first time, it should be obvious where to go and what each route is for.",
       items: [
-        { label: "Primary mode", value: "Email placeholders" },
-        { label: "Tone", value: "Studio-facing" },
-        { label: "State", value: "Editable later" }
+        { label: "Format", value: "Email routes" },
+        { label: "Tone", value: "Respectful and direct" },
+        { label: "Purpose", value: "First contact" }
       ]
     },
     channels: {
       general: {
         label: "General inbox",
-        note: "For broad questions, site notes, and public-facing communication."
+        note: "For questions about the site, the RRP directions, and public-facing material."
       },
       studio: {
         label: "Studio line",
-        note: "For creative direction, collaboration, and authored updates."
+        note: "For creative direction, collaboration, and authored topics."
       },
       partners: {
         label: "CROWN route",
-        note: "For dashboard-side coordination and workspace-related follow-up."
+        note: "For workspace-side questions, coordination, and internal follow-up."
       }
     }
   },
   servers: {
     title: "CROWN workspace",
     intro:
-      "Dashboard placeholder for the control surface: server inventory, environment summaries, and operator-facing notes.",
+      "This early CROWN surface points toward the internal workspace: summaries, notes, and access points that can later expand into a fuller operating layer.",
     panels: [
       {
-        title: "Fleet overview",
-        body: "Reserve this panel for environment counts, status summaries, and system-wide visibility."
+        title: "Shared overview",
+        body: "This panel can hold the broad picture of the internal environment, giving the team a clear starting point inside the operational layer."
       },
       {
         title: "Current changes",
-        body: "Use this space for maintenance windows, rollout notes, and operational messages once the dashboard is connected."
+        body: "Use this area for maintenance notes, important updates, and short operating messages inside CROWN."
       },
       {
-        title: "Workspace access",
-        body: "Role-based tools and actions can be attached later without changing the public shell structure."
+        title: "Access and actions",
+        body: "As CROWN grows, this is where the tools and actions that belong to the internal workspace can start to live."
       }
     ]
   },
   projects: {
-    introLabel: "Project focus",
+    introLabel: "Direction",
     items: {
       chrp: {
-        navDescription: "Roleplay project and community direction.",
+        navDescription: "Roleplay direction and community.",
         categoryLabel: "Roleplay direction",
-        tagline: "A roleplay world and community direction with room for atmosphere, structure, and continuity.",
+        tagline: "A direction for worldbuilding, roleplay, and community life shaped by atmosphere and internal continuity.",
         summary:
-          "CHRP is the outward-facing side of the ecosystem: a public project surface shaped around community presence, setting, and long-term direction rather than generic product language.",
+          "CHRP is the more open and public side of RRP. It carries the mood of the project, its longer rhythm, and the sense of a community worth returning to.",
         sections: [
           {
-            title: "Community-facing",
-            body: "The CHRP page is meant to feel like an entry into a living project direction. It can later expand into lore, access notes, timelines, or participation guidance."
+            title: "An entry into the world",
+            body: "The CHRP page should help visitors feel the direction from the first screen, without collapsing into product language or generic spectacle."
           },
           {
-            title: "Narrative discipline",
-            body: "Even as a placeholder, the page keeps a deliberate tone and avoids overexplaining. The structure leaves room for atmosphere without turning abstract."
+            title: "Community rhythm",
+            body: "This direction is built around people, tone, and long-term continuity. It needs a more attentive and living voice because of that."
           },
           {
-            title: "Shared shell",
-            body: "CHRP still belongs to the same visual system as the rest of RRP, which keeps the ecosystem coherent while allowing the content voice to stay distinct."
+            title: "Part of the wider RRP shell",
+            body: "CHRP keeps its own character while still belonging naturally inside the larger RRP environment."
           }
         ],
         specs: [
-          { label: "Direction", value: "Roleplay / community" },
-          { label: "Current state", value: "Public-first page" },
-          { label: "CTA route", value: "/projects/chrp" }
+          { label: "Focus", value: "Roleplay and community" },
+          { label: "Format", value: "Public-facing direction" },
+          { label: "Route", value: "/projects/chrp" }
         ],
         surface: {
-          eyebrow: "Page posture",
-          title: "Framed as a project world, not a SaaS feature.",
-          body: "The composition gives CHRP enough presence to feel like a standalone direction while still sitting naturally inside the larger RRP shell."
+          eyebrow: "CHRP posture",
+          title: "This is an entry into a living direction, not a card for an abstract product.",
+          body: "CHRP should feel like a distinct world inside RRP, with its own atmosphere, voice, and public point of entry for the community."
         }
       },
       crown: {
-        navDescription: "Dashboard and control workspace.",
+        navDescription: "Dashboard and workspace.",
         categoryLabel: "Dashboard workspace",
-        tagline: "A dashboard workspace for control, routing, and the operational layer behind the public surface.",
+        tagline: "An internal direction for access, coordination, and the order behind the public side of the project.",
         summary:
-          "CROWN is framed as the internal-facing workspace: the place where control surfaces, server summaries, and disciplined operational context begin to take shape.",
+          "CROWN is the control workspace inside the RRP ecosystem. It carries the more disciplined, operational side of the work and the systems that usually stay behind the curtain.",
         sections: [
           {
-            title: "Control surface",
-            body: "CROWN is positioned as the dashboard-side layer, suited to summaries, access-aware tooling, and the calm structure expected from an operator workspace."
+            title: "Working surface",
+            body: "CROWN exists for calm organization: notes, access, routing, and the internal panels that can gradually become part of a fuller workspace."
           },
           {
             title: "Clear hierarchy",
-            body: "The page emphasizes panels, notes, and routing rather than spectacle. That keeps the project premium and credible instead of theatrical."
+            body: "This direction values order over spectacle. That is why it leans on a clear structure and a composed tone rather than heavy theatrics."
           },
           {
-            title: "Bridge to the shell",
-            body: "The public site points into CROWN without pretending to implement the full application. The boundary stays clean and static-export friendly."
+            title: "Connected to the public site",
+            body: "The public side of RRP points toward CROWN as a real working layer, without pretending the full workspace already lives on this surface."
           }
         ],
         specs: [
-          { label: "Direction", value: "Dashboard / control" },
-          { label: "Current state", value: "Workspace shell" },
-          { label: "CTA route", value: "/projects/crown" }
+          { label: "Focus", value: "Dashboard and control" },
+          { label: "Format", value: "Workspace shell" },
+          { label: "Route", value: "/projects/crown" }
         ],
         surface: {
-          eyebrow: "Workspace posture",
-          title: "Framed as the operational room behind the curtain.",
-          body: "CROWN is intentionally presented with discipline: compact, legible, and ready to expand into a real control workspace without changing the visual language."
+          eyebrow: "CROWN posture",
+          title: "This is the internal room for coordination, not a showcase built for effect.",
+          body: "CROWN is presented with discipline and restraint so it carries the weight of a real workspace instead of reading like another marketing block."
         }
       }
     }
   },
   footer: {
     privacy: "Privacy",
-    filePolicy: "File Policy",
+    filePolicy: "Files",
     terms: "Terms",
     contacts: "Contacts",
     faq: "FAQ",
-    docs: "Docs",
-    subtitle: "A quiet shell for the projects, notes, and control surfaces gathered under RRP.",
+    docs: "Materials",
+    subtitle: "The public RRP site, with CHRP for community-facing work and CROWN for the internal operating layer.",
     copyright: "Royal Rats Productions"
   },
   redirect: {
     title: "Choosing language",
-    body: "The site is selecting the nearest locale and opening the public shell.",
+    body: "The site is opening the closest locale and taking you into the public RRP shell.",
     fallback: "Continue manually"
   }
 } satisfies SiteMessages;

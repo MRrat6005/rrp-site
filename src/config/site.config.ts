@@ -88,7 +88,7 @@ export const siteConfig: SiteConfig = {
     dashboardBrand: "CROWN"
   },
   description:
-    "Dark bilingual static shell for the Royal Rats Productions public website and dashboard entry points.",
+    "Public-facing site for Royal Rats Productions, with CHRP and CROWN as its main directions.",
   siteUrl: "https://royalratsproductions.ru",
   defaultLocale: "ru",
   locales,

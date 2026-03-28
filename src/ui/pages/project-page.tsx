@@ -25,9 +25,9 @@ export function ProjectPage({
   const asset = siteConfig.assetPlaceholders.projects[projectId];
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 sm:px-8 lg:px-10 lg:py-14">
-      <section className="section-frame overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.14),transparent_25%),radial-gradient(circle_at_bottom_right,rgba(141,243,209,0.08),transparent_25%)]" />
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-10 sm:px-8 lg:px-10 lg:gap-14 lg:py-14">
+      <section className="section-frame overflow-hidden reveal-up">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.1),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(141,243,209,0.06),transparent_24%)]" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(19rem,0.84fr)]">
           <div className="space-y-5">
             <p className="eyebrow">{messages.projects.introLabel}</p>
@@ -72,7 +72,7 @@ export function ProjectPage({
               {copy.specs.map((spec) => (
                 <div
                   key={spec.label}
-                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-white/10 bg-white/[0.03] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
                 >
                   <span className="text-sm text-muted">{spec.label}</span>
                   <span className="text-sm font-medium text-ink">{spec.value}</span>
@@ -84,8 +84,11 @@ export function ProjectPage({
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {copy.sections.map((section) => (
-          <article key={section.title} className="glass-panel h-full">
+        {copy.sections.map((section, index) => (
+          <article
+            key={section.title}
+            className={`glass-panel h-full reveal-up ${index === 1 ? "reveal-delay-1" : index === 2 ? "reveal-delay-2" : ""}`}
+          >
             <h2 className="[font-family:var(--font-display)] text-xl font-semibold text-ink">
               {section.title}
             </h2>
@@ -96,5 +99,3 @@ export function ProjectPage({
     </main>
   );
 }
-
-

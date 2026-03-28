@@ -93,12 +93,14 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 z-50 border-b border-white/10 bg-[rgba(6,8,14,0.78)] backdrop-blur-2xl"
+      className="sticky top-0 z-50 border-b border-white/[0.08] bg-[rgba(5,7,11,0.72)] backdrop-blur-xl"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.12),transparent_24%),radial-gradient(circle_at_top_right,rgba(141,243,209,0.08),transparent_20%)]" />
-      <div className="relative mx-auto w-full max-w-7xl px-6 py-4 sm:px-8 lg:px-10">
-        <div className="grid items-center gap-4 lg:grid-cols-[minmax(18rem,24rem)_1fr_auto]">
-          <Link href={getLocalizedPath(locale)} className="flex min-w-0 items-center gap-4">
+      <div className="relative mx-auto w-full max-w-7xl px-6 py-5 sm:px-8 lg:px-10">
+        <div className="flex items-center justify-between gap-5 xl:gap-8">
+          <Link
+            href={getLocalizedPath(locale)}
+            className="flex min-w-0 items-center gap-4 pr-2"
+          >
             <LogoTile
               shortLabel={siteConfig.assetPlaceholders.brand.shortLabel}
               label={siteConfig.assetPlaceholders.brand.label}
@@ -107,89 +109,98 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
               <span className="block truncate [font-family:var(--font-display)] text-[1.05rem] font-semibold tracking-[0.01em] text-ink sm:text-lg">
                 {siteConfig.brand.fullName}
               </span>
-              <span className="block truncate text-xs text-muted">
+              <span className="block truncate text-xs text-white/46">
                 {siteConfig.brand.shortName} / {siteConfig.brand.domain}
               </span>
             </span>
           </Link>
 
-          <div className="hidden items-center justify-start gap-2 lg:flex">
-            {siteConfig.featureFlags.showProjectsDropdown ? (
-              <div className="relative">
-                <button
-                  type="button"
-                  aria-expanded={isProjectsOpen}
-                  className={`nav-link ${isProjectsRoute || isProjectsOpen ? "nav-link-active" : ""}`}
-                  onClick={() => setIsProjectsOpen((current) => !current)}
-                >
-                  {messages.nav.projects}
-                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.22em] text-white/62">
-                    {projectLinks.length}
-                  </span>
-                </button>
-                {isProjectsOpen ? (
-                  <div className="absolute left-0 top-[calc(100%+1rem)] w-[min(34rem,calc(100vw-5rem))] rounded-[1.75rem] border border-white/10 bg-[rgba(8,11,18,0.98)] p-3 shadow-halo backdrop-blur-2xl">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {projectLinks.map((project) => (
-                        <Link
-                          key={project.id}
-                          href={project.href}
-                          className="group rounded-[1.4rem] border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/16 hover:bg-white/[0.05]"
-                        >
-                          <div className="flex items-start gap-3">
-                            <LogoTile
-                              shortLabel={project.asset.shortLabel}
-                              label={project.asset.label}
-                              size="sm"
-                            />
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
+          <div className="hidden min-w-0 flex-1 items-center justify-between gap-8 lg:flex">
+            <nav className="flex min-w-0 items-center gap-1 xl:gap-3">
+              {siteConfig.featureFlags.showProjectsDropdown ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-expanded={isProjectsOpen}
+                    className={`nav-link ${isProjectsRoute || isProjectsOpen ? "nav-link-active" : ""}`}
+                    onClick={() => setIsProjectsOpen((current) => !current)}
+                  >
+                    {messages.nav.projects}
+                    <span className="text-[11px] uppercase tracking-[0.26em] text-white/36">
+                      {projectLinks.length.toString().padStart(2, "0")}
+                    </span>
+                  </button>
+                  {isProjectsOpen ? (
+                    <div className="menu-enter absolute left-0 top-[calc(100%+0.9rem)] w-[min(35rem,calc(100vw-5rem))] rounded-[1.75rem] border border-white/[0.08] bg-[rgba(8,11,18,0.96)] p-3 backdrop-blur-2xl">
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {projectLinks.map((project) => (
+                          <Link
+                            key={project.id}
+                            href={project.href}
+                            className="group rounded-[1.4rem] border border-white/[0.07] bg-white/[0.025] p-4 transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.045]"
+                          >
+                            <div className="flex items-start gap-3">
+                              <LogoTile
+                                shortLabel={project.asset.shortLabel}
+                                label={project.asset.label}
+                                size="sm"
+                              />
+                              <div className="min-w-0">
                                 <p className="[font-family:var(--font-display)] text-sm font-semibold text-ink">
                                   {project.title}
                                 </p>
-                                <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.22em] text-white/55">
+                                <p className="mt-1 text-[11px] uppercase tracking-[0.24em] text-white/38">
                                   {project.categoryLabel}
-                                </span>
+                                </p>
+                                <p className="mt-3 text-sm leading-6 text-muted">
+                                  {project.description}
+                                </p>
                               </div>
-                              <p className="mt-2 text-sm leading-6 text-muted">
-                                {project.description}
-                              </p>
                             </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+                  ) : null}
+                </div>
+              ) : null}
 
-            {headerLinks.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                className={`nav-link ${isCurrentPath(pathname, item.href) ? "nav-link-active" : ""}`}
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            <div className="ml-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1">
-              {localeLinks.map((item) => (
+              {headerLinks.map((item) => (
                 <Link
-                  key={item.locale}
+                  key={item.key}
                   href={item.href}
-                  aria-label={`${messages.nav.switchLanguage}: ${item.locale.toUpperCase()}`}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] transition ${item.locale === locale ? "bg-white text-slate-950" : "text-white/62 hover:text-ink"}`}
+                  className={`nav-link ${isCurrentPath(pathname, item.href) ? "nav-link-active" : ""}`}
                 >
-                  {item.locale}
+                  {item.label}
                 </Link>
               ))}
+            </nav>
+
+            <div className="flex items-center gap-3 xl:gap-4">
+              <div className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.02] p-1">
+                {localeLinks.map((item) => (
+                  <Link
+                    key={item.locale}
+                    href={item.href}
+                    aria-label={`${messages.nav.switchLanguage}: ${item.locale.toUpperCase()}`}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] transition duration-200 ${item.locale === locale ? "bg-white text-slate-950" : "text-white/58 hover:text-ink"}`}
+                  >
+                    {item.locale}
+                  </Link>
+                ))}
+              </div>
+
+              <Link href={dashboardHref} className="button-primary">
+                <span>{messages.nav.openDashboard}</span>
+                <span className="hidden text-[10px] uppercase tracking-[0.26em] text-slate-600 xl:inline">
+                  {siteConfig.brand.dashboardBrand}
+                </span>
+              </Link>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3">
-            <Link href={dashboardHref} className="button-primary shadow-[0_12px_36px_rgba(255,255,255,0.12)]">
+          <div className="flex items-center justify-end gap-3 lg:hidden">
+            <Link href={dashboardHref} className="button-primary">
               <span>{messages.nav.openDashboard}</span>
               <span className="hidden text-[10px] uppercase tracking-[0.26em] text-slate-600 sm:inline">
                 {siteConfig.brand.dashboardBrand}
@@ -197,7 +208,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
             </Link>
             <button
               type="button"
-              className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-ink transition hover:border-white/20 hover:bg-white/[0.06] lg:hidden"
+              className="inline-flex rounded-full border border-white/[0.08] bg-white/[0.02] px-4 py-2 text-sm text-ink transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.05]"
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               {isMenuOpen ? messages.nav.close : messages.nav.menu}
@@ -207,9 +218,9 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
       </div>
 
       {isMenuOpen && siteConfig.featureFlags.useMobileMenuSheet ? (
-        <div className="relative border-t border-white/10 px-4 pb-4 lg:hidden sm:px-6">
+        <div className="relative border-t border-white/[0.08] px-4 pb-4 lg:hidden sm:px-6">
           <div className="mx-auto max-w-7xl">
-            <div className="menu-sheet">
+            <div className="menu-sheet menu-enter">
               <div className="grid gap-5">
                 <div className="grid gap-3">
                   <p className="eyebrow px-1">{messages.nav.projects}</p>
@@ -217,7 +228,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     <Link
                       key={project.id}
                       href={project.href}
-                      className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/16 hover:bg-white/[0.05]"
+                      className="rounded-[1.4rem] border border-white/[0.08] bg-white/[0.025] p-4 transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.045]"
                     >
                       <div className="flex items-start gap-3">
                         <LogoTile
@@ -243,21 +254,21 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     <Link
                       key={item.key}
                       href={item.href}
-                      className={`rounded-[1.2rem] border px-4 py-3 text-sm transition ${isCurrentPath(pathname, item.href) ? "border-white/18 bg-white/[0.05] text-ink" : "border-white/10 bg-white/[0.02] text-muted hover:border-white/16 hover:text-ink"}`}
+                      className={`rounded-[1.2rem] border px-4 py-3 text-sm transition duration-200 ${isCurrentPath(pathname, item.href) ? "border-white/[0.14] bg-white/[0.05] text-ink" : "border-white/[0.08] bg-white/[0.02] text-muted hover:border-white/[0.14] hover:text-ink"}`}
                     >
                       {item.label}
                     </Link>
                   ))}
                 </div>
 
-                <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
+                <div className="rounded-[1.4rem] border border-white/[0.08] bg-white/[0.02] p-4">
                   <p className="eyebrow">{messages.nav.switchLanguage}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {localeLinks.map((item) => (
                       <Link
                         key={item.locale}
                         href={item.href}
-                        className={`rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] ${item.locale === locale ? "bg-white text-slate-950" : "border border-white/10 text-ink"}`}
+                        className={`rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] ${item.locale === locale ? "bg-white text-slate-950" : "border border-white/[0.08] text-ink"}`}
                       >
                         {item.locale}
                       </Link>
