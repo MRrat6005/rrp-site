@@ -28,12 +28,9 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
         <div className="hero-aurora" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.14fr)_minmax(19rem,0.86fr)] lg:gap-10">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="eyebrow">{messages.projects.introLabel}</p>
-              <span className="project-tag">{copy.categoryLabel}</span>
-            </div>
+            <p className="eyebrow">{messages.projects.introLabel}</p>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 sm:gap-5">
               <LogoTile
                 shortLabel={asset.shortLabel}
                 label={asset.label}

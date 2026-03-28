@@ -87,8 +87,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
       href: getLocalizedPath(locale, siteConfig.ctaRoutes.projects[projectId]),
       markPath: siteConfig.visuals.projects[projectId].markPath,
       themeStyle: getProjectThemeStyle(projectId),
-      description: messages.projects.items[projectId].navDescription,
-      categoryLabel: messages.projects.items[projectId].categoryLabel
+      description: messages.projects.items[projectId].navDescription
     };
   });
 
@@ -132,35 +131,29 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     onClick={() => setIsProjectsOpen((current) => !current)}
                   >
                     {messages.nav.projects}
-                    <span className="text-[10px] uppercase tracking-[0.26em] text-white/30">
-                      {projectLinks.length.toString().padStart(2, "0")}
-                    </span>
                   </button>
                   {isProjectsOpen ? (
-                    <div className="dropdown-panel menu-enter absolute left-0 top-[calc(100%+0.85rem)] w-[min(42rem,calc(100vw-6rem))]">
-                      <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="dropdown-panel menu-enter absolute left-0 top-[calc(100%+0.8rem)] w-[min(24rem,calc(100vw-6rem))]">
+                      <div className="grid gap-2">
                         {projectLinks.map((project) => (
                           <Link
                             key={project.id}
                             href={project.href}
-                            className="project-card hover-lift-sm group p-4"
+                            className="dropdown-project-item group"
                             style={project.themeStyle}
                           >
-                            <div className="relative flex items-start gap-3">
+                            <div className="relative flex items-center gap-3">
                               <LogoTile
                                 shortLabel={project.asset.shortLabel}
                                 label={project.asset.label}
                                 imagePath={project.markPath}
                                 size="sm"
                               />
-                              <div className="min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <p className="[font-family:var(--font-display)] text-sm font-semibold text-ink">
-                                    {project.title}
-                                  </p>
-                                  <span className="project-tag">{project.categoryLabel}</span>
-                                </div>
-                                <p className="mt-3 text-sm leading-6 text-muted">
+                              <div className="min-w-0 flex-1">
+                                <p className="[font-family:var(--font-display)] text-base font-semibold text-ink">
+                                  {project.title}
+                                </p>
+                                <p className="mt-1.5 text-sm leading-6 text-muted">
                                   {project.description}
                                 </p>
                               </div>
@@ -230,24 +223,21 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     <Link
                       key={project.id}
                       href={project.href}
-                      className="project-card hover-lift-sm p-4"
+                      className="dropdown-project-item"
                       style={project.themeStyle}
                     >
-                      <div className="relative flex items-start gap-3">
+                      <div className="relative flex items-center gap-3">
                         <LogoTile
                           shortLabel={project.asset.shortLabel}
                           label={project.asset.label}
                           imagePath={project.markPath}
                           size="sm"
                         />
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="[font-family:var(--font-display)] text-sm font-semibold text-ink">
-                              {project.title}
-                            </p>
-                            <span className="project-tag">{project.categoryLabel}</span>
-                          </div>
-                          <p className="mt-3 text-sm leading-6 text-muted">{project.description}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="[font-family:var(--font-display)] text-base font-semibold text-ink">
+                            {project.title}
+                          </p>
+                          <p className="mt-1.5 text-sm leading-6 text-muted">{project.description}</p>
                         </div>
                       </div>
                     </Link>
@@ -286,4 +276,3 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
     </header>
   );
 }
-

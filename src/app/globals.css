@@ -178,28 +178,18 @@ a {
 
   .logo-tile {
     @apply relative flex items-center justify-center overflow-hidden border backdrop-blur-xl [font-family:var(--font-display)] font-semibold uppercase text-ink;
-    border-color: var(--tile-border);
-    background: linear-gradient(180deg, var(--tile-bg-top), var(--tile-bg-bottom));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 18px 38px rgba(2, 6, 12, 0.18);
-  }
-
-  .logo-tile__halo {
-    position: absolute;
-    inset: -28% auto auto -16%;
-    height: 72%;
-    width: 72%;
-    border-radius: 999px;
-    background: radial-gradient(circle, var(--tile-glow), transparent 72%);
-    filter: blur(14px);
-    opacity: 0.94;
+    border-color: color-mix(in srgb, var(--tile-border) 82%, rgba(255, 255, 255, 0.08));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tile-bg-top) 84%, rgba(255, 255, 255, 0.03)), color-mix(in srgb, var(--tile-bg-bottom) 88%, rgba(8, 12, 18, 0.12)));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 30px rgba(2, 6, 12, 0.14);
   }
 
   .logo-tile__image {
     position: relative;
     z-index: 1;
-    height: 68%;
-    width: 68%;
+    height: 76%;
+    width: 76%;
     object-fit: contain;
+    filter: drop-shadow(0 10px 24px rgba(3, 7, 14, 0.14));
   }
 
   .site-header-shell {
@@ -474,8 +464,26 @@ a {
   }
 
   .dropdown-panel {
-    @apply rounded-[1.65rem] border border-white/[0.1] bg-[rgba(10,14,22,0.88)] p-3 backdrop-blur-2xl;
-    box-shadow: 0 26px 72px rgba(3, 7, 14, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    @apply rounded-[1.45rem] border border-white/[0.08] bg-[rgba(9,13,20,0.9)] p-2.5 backdrop-blur-2xl;
+    box-shadow: 0 22px 56px rgba(3, 7, 14, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .dropdown-project-item {
+    @apply relative overflow-hidden rounded-[1.15rem] border px-3.5 py-3.5 backdrop-blur-xl;
+    border-color: var(--project-border);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--project-surface-top) 92%, rgba(255, 255, 255, 0.02)), color-mix(in srgb, var(--project-surface-bottom) 94%, rgba(7, 10, 16, 0.08)));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition:
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.22s ease,
+      box-shadow 0.24s ease,
+      background-color 0.22s ease;
+  }
+
+  .dropdown-project-item:hover {
+    transform: translate3d(0, -2px, 0);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 16px 34px rgba(3, 7, 14, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   .workspace-shell {
@@ -588,7 +596,7 @@ a {
   }
 
   .nav-link {
-    @apply inline-flex items-center gap-2 rounded-full border border-transparent px-4 py-2.5 text-sm text-white/[0.66] transition duration-300;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-transparent px-4 py-2.5 text-sm text-white/[0.66] transition duration-300;
   }
 
   .nav-link:hover {
@@ -715,21 +723,21 @@ a {
   }
 
   .home-route-card {
-    @apply relative overflow-hidden rounded-[1.45rem] border p-4 backdrop-blur-xl;
+    @apply relative overflow-hidden rounded-[1.35rem] border p-4 backdrop-blur-xl;
     border-color: var(--project-border);
-    background: linear-gradient(180deg, var(--project-surface-top), var(--project-surface-bottom));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--project-surface-top) 94%, rgba(255, 255, 255, 0.02)), color-mix(in srgb, var(--project-surface-bottom) 95%, rgba(7, 10, 16, 0.08)));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     transition:
-      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.28s ease,
-      background-color 0.28s ease,
-      box-shadow 0.32s ease;
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.24s ease,
+      background-color 0.24s ease,
+      box-shadow 0.28s ease;
   }
 
   .home-route-card:hover {
-    transform: translate3d(0, -3px, 0);
-    border-color: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 20px 44px rgba(3, 7, 14, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translate3d(0, -2px, 0);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 16px 34px rgba(3, 7, 14, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   .home-hero-stat {
@@ -939,6 +947,7 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
 
 
 

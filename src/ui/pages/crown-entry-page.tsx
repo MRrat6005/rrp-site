@@ -22,12 +22,9 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
         <div className="hero-aurora" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(19rem,0.88fr)] lg:gap-10">
           <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="eyebrow">{messages.crownEntry.eyebrow}</p>
-              <span className="project-tag">{messages.projects.items.crown.categoryLabel}</span>
-            </div>
+            <p className="eyebrow">{messages.crownEntry.eyebrow}</p>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 sm:gap-5">
               <LogoTile
                 shortLabel={asset.shortLabel}
                 label={asset.label}

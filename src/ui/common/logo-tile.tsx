@@ -11,8 +11,8 @@ interface LogoTileProps {
 }
 
 const sizeClassNames = {
-  sm: "h-10 w-10 rounded-[1.1rem] text-[11px] tracking-[0.26em]",
-  md: "h-12 w-12 rounded-[1.2rem] text-xs tracking-[0.28em]"
+  sm: "h-11 w-11 rounded-[1.2rem] text-[11px] tracking-[0.24em]",
+  md: "h-14 w-14 rounded-[1.45rem] text-xs tracking-[0.26em]"
 } as const;
 
 export function LogoTile({
@@ -29,7 +29,6 @@ export function LogoTile({
       className={`logo-tile ${sizeClassNames[size]} ${className}`.trim()}
       style={style}
     >
-      <span className="logo-tile__halo" />
       {imagePath ? (
         <Image
           src={imagePath}

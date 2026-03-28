@@ -142,18 +142,15 @@ export function HomePage({ locale, messages }: HomePageProps) {
                     className="home-route-card"
                     style={project.themeStyle}
                   >
-                    <div className="relative flex items-center gap-3">
+                    <div className="relative flex items-center gap-4">
                       <LogoTile
                         shortLabel={project.asset.shortLabel}
                         label={project.asset.label}
                         imagePath={project.markPath}
                       />
                       <div className="min-w-0">
-                        <p className="[font-family:var(--font-display)] text-lg font-semibold text-ink">
+                        <p className="[font-family:var(--font-display)] text-[1.15rem] font-semibold text-ink sm:text-xl">
                           {project.title}
-                        </p>
-                        <p className="mt-1 text-xs uppercase tracking-[0.22em] text-white/42">
-                          {project.categoryLabel}
                         </p>
                       </div>
                     </div>
@@ -298,11 +295,11 @@ export function HomePage({ locale, messages }: HomePageProps) {
                 shortLabel={siteConfig.assetPlaceholders.brand.shortLabel}
                 label={siteConfig.assetPlaceholders.brand.label}
                 imagePath={siteConfig.visuals.brand.markPath}
-                className="h-14 w-14 rounded-[1.35rem]"
+                className="h-16 w-16 rounded-[1.55rem]"
               />
               <div>
                 <p className="[font-family:var(--font-display)] text-lg font-semibold text-ink">
-                  {siteConfig.brand.fullName}
+                  {messages.home.brandTitle}
                 </p>
                 <p className="mt-1 text-sm text-white/44">{siteConfig.brand.domain}</p>
               </div>
@@ -341,5 +338,4 @@ export function HomePage({ locale, messages }: HomePageProps) {
     </main>
   );
 }
-
 
