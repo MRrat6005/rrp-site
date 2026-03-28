@@ -64,6 +64,12 @@ export interface SiteMessages {
     directionsEyebrow: string;
     directionsTitle: string;
     directionsIntro: string;
+    brandEyebrow: string;
+    brandTitle: string;
+    brandBody: string;
+    finalEyebrow: string;
+    finalTitle: string;
+    finalBody: string;
     notes: readonly SectionCopy[];
     stats: readonly LabeledValue[];
   };
@@ -135,3 +141,4 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+

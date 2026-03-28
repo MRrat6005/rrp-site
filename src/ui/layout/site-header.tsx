@@ -27,12 +27,22 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${locale}`;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setIsMenuOpen(false);
     setIsProjectsOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const syncScrollState = () => setIsScrolled(window.scrollY > 10);
+
+    syncScrollState();
+    window.addEventListener("scroll", syncScrollState, { passive: true });
+
+    return () => window.removeEventListener("scroll", syncScrollState);
+  }, []);
 
   useEffect(() => {
     if (!isMenuOpen && !isProjectsOpen) {
@@ -91,9 +101,9 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
   const isProjectsRoute = pathname.includes("/projects/");
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
+    <header ref={headerRef} className="sticky top-0 z-50 px-4 pt-3 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="site-header-shell">
+        <div className={`site-header-shell ${isScrolled ? "site-header-shell--scrolled" : ""}`.trim()}>
           <Link href={getLocalizedPath(locale)} className="brand-lockup pr-2">
             <LogoTile
               shortLabel={siteConfig.assetPlaceholders.brand.shortLabel}
@@ -104,7 +114,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
               <span className="block truncate [font-family:var(--font-display)] text-[1.02rem] font-semibold tracking-[0.01em] text-ink sm:text-lg">
                 {siteConfig.brand.fullName}
               </span>
-              <span className="block truncate text-xs text-white/42">
+              <span className="block truncate text-xs text-white/38">
                 {siteConfig.brand.shortName} / {siteConfig.brand.domain}
               </span>
             </span>
@@ -121,12 +131,12 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     onClick={() => setIsProjectsOpen((current) => !current)}
                   >
                     {messages.nav.projects}
-                    <span className="text-[10px] uppercase tracking-[0.26em] text-white/34">
+                    <span className="text-[10px] uppercase tracking-[0.26em] text-white/30">
                       {projectLinks.length.toString().padStart(2, "0")}
                     </span>
                   </button>
                   {isProjectsOpen ? (
-                    <div className="dropdown-panel menu-enter absolute left-0 top-[calc(100%+0.9rem)] w-[min(42rem,calc(100vw-6rem))]">
+                    <div className="dropdown-panel menu-enter absolute left-0 top-[calc(100%+0.85rem)] w-[min(42rem,calc(100vw-6rem))]">
                       <div className="grid gap-3 sm:grid-cols-2">
                         {projectLinks.map((project) => (
                           <Link

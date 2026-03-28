@@ -21,37 +21,45 @@ export const enMessages = {
   },
   home: {
     eyebrow: "Royal Rats Productions",
-    title: "A single entry point into the RRP ecosystem.",
+    title: "RRP. The public entry point into CHRP and CROWN.",
     subtitle:
-      "Royal Rats Productions brings projects, internal systems, and public directions into one environment. CHRP carries atmosphere and community, while CROWN holds coordination and the internal working layer.",
+      "A restrained front door to the Royal Rats Productions ecosystem. The homepage introduces the brand first, then routes visitors clearly toward CHRP or the internal CROWN workspace.",
     primaryCta: "Open CROWN",
-    secondaryCta: "Open materials",
-    frameEyebrow: "The RRP ecosystem",
-    frameTitle: "Two directions. One shared system.",
+    secondaryCta: "Explore CHRP",
+    frameEyebrow: "The public RRP layer",
+    frameTitle: "Two distinct routes without blurred roles.",
     frameBody:
-      "RRP connects public identity, creative context, and internal working discipline. The site gives visitors a clear view of the ecosystem and a direct route into each direction.",
-    directionsEyebrow: "Core directions",
-    directionsTitle: "CHRP and CROWN shape different sides of RRP.",
+      "CHRP remains the direction of world and community. CROWN leads into a stricter working environment. The homepage presents both sides calmly and without extra noise.",
+    directionsEyebrow: "Directions",
+    directionsTitle: "CHRP and CROWN should be read as separate directions.",
     directionsIntro:
-      "CHRP faces the world of the project and its community. CROWN leads into the internal environment of management, modules, and project work.",
+      "One direction is built around atmosphere and presence. The other holds structure, access, and internal coordination.",
+    brandEyebrow: "RRP",
+    brandTitle: "RRP sets the frame while CHRP and CROWN lead in different directions.",
+    brandBody:
+      "The public side of RRP should stay coherent and calm. It explains the brand briefly, then helps visitors choose between the atmospheric CHRP direction and the working CROWN environment.",
+    finalEyebrow: "Next route",
+    finalTitle: "Choose the route that fits what you need now.",
+    finalBody:
+      "Go to CHRP if you want the world and community side. Open CROWN if you need entry into the internal working layer.",
     notes: [
       {
-        title: "One ecosystem",
-        body: "Public directions, working surfaces, and supporting materials live inside one system and speak with a consistent voice."
+        title: "RRP as the frame",
+        body: "The brand holds the public tone and structure together without blending the roles of its directions."
       },
       {
-        title: "Clear presence",
-        body: "RRP is presented with restraint and confidence, without filler and without losing character, purpose, or direction."
+        title: "CHRP as the public world",
+        body: "CHRP speaks through atmosphere, lore, and community while remaining its own direction inside RRP."
       },
       {
-        title: "Working layer",
-        body: "CROWN separates internal coordination from the public-facing side while keeping the wider ecosystem orderly and coherent."
+        title: "CROWN as the working layer",
+        body: "CROWN handles access, coordination, and internal routes without turning the public site into an operations panel."
       }
     ],
     stats: [
-      { label: "Focus", value: "Projects, worlds, and systems" },
-      { label: "Directions", value: "CHRP and CROWN" },
-      { label: "Format", value: "Public site and workspace entry" }
+      { label: "Focus", value: "Public entry and two directions" },
+      { label: "Routes", value: "CHRP and CROWN" },
+      { label: "Tone", value: "Restrained and official" }
     ]
   },
   about: {
@@ -475,3 +483,4 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
