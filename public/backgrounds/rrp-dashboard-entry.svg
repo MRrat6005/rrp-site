@@ -1,0 +1,47 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#05070C"/>
+  <g filter="url(#blur-xl)">
+    <ellipse cx="1318" cy="182" rx="298" ry="214" fill="url(#entry-right)" fill-opacity="0.5"/>
+    <ellipse cx="282" cy="1012" rx="346" ry="268" fill="url(#entry-left)" fill-opacity="0.48"/>
+    <ellipse cx="768" cy="384" rx="552" ry="320" fill="url(#entry-center)" fill-opacity="0.2"/>
+  </g>
+  <g opacity="0.22">
+    <rect x="248" y="156" width="1104" height="728" rx="80" stroke="url(#frame-stroke)" stroke-width="1.5"/>
+    <path d="M354 320H1246" stroke="url(#line-horizontal)" stroke-width="1.5"/>
+    <path d="M520 250V790" stroke="url(#line-vertical)" stroke-width="1.5"/>
+  </g>
+  <defs>
+    <filter id="blur-xl" x="-160" y="-160" width="1920" height="1520" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="110"/>
+    </filter>
+    <linearGradient id="entry-right" x1="1020" y1="78" x2="1562" y2="316" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#92C5FF"/>
+      <stop offset="0.58" stop-color="#4E6FA3"/>
+      <stop offset="1" stop-color="#101929" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="entry-left" x1="-64" y1="968" x2="608" y2="1042" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8EF0D8"/>
+      <stop offset="0.6" stop-color="#395569"/>
+      <stop offset="1" stop-color="#0D141F" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="entry-center" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(768 384) rotate(90) scale(320 552)">
+      <stop stop-color="#DEE7FF"/>
+      <stop offset="1" stop-color="#101727" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="frame-stroke" x1="248" y1="520" x2="1352" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7EEF8" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#E7EEF8" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#E7EEF8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="line-horizontal" x1="354" y1="320.75" x2="1246" y2="320.75" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8D9F5" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#C8D9F5" stop-opacity="0.88"/>
+      <stop offset="1" stop-color="#C8D9F5" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="line-vertical" x1="520.75" y1="250" x2="520.75" y2="790" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D1DCF3" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#D1DCF3" stop-opacity="0.84"/>
+      <stop offset="1" stop-color="#D1DCF3" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

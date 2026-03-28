@@ -21,7 +21,7 @@ export function CrownEntryPage({
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-10 sm:px-8 lg:px-10 lg:gap-14 lg:py-14">
       <section className="section-frame overflow-hidden reveal-up">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(122,172,255,0.14),transparent_24%),radial-gradient(circle_at_86%_16%,rgba(141,243,209,0.06),transparent_18%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_42%)]" />
+        <div className="hero-aurora" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.16fr)_minmax(19rem,0.84fr)] lg:gap-10">
           <div className="space-y-6">
             <p className="eyebrow">{messages.crownEntry.eyebrow}</p>
@@ -52,24 +52,26 @@ export function CrownEntryPage({
             </div>
           </div>
 
-          <aside className="glass-panel">
-            <p className="eyebrow">{messages.crownEntry.shell.eyebrow}</p>
-            <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink sm:text-[2rem]">
-              {messages.crownEntry.shell.title}
-            </p>
-            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-              {messages.crownEntry.shell.body}
-            </p>
-            <div className="mt-6 space-y-3">
-              {messages.crownEntry.shell.items?.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-between gap-4 rounded-[1.2rem] border border-white/[0.08] bg-white/[0.025] px-4 py-3"
-                >
-                  <span className="text-sm text-muted">{item.label}</span>
-                  <span className="text-sm font-medium text-ink">{item.value}</span>
-                </div>
-              ))}
+          <aside className="glass-panel reveal-up reveal-delay-1">
+            <div className="relative z-10">
+              <p className="eyebrow">{messages.crownEntry.shell.eyebrow}</p>
+              <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink sm:text-[2rem]">
+                {messages.crownEntry.shell.title}
+              </p>
+              <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+                {messages.crownEntry.shell.body}
+              </p>
+              <div className="mt-6 space-y-3">
+                {messages.crownEntry.shell.items?.map((item) => (
+                  <div
+                    key={item.label}
+                    className="quiet-surface flex items-center justify-between gap-4 px-4 py-3"
+                  >
+                    <span className="text-sm text-muted">{item.label}</span>
+                    <span className="text-sm font-medium text-ink">{item.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </aside>
         </div>
@@ -79,12 +81,12 @@ export function CrownEntryPage({
         {messages.crownEntry.capabilities.map((item, index) => (
           <article
             key={item.title}
-            className={`glass-panel h-full reveal-up ${index === 1 ? "reveal-delay-1" : index === 2 ? "reveal-delay-2" : ""}`}
+            className={`quiet-surface hover-lift h-full reveal-up ${index === 1 ? "reveal-delay-1" : index === 2 ? "reveal-delay-2" : ""}`}
           >
-            <h2 className="[font-family:var(--font-display)] text-xl font-semibold text-ink">
+            <h2 className="relative [font-family:var(--font-display)] text-xl font-semibold text-ink">
               {item.title}
             </h2>
-            <p className="mt-4 text-sm leading-7 text-muted">{item.body}</p>
+            <p className="relative mt-4 text-sm leading-7 text-muted">{item.body}</p>
           </article>
         ))}
       </section>
@@ -100,14 +102,11 @@ export function CrownEntryPage({
           </p>
           <div className="grid gap-3 pt-1 sm:grid-cols-3 lg:grid-cols-1">
             {messages.crownEntry.stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[1.35rem] border border-white/[0.08] bg-white/[0.02] px-4 py-4"
-              >
-                <p className="text-[10px] uppercase tracking-[0.28em] text-white/36">
+              <div key={stat.label} className="quiet-surface px-4 py-4">
+                <p className="relative text-[10px] uppercase tracking-[0.28em] text-white/36">
                   {stat.label}
                 </p>
-                <p className="mt-3 [font-family:var(--font-display)] text-lg font-medium text-ink">
+                <p className="relative mt-3 [font-family:var(--font-display)] text-lg font-medium text-ink">
                   {stat.value}
                 </p>
               </div>
@@ -115,11 +114,11 @@ export function CrownEntryPage({
           </div>
         </div>
 
-        <div className="reveal-up reveal-delay-2 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[rgba(9,12,18,0.54)] backdrop-blur-xl">
+        <div className="quiet-surface reveal-up reveal-delay-2 overflow-hidden rounded-[2rem] p-0 backdrop-blur-xl">
           {messages.crownEntry.flow.map((item, index) => (
             <article
               key={item.title}
-              className={`px-6 py-6 sm:px-7 ${index > 0 ? "border-t border-white/[0.08]" : ""}`}
+              className={`relative px-6 py-6 sm:px-7 ${index > 0 ? "border-t border-white/[0.08]" : ""}`}
             >
               <h2 className="[font-family:var(--font-display)] text-2xl font-semibold text-ink">
                 {item.title}

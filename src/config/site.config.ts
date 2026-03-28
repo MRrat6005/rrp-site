@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 export const locales = ["ru", "en"] as const;
 export const projectOrder = ["chrp", "crown"] as const;
 
@@ -7,6 +9,9 @@ export type HeaderNavKey = "about" | "faq" | "docs";
 export type LegalRouteKey = "privacy" | "filePolicy" | "terms" | "contacts";
 export type FooterRouteKey = LegalRouteKey | "faq" | "docs";
 export type ContactChannelId = "general" | "studio" | "partners";
+export type BackgroundImagePath = `/${string}` | `https://${string}` | `http://${string}` | null;
+export type BackgroundPosition = NonNullable<CSSProperties["backgroundPosition"]>;
+export type BackgroundSize = NonNullable<CSSProperties["backgroundSize"]>;
 
 export interface AssetPlaceholder {
   label: string;
@@ -44,6 +49,14 @@ export interface ProjectConfig {
   ctaSegment: string;
 }
 
+export interface BackgroundSurfaceConfig {
+  image: BackgroundImagePath;
+  overlayOpacity: number;
+  position: BackgroundPosition;
+  size: BackgroundSize;
+  gradientStrength: number;
+}
+
 export interface SiteConfig {
   brand: {
     fullName: string;
@@ -72,6 +85,12 @@ export interface SiteConfig {
     docs: string;
     contacts: string;
     projects: Record<ProjectId, string>;
+  };
+  visuals: {
+    backgrounds: {
+      publicSite: BackgroundSurfaceConfig;
+      dashboardEntry: BackgroundSurfaceConfig;
+    };
   };
   featureFlags: {
     showProjectsDropdown: boolean;
@@ -165,6 +184,24 @@ export const siteConfig: SiteConfig = {
     projects: {
       chrp: "projects/chrp",
       crown: "projects/crown"
+    }
+  },
+  visuals: {
+    backgrounds: {
+      publicSite: {
+        image: "/backgrounds/rrp-public-aurora.svg",
+        overlayOpacity: 0.62,
+        position: "center top",
+        size: "cover",
+        gradientStrength: 0.74
+      },
+      dashboardEntry: {
+        image: "/backgrounds/rrp-dashboard-entry.svg",
+        overlayOpacity: 0.74,
+        position: "center center",
+        size: "cover",
+        gradientStrength: 0.82
+      }
     }
   },
   featureFlags: {

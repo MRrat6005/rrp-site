@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
-import type { Locale } from "@/config/site.config";
+import { siteConfig, type Locale } from "@/config/site.config";
 import type { SiteMessages } from "@/messages/types";
+import { ConfigurableBackdrop } from "@/ui/layout/configurable-backdrop";
 import { SiteFooter } from "@/ui/layout/site-footer";
 import { SiteHeader } from "@/ui/layout/site-header";
 
@@ -13,11 +14,16 @@ interface SiteShellProps {
 
 export function SiteShell({ locale, messages, children }: SiteShellProps) {
   return (
-    <div className="relative flex min-h-screen flex-col">
-      <SiteHeader locale={locale} messages={messages} />
-      <div className="flex-1">{children}</div>
-      <SiteFooter locale={locale} messages={messages} />
+    <div className="site-stage">
+      <ConfigurableBackdrop
+        background={siteConfig.visuals.backgrounds.publicSite}
+        className="fixed inset-0"
+      />
+      <div className="site-stage__content">
+        <SiteHeader locale={locale} messages={messages} />
+        <div className="flex-1">{children}</div>
+        <SiteFooter locale={locale} messages={messages} />
+      </div>
     </div>
   );
 }
-

@@ -93,7 +93,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 z-50 border-b border-white/[0.08] bg-[rgba(5,7,11,0.72)] backdrop-blur-xl"
+      className="sticky top-0 z-50 border-b border-white/[0.08] bg-[rgba(5,7,11,0.38)] backdrop-blur-2xl"
     >
       <div className="relative mx-auto w-full max-w-7xl px-6 py-5 sm:px-8 lg:px-10">
         <div className="flex items-center justify-between gap-5 xl:gap-8">
@@ -131,15 +131,15 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     </span>
                   </button>
                   {isProjectsOpen ? (
-                    <div className="menu-enter absolute left-0 top-[calc(100%+0.9rem)] w-[min(35rem,calc(100vw-5rem))] rounded-[1.75rem] border border-white/[0.08] bg-[rgba(8,11,18,0.96)] p-3 backdrop-blur-2xl">
+                    <div className="dropdown-panel menu-enter absolute left-0 top-[calc(100%+0.95rem)] w-[min(36rem,calc(100vw-5rem))]">
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {projectLinks.map((project) => (
+                        {projectLinks.map((project, index) => (
                           <Link
                             key={project.id}
                             href={project.href}
-                            className="group rounded-[1.4rem] border border-white/[0.07] bg-white/[0.025] p-4 transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.045]"
+                            className={`${index === 0 ? "glass-panel glass-panel-strong" : "quiet-surface"} hover-lift-sm group p-4`}
                           >
-                            <div className="flex items-start gap-3">
+                            <div className="relative flex items-start gap-3">
                               <LogoTile
                                 shortLabel={project.asset.shortLabel}
                                 label={project.asset.label}
@@ -177,13 +177,13 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
             </nav>
 
             <div className="flex items-center gap-3 xl:gap-4">
-              <div className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.02] p-1">
+              <div className="glass-control inline-flex items-center p-1">
                 {localeLinks.map((item) => (
                   <Link
                     key={item.locale}
                     href={item.href}
                     aria-label={`${messages.nav.switchLanguage}: ${item.locale.toUpperCase()}`}
-                    className={`rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] transition duration-200 ${item.locale === locale ? "bg-white text-slate-950" : "text-white/58 hover:text-ink"}`}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium uppercase tracking-[0.24em] transition duration-300 ${item.locale === locale ? "bg-white/92 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.88),0_10px_24px_rgba(255,255,255,0.1)]" : "text-white/60 hover:text-ink"}`}
                   >
                     {item.locale}
                   </Link>
@@ -208,7 +208,7 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
             </Link>
             <button
               type="button"
-              className="inline-flex rounded-full border border-white/[0.08] bg-white/[0.02] px-4 py-2 text-sm text-ink transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.05]"
+              className="glass-control inline-flex rounded-full px-4 py-2 text-sm text-ink transition duration-300 hover:border-white/[0.16] hover:bg-white/[0.08]"
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               {isMenuOpen ? messages.nav.close : messages.nav.menu}
@@ -224,13 +224,13 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
               <div className="grid gap-5">
                 <div className="grid gap-3">
                   <p className="eyebrow px-1">{messages.nav.projects}</p>
-                  {projectLinks.map((project) => (
+                  {projectLinks.map((project, index) => (
                     <Link
                       key={project.id}
                       href={project.href}
-                      className="rounded-[1.4rem] border border-white/[0.08] bg-white/[0.025] p-4 transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.045]"
+                      className={`${index === 0 ? "glass-panel glass-panel-strong" : "quiet-surface"} hover-lift-sm p-4`}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="relative flex items-start gap-3">
                         <LogoTile
                           shortLabel={project.asset.shortLabel}
                           label={project.asset.label}
@@ -254,21 +254,21 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                     <Link
                       key={item.key}
                       href={item.href}
-                      className={`rounded-[1.2rem] border px-4 py-3 text-sm transition duration-200 ${isCurrentPath(pathname, item.href) ? "border-white/[0.14] bg-white/[0.05] text-ink" : "border-white/[0.08] bg-white/[0.02] text-muted hover:border-white/[0.14] hover:text-ink"}`}
+                      className={`${isCurrentPath(pathname, item.href) ? "glass-panel" : "quiet-surface"} hover-lift-sm px-4 py-3 text-sm`}
                     >
-                      {item.label}
+                      <span className="relative z-10">{item.label}</span>
                     </Link>
                   ))}
                 </div>
 
-                <div className="rounded-[1.4rem] border border-white/[0.08] bg-white/[0.02] p-4">
-                  <p className="eyebrow">{messages.nav.switchLanguage}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                <div className="glass-panel p-4">
+                  <p className="relative z-10 eyebrow">{messages.nav.switchLanguage}</p>
+                  <div className="relative z-10 mt-3 flex flex-wrap gap-2">
                     {localeLinks.map((item) => (
                       <Link
                         key={item.locale}
                         href={item.href}
-                        className={`rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] ${item.locale === locale ? "bg-white text-slate-950" : "border border-white/[0.08] text-ink"}`}
+                        className={`rounded-full px-4 py-2 text-xs font-medium uppercase tracking-[0.24em] ${item.locale === locale ? "bg-white text-slate-950" : "border border-white/[0.1] text-ink"}`}
                       >
                         {item.locale}
                       </Link>

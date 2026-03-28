@@ -48,7 +48,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8 sm:px-8 lg:px-10 lg:gap-8 lg:py-10">
       <section className="workspace-shell reveal-up overflow-hidden">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl space-y-4">
             <p className="eyebrow">{messages.servers.eyebrow}</p>
             <h1 className="display-title max-w-3xl">{messages.servers.title}</h1>
@@ -67,7 +67,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
           </div>
         </div>
 
-        <dl className="mt-8 grid gap-3 border-t border-white/[0.08] pt-5 sm:grid-cols-3">
+        <dl className="relative z-10 mt-8 grid gap-3 border-t border-white/[0.08] pt-5 sm:grid-cols-3">
           {messages.servers.status.map((item) => (
             <div key={item.label} className="workspace-slot min-h-[7rem] justify-between">
               <dt className="workspace-label">{item.label}</dt>
@@ -81,7 +81,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.28fr)_minmax(20rem,0.72fr)]">
         <article className="workspace-panel reveal-up reveal-delay-1 overflow-hidden p-0">
-          <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4 sm:px-7">
+          <div className="relative flex items-center justify-between border-b border-white/[0.08] px-6 py-4 sm:px-7">
             <div>
               <p className="workspace-label">{spacesState.eyebrow}</p>
               <h2 className="mt-3 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -95,7 +95,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
             </div>
           </div>
 
-          <div className="px-6 py-6 sm:px-7 sm:py-7">
+          <div className="relative px-6 py-6 sm:px-7 sm:py-7">
             <p className="max-w-2xl text-sm leading-7 text-muted sm:text-base">
               {spacesState.body}
             </p>
@@ -119,40 +119,44 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
 
         <div className="grid gap-5">
           <article className="workspace-panel reveal-up reveal-delay-2">
-            <p className="workspace-label">{accessState.eyebrow}</p>
-            <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
-              {accessState.title}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-              {accessState.body}
-            </p>
-            <Link href={loginHref} className="button-secondary mt-6">
-              {labels.loginButton}
-            </Link>
+            <div className="relative z-10">
+              <p className="workspace-label">{accessState.eyebrow}</p>
+              <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
+                {accessState.title}
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+                {accessState.body}
+              </p>
+              <Link href={loginHref} className="button-secondary mt-6">
+                {labels.loginButton}
+              </Link>
+            </div>
           </article>
 
           <article className="workspace-panel reveal-up reveal-delay-2">
-            <p className="workspace-label">{futureState.eyebrow}</p>
-            <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
-              {futureState.title}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-              {futureState.body}
-            </p>
-            <div className="mt-6 space-y-3">
-              {placeholderRows.map((row) => (
-                <div
-                  key={row}
-                  className="flex items-center justify-between rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
-                >
-                  <span className="text-sm text-muted">
-                    {labels.futureServer} {row}
-                  </span>
-                  <span className="text-xs uppercase tracking-[0.24em] text-white/34">
-                    {labels.queued}
-                  </span>
-                </div>
-              ))}
+            <div className="relative z-10">
+              <p className="workspace-label">{futureState.eyebrow}</p>
+              <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
+                {futureState.title}
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+                {futureState.body}
+              </p>
+              <div className="mt-6 space-y-3">
+                {placeholderRows.map((row) => (
+                  <div
+                    key={row}
+                    className="flex items-center justify-between rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+                  >
+                    <span className="text-sm text-muted">
+                      {labels.futureServer} {row}
+                    </span>
+                    <span className="text-xs uppercase tracking-[0.24em] text-white/34">
+                      {labels.queued}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </article>
         </div>
@@ -160,41 +164,45 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,0.68fr)_minmax(20rem,0.32fr)]">
         <article className="workspace-panel reveal-up reveal-delay-2">
-          <p className="workspace-label">{labels.workspaceOutline}</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            <div className="workspace-slot min-h-[7.5rem] justify-between">
-              <span className="workspace-label">{labels.spaces}</span>
-              <span className="text-sm font-medium text-ink">{labels.spacesValue}</span>
-            </div>
-            <div className="workspace-slot min-h-[7.5rem] justify-between">
-              <span className="workspace-label">{labels.access}</span>
-              <span className="text-sm font-medium text-ink">{labels.accessValue}</span>
-            </div>
-            <div className="workspace-slot min-h-[7.5rem] justify-between">
-              <span className="workspace-label">{labels.servers}</span>
-              <span className="text-sm font-medium text-ink">{labels.serversValue}</span>
+          <div className="relative z-10">
+            <p className="workspace-label">{labels.workspaceOutline}</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <div className="workspace-slot min-h-[7.5rem] justify-between">
+                <span className="workspace-label">{labels.spaces}</span>
+                <span className="text-sm font-medium text-ink">{labels.spacesValue}</span>
+              </div>
+              <div className="workspace-slot min-h-[7.5rem] justify-between">
+                <span className="workspace-label">{labels.access}</span>
+                <span className="text-sm font-medium text-ink">{labels.accessValue}</span>
+              </div>
+              <div className="workspace-slot min-h-[7.5rem] justify-between">
+                <span className="workspace-label">{labels.servers}</span>
+                <span className="text-sm font-medium text-ink">{labels.serversValue}</span>
+              </div>
             </div>
           </div>
         </article>
 
         <aside className="workspace-panel reveal-up reveal-delay-2">
-          <p className="eyebrow">{messages.servers.rail.eyebrow}</p>
-          <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
-            {messages.servers.rail.title}
-          </p>
-          <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
-            {messages.servers.rail.body}
-          </p>
-          <div className="mt-6 space-y-3">
-            {messages.servers.rail.items?.map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
-              >
-                <span className="text-sm text-muted">{item.label}</span>
-                <span className="text-sm font-medium text-ink">{item.value}</span>
-              </div>
-            ))}
+          <div className="relative z-10">
+            <p className="eyebrow">{messages.servers.rail.eyebrow}</p>
+            <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
+              {messages.servers.rail.title}
+            </p>
+            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+              {messages.servers.rail.body}
+            </p>
+            <div className="mt-6 space-y-3">
+              {messages.servers.rail.items?.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+                >
+                  <span className="text-sm text-muted">{item.label}</span>
+                  <span className="text-sm font-medium text-ink">{item.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
       </section>
