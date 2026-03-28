@@ -1,5 +1,5 @@
 import { getMessages, resolveLocale } from "@/lib/i18n";
-import { ProjectPage } from "@/ui/pages/project-page";
+import { CrownEntryPage } from "@/ui/pages/crown-entry-page";
 
 interface ProjectRoutePageProps {
   params: {
@@ -11,5 +11,5 @@ export default function CrownPage({ params }: ProjectRoutePageProps) {
   const locale = resolveLocale(params.locale);
   const messages = getMessages(locale);
 
-  return <ProjectPage locale={locale} projectId="crown" messages={messages} />;
+  return <CrownEntryPage locale={locale} messages={messages} />;
 }

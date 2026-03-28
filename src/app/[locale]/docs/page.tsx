@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site.config";
 import { getMessages, getLocalizedPath, resolveLocale } from "@/lib/i18n";
 import { SimpleSectionPage } from "@/ui/pages/simple-section-page";
 
@@ -20,12 +21,12 @@ export default function DocsPage({ params }: DocsPageProps) {
       aside={messages.docs.aside}
       actions={[
         {
-          href: getLocalizedPath(locale, "contacts"),
+          href: getLocalizedPath(locale, siteConfig.ctaRoutes.contacts),
           label: messages.footer.contacts,
           variant: "secondary"
         },
         {
-          href: getLocalizedPath(locale, "app/servers"),
+          href: getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard),
           label: messages.nav.openDashboard
         }
       ]}

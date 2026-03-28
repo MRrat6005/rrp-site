@@ -96,6 +96,40 @@ a {
     box-shadow: 0 22px 70px rgba(4, 8, 16, 0.2);
   }
 
+  .workspace-shell {
+    @apply relative rounded-[1.75rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(7,10,15,0.96),rgba(8,11,17,0.9))] p-6 backdrop-blur-xl sm:p-7 lg:p-8;
+    box-shadow: 0 24px 64px rgba(2, 4, 10, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .workspace-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 100% 100%, 112px 112px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .workspace-panel {
+    @apply relative rounded-[1.45rem] border border-white/[0.08] bg-[rgba(7,10,15,0.82)] p-6 backdrop-blur-md;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .workspace-slot {
+    @apply flex rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-4;
+  }
+
+  .workspace-chip {
+    @apply inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-white/60;
+  }
+
+  .workspace-label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/30;
+  }
+
   .menu-sheet {
     @apply rounded-[2rem] border border-white/[0.08] bg-[rgba(8,11,18,0.94)] p-4 backdrop-blur-2xl;
     box-shadow: 0 22px 70px rgba(3, 6, 12, 0.3);
@@ -157,3 +191,5 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+

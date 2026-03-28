@@ -68,6 +68,7 @@ export interface SiteConfig {
   projects: Record<ProjectId, ProjectConfig>;
   ctaRoutes: {
     dashboard: string;
+    workspace: string;
     docs: string;
     contacts: string;
     projects: Record<ProjectId, string>;
@@ -157,7 +158,8 @@ export const siteConfig: SiteConfig = {
     }
   },
   ctaRoutes: {
-    dashboard: "app/servers",
+    dashboard: "login",
+    workspace: "app/servers",
     docs: "docs",
     contacts: "contacts",
     projects: {

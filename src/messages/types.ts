@@ -14,6 +14,10 @@ export interface SectionCopy {
   body: string;
 }
 
+export interface EyebrowSectionCopy extends SectionCopy {
+  eyebrow: string;
+}
+
 export interface PageAsideCopy {
   eyebrow: string;
   title: string;
@@ -67,10 +71,14 @@ export interface SiteMessages {
   faq: StructuredPageCopy;
   docs: StructuredPageCopy;
   login: {
+    eyebrow: string;
     title: string;
     intro: string;
+    summary: string;
     panelTitle: string;
     panelBody: string;
+    highlights: readonly string[];
+    legalNote: string;
   };
   privacy: StructuredPageCopy;
   filePolicy: StructuredPageCopy;
@@ -85,9 +93,22 @@ export interface SiteMessages {
     >;
   };
   servers: {
+    eyebrow: string;
     title: string;
     intro: string;
-    panels: readonly SectionCopy[];
+    status: readonly LabeledValue[];
+    states: readonly EyebrowSectionCopy[];
+    rail: PageAsideCopy;
+  };
+  crownEntry: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    summary: string;
+    stats: readonly LabeledValue[];
+    capabilities: readonly SectionCopy[];
+    flow: readonly SectionCopy[];
+    shell: PageAsideCopy;
   };
   projects: {
     introLabel: string;

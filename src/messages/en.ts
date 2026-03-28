@@ -157,12 +157,22 @@ export const enMessages = {
     }
   },
   login: {
-    title: "Login",
+    eyebrow: "CROWN entry",
+    title: "Enter the CROWN workspace",
     intro:
-      "This remains an entry point only. The public site does not pretend to be the full application and keeps the external layer separate from internal access.",
+      "CROWN is where project spaces, internal notes, access, and calm coordination come together inside RRP.",
+    summary:
+      "The public site only leads up to that layer. From here the interface becomes stricter, quieter, and more operational in tone.",
     panelTitle: "Workspace access",
     panelBody:
-      "Later on, this area can connect to a real access system for CROWN without changing the character or structure of the public site."
+      "If your access is already in place, this is the point where CROWN opens into its workspace shell, status surfaces, and future server list.",
+    highlights: [
+      "Project spaces",
+      "Internal status",
+      "Operational coordination"
+    ],
+    legalNote:
+      "Supporting and legal links stay close by so the entry into CROWN feels clear and predictable."
   },
   privacy: {
     eyebrow: "Privacy",
@@ -294,23 +304,93 @@ export const enMessages = {
     }
   },
   servers: {
-    title: "CROWN workspace",
+    eyebrow: "CROWN shell",
+    title: "The CROWN workspace shell",
     intro:
-      "This early CROWN surface points toward the internal workspace: summaries, notes, and access points that can later expand into a fuller operating layer.",
-    panels: [
+      "This is where CROWN starts to feel like an internal environment: stricter, quieter, and ready to receive real project spaces when they are connected.",
+    status: [
+      { label: "Mode", value: "Operational shell" },
+      { label: "Access", value: "Invite only" },
+      { label: "Structure", value: "Ready to fill" }
+    ],
+    states: [
       {
-        title: "Shared overview",
-        body: "This panel can hold the broad picture of the internal environment, giving the team a clear starting point inside the operational layer."
+        eyebrow: "Empty state",
+        title: "No connected spaces yet",
+        body: "When the first spaces are added, they will appear here as working entry points for projects and servers. For now, the shell is already reserving that structure."
       },
       {
-        title: "Current changes",
-        body: "Use this area for maintenance notes, important updates, and short operating messages inside CROWN."
+        eyebrow: "Access",
+        title: "Sign-in may still require confirmation",
+        body: "If access has not been granted or sign-in is not complete, CROWN stays in a restrained waiting state and keeps working data out of view."
       },
       {
-        title: "Access and actions",
-        body: "As CROWN grows, this is where the tools and actions that belong to the internal workspace can start to live."
+        eyebrow: "Next layer",
+        title: "The server list will land here next",
+        body: "This area is reserved for the future server list, status signals, and short operating summaries so the workspace does not stop at a dead-end placeholder."
       }
-    ]
+    ],
+    rail: {
+      eyebrow: "About the shell",
+      title: "For now this is a clean operational frame, not an overloaded placeholder.",
+      body: "CROWN is already distinct from the public site through its rhythm, surfaces, and hierarchy. The next step here is not another redesign, but real spaces and working data.",
+      items: [
+        { label: "Surface", value: "Stricter than public shell" },
+        { label: "State", value: "Static export safe" },
+        { label: "Next layer", value: "Spaces and servers" }
+      ]
+    }
+  },
+  crownEntry: {
+    eyebrow: "CROWN / workspace",
+    title: "CROWN opens the working side of RRP without unnecessary performance.",
+    intro:
+      "This is the dashboard entry for project spaces, internal notes, access, and coordination.",
+    summary:
+      "On the public side, CROWN does not need to explain itself through implementation details. What matters is showing why people enter it: to open the right space, understand the current state, and continue work without noise.",
+    stats: [
+      { label: "Purpose", value: "Projects, access, coordination" },
+      { label: "Format", value: "Dashboard entry" },
+      { label: "Transition", value: "Public site -> CROWN" }
+    ],
+    capabilities: [
+      {
+        title: "Open the right space",
+        body: "CROWN gathers the working directions into one calm point of entry, so people do not have to begin from scattered routes and utility noise every time."
+      },
+      {
+        title: "Keep context close",
+        body: "It should be easy to see what is already connected, what is still pending access, and where servers, notes, and internal status will appear next."
+      },
+      {
+        title: "Move into a stricter layer",
+        body: "After the public site, CROWN should feel less like another landing page and more like an operational shell that can carry real work."
+      }
+    ],
+    flow: [
+      {
+        title: "The public entry stays clear",
+        body: "The CROWN page explains the role of the workspace in plain language and avoids repeating the site’s broader marketing copy."
+      },
+      {
+        title: "A calm login step follows",
+        body: "A dedicated entry page makes the move into the dashboard feel deliberate: first you understand where you are going, then you open the workspace itself."
+      },
+      {
+        title: "The workspace shell starts after that",
+        body: "Even in a static state, CROWN shows discipline, empty states, and room for future servers in a way that does not feel like a dead end."
+      }
+    ],
+    shell: {
+      eyebrow: "CROWN posture",
+      title: "This is not a product showcase, but a careful entry into the workspace.",
+      body: "CROWN should feel trustworthy through clarity and restraint. That means less promotional language and a more legible path from the public shell into the dashboard.",
+      items: [
+        { label: "Tone", value: "Restrained and precise" },
+        { label: "Surface", value: "Dashboard workspace" },
+        { label: "CTA", value: "Open Dashboard" }
+      ]
+    }
   },
   projects: {
     introLabel: "Direction",
@@ -347,34 +427,34 @@ export const enMessages = {
         }
       },
       crown: {
-        navDescription: "Dashboard and workspace.",
+        navDescription: "A working entry into the dashboard and internal spaces.",
         categoryLabel: "Dashboard workspace",
-        tagline: "An internal direction for access, coordination, and the order behind the public side of the project.",
+        tagline: "The public entry into CROWN for access, coordination, and a more deliberate working order inside RRP.",
         summary:
-          "CROWN is the control workspace inside the RRP ecosystem. It carries the more disciplined, operational side of the work and the systems that usually stay behind the curtain.",
+          "CROWN is the working side of the RRP ecosystem. Its job is to make the move into project spaces, status surfaces, and internal systems feel clear, calm, and genuinely useful.",
         sections: [
           {
-            title: "Working surface",
-            body: "CROWN exists for calm organization: notes, access, routing, and the internal panels that can gradually become part of a fuller workspace."
+            title: "A working entry instead of extra promises",
+            body: "The CROWN page should immediately explain why this layer matters: open access, see the structure, and move into the dashboard without unnecessary display."
           },
           {
-            title: "Clear hierarchy",
-            body: "This direction values order over spectacle. That is why it leans on a clear structure and a composed tone rather than heavy theatrics."
+            title: "Stricter than the public site",
+            body: "In tone and hierarchy, CROWN is more disciplined. That helps people feel the boundary between the softer public shell and the operational internal layer."
           },
           {
-            title: "Connected to the public site",
-            body: "The public side of RRP points toward CROWN as a real working layer, without pretending the full workspace already lives on this surface."
+            title: "Ready to grow",
+            body: "Even before live data is connected, CROWN already sets the right rhythm for future spaces, servers, notes, and working scenarios."
           }
         ],
         specs: [
-          { label: "Focus", value: "Dashboard and control" },
+          { label: "Focus", value: "Dashboard entry" },
           { label: "Format", value: "Workspace shell" },
           { label: "Route", value: "/projects/crown" }
         ],
         surface: {
           eyebrow: "CROWN posture",
-          title: "This is the internal room for coordination, not a showcase built for effect.",
-          body: "CROWN is presented with discipline and restraint so it carries the weight of a real workspace instead of reading like another marketing block."
+          title: "This is an entry into the workspace, not a separate promotional block.",
+          body: "CROWN is framed as a real operational layer inside RRP: calm, strict, and ready to lead onward into the dashboard instead of repeating the broader marketing language."
         }
       }
     }
@@ -395,3 +475,4 @@ export const enMessages = {
     fallback: "Continue manually"
   }
 } satisfies SiteMessages;
+
