@@ -1,0 +1,15 @@
+<svg width="112" height="112" viewBox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="112" height="112" rx="28" fill="#090D14"/>
+  <rect x="1" y="1" width="110" height="110" rx="27" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <circle cx="36" cy="32" r="28" fill="url(#glow)" opacity="0.9"/>
+  <path d="M28 74H84" stroke="rgba(232,238,247,0.24)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M34 68V40H48C56 40 61 44.4 61 51.2C61 58 56 62.4 48 62.4H41.8V68H34ZM41.8 56.1H47.1C50.8 56.1 53.1 54.3 53.1 51.2C53.1 48.1 50.8 46.3 47.1 46.3H41.8V56.1Z" fill="#EEF3FA"/>
+  <path d="M65 68V40H78C85.2 40 90 44.1 90 50.6C90 55.1 87.6 58.4 83.6 60L90.8 68H82.4L76.2 61H72.8V68H65ZM72.8 54.8H77.1C80.6 54.8 82.7 53.3 82.7 50.6C82.7 47.9 80.6 46.4 77.1 46.4H72.8V54.8Z" fill="#EEF3FA"/>
+  <text x="56" y="91" text-anchor="middle" fill="#A0AFC4" font-family="Segoe UI, Arial, sans-serif" font-size="10" letter-spacing="4">RRP</text>
+  <defs>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(36 32) rotate(90) scale(28)">
+      <stop stop-color="#8098FF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#8098FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

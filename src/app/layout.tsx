@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import "@/app/globals.css";
 import { siteConfig } from "@/config/site.config";
+import { getSiteMetadataIcons } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -10,7 +11,8 @@ export const metadata: Metadata = {
     default: siteConfig.brand.fullName,
     template: `%s | ${siteConfig.brand.fullName}`
   },
-  description: siteConfig.description
+  description: siteConfig.description,
+  icons: getSiteMetadataIcons()
 };
 
 interface RootLayoutProps {

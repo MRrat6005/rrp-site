@@ -1,26 +1,48 @@
+import Image from "next/image";
+import type { CSSProperties } from "react";
+
 interface LogoTileProps {
   shortLabel: string;
   label: string;
+  imagePath?: string | null;
   size?: "sm" | "md";
+  className?: string;
+  style?: CSSProperties;
 }
 
 const sizeClassNames = {
-  sm: "h-10 w-10 rounded-2xl text-[11px] tracking-[0.26em]",
-  md: "h-12 w-12 rounded-[1.15rem] text-xs tracking-[0.28em]"
+  sm: "h-10 w-10 rounded-[1.1rem] text-[11px] tracking-[0.26em]",
+  md: "h-12 w-12 rounded-[1.2rem] text-xs tracking-[0.28em]"
 } as const;
 
 export function LogoTile({
   shortLabel,
   label,
-  size = "md"
+  imagePath,
+  size = "md",
+  className = "",
+  style
 }: LogoTileProps) {
   return (
     <span
       aria-label={label}
-      className={`relative flex items-center justify-center overflow-hidden border border-white/[0.12] bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] backdrop-blur-xl [box-shadow:inset_0_1px_0_rgba(255,255,255,0.16),0_14px_34px_rgba(4,8,16,0.2)] [font-family:var(--font-display)] font-semibold uppercase text-ink ${sizeClassNames[size]}`}
+      className={`logo-tile ${sizeClassNames[size]} ${className}`.trim()}
+      style={style}
     >
-      <span className="absolute inset-x-[14%] top-0 h-1/2 rounded-full bg-white/25 blur-xl" />
-      <span className="relative z-10">{shortLabel}</span>
+      <span className="logo-tile__halo" />
+      {imagePath ? (
+        <Image
+          src={imagePath}
+          alt=""
+          aria-hidden="true"
+          width={56}
+          height={56}
+          unoptimized
+          className="logo-tile__image"
+        />
+      ) : (
+        <span className="relative z-10">{shortLabel}</span>
+      )}
     </span>
   );
 }
