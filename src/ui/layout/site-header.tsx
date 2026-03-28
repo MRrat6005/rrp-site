@@ -10,7 +10,7 @@ import {
   siteConfig,
   type Locale
 } from "@/config/site.config";
-import { getLocalizedPath, swapLocaleInPath } from "@/lib/i18n";
+import { getAlternateLocale, getLocalizedPath, swapLocaleInPath } from "@/lib/i18n";
 import type { SiteMessages } from "@/messages/types";
 import { LogoTile } from "@/ui/common/logo-tile";
 
@@ -92,10 +92,11 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
     };
   });
 
-  const localeLinks = siteConfig.locales.map((targetLocale) => ({
-    locale: targetLocale,
-    href: swapLocaleInPath(pathname, targetLocale)
-  }));
+  const alternateLocale = getAlternateLocale(locale);
+  const localeSwitch = {
+    locale: alternateLocale,
+    href: swapLocaleInPath(pathname, alternateLocale)
+  };
 
   const dashboardHref = getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard);
   const isProjectsRoute = pathname.includes("/projects/");
@@ -185,20 +186,13 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
 
             <div className="header-actions">
               <div className="locale-switcher" aria-label={messages.nav.switchLanguage}>
-                {localeLinks.map((item) => {
-                  const localeClass = item.locale === "ru" ? "locale-pill--ru" : "locale-pill--en";
-
-                  return (
-                    <Link
-                      key={item.locale}
-                      href={item.href}
-                      aria-label={`${messages.nav.switchLanguage}: ${item.locale.toUpperCase()}`}
-                      className={`locale-pill ${localeClass} ${item.locale === locale ? "locale-pill--active" : ""}`}
-                    >
-                      <span className="relative z-10">{item.locale}</span>
-                    </Link>
-                  );
-                })}
+                <Link
+                  href={localeSwitch.href}
+                  aria-label={`${messages.nav.switchLanguage}: ${localeSwitch.locale.toUpperCase()}`}
+                  className={`locale-pill ${localeSwitch.locale === "ru" ? "locale-pill--ru" : "locale-pill--en"}`}
+                >
+                  <span className="relative z-10">{localeSwitch.locale}</span>
+                </Link>
               </div>
 
               <Link href={dashboardHref} className="button-primary button-primary--header">
@@ -275,19 +269,13 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
                 <div className="glass-panel p-4">
                   <p className="relative z-10 eyebrow">{messages.nav.switchLanguage}</p>
                   <div className="relative z-10 mt-3 flex flex-wrap gap-2">
-                    {localeLinks.map((item) => {
-                      const localeClass = item.locale === "ru" ? "locale-pill--ru" : "locale-pill--en";
-
-                      return (
-                        <Link
-                          key={item.locale}
-                          href={item.href}
-                          className={`locale-pill ${localeClass} ${item.locale === locale ? "locale-pill--active" : ""}`}
-                        >
-                          <span className="relative z-10">{item.locale}</span>
-                        </Link>
-                      );
-                    })}
+                    <Link
+                      href={localeSwitch.href}
+                      aria-label={`${messages.nav.switchLanguage}: ${localeSwitch.locale.toUpperCase()}`}
+                      className={`locale-pill ${localeSwitch.locale === "ru" ? "locale-pill--ru" : "locale-pill--en"}`}
+                    >
+                      <span className="relative z-10">{localeSwitch.locale}</span>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -298,3 +286,4 @@ export function SiteHeader({ locale, messages }: SiteHeaderProps) {
     </header>
   );
 }
+
