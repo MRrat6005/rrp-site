@@ -1,5 +1,5 @@
 import { getMessages, resolveLocale } from "@/lib/i18n";
-import { ProjectPage } from "@/ui/pages/project-page";
+import { ChrpMarketingPage } from "@/ui/pages/chrp-marketing-page";
 
 interface ProjectRoutePageProps {
   params: {
@@ -11,5 +11,5 @@ export default function ChrpPage({ params }: ProjectRoutePageProps) {
   const locale = resolveLocale(params.locale);
   const messages = getMessages(locale);
 
-  return <ProjectPage locale={locale} projectId="chrp" messages={messages} />;
+  return <ChrpMarketingPage messages={messages} />;
 }

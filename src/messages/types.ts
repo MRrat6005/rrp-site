@@ -9,6 +9,11 @@ export interface LabeledValue {
   value: string;
 }
 
+export interface StepCopy {
+  title: string;
+  body: string;
+}
+
 export interface SectionCopy {
   title: string;
   body: string;
@@ -31,6 +36,65 @@ export interface StructuredPageCopy {
   intro: string;
   sections: readonly SectionCopy[];
   aside: PageAsideCopy;
+}
+
+export interface ComparisonRowCopy {
+  label: string;
+  liberty: string;
+  chrp: string;
+  others: string;
+}
+
+export interface ChrpPageCopy {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroBody: string;
+  heroStats: readonly LabeledValue[];
+  heroVisualTitle: string;
+  heroVisualBody: string;
+  heroVisualItems: readonly string[];
+  primaryCta: string;
+  start: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    steps: readonly StepCopy[];
+  };
+  mediumRp: EyebrowSectionCopy;
+  desiredRp: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    points: readonly SectionCopy[];
+  };
+  visuals: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    placeholders: readonly string[];
+  };
+  comparison: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    libertyLabel: string;
+    chrpLabel: string;
+    othersLabel: string;
+    rows: readonly ComparisonRowCopy[];
+  };
+  rebirth: EyebrowSectionCopy;
+  verification: {
+    eyebrow: string;
+    title: string;
+    items: readonly string[];
+  };
+  finalCta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    buttonLabel: string;
+  };
 }
 
 export interface SiteMessages {
@@ -116,6 +180,7 @@ export interface SiteMessages {
     flow: readonly SectionCopy[];
     shell: PageAsideCopy;
   };
+  chrpPage: ChrpPageCopy;
   projects: {
     introLabel: string;
     items: Record<
@@ -141,4 +206,3 @@ export interface SiteMessages {
     fallback: string;
   };
 }
-

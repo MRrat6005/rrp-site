@@ -400,7 +400,131 @@ export const enMessages = {
       ]
     }
   },
-  projects: {
+  chrpPage: {
+    heroEyebrow: "CHRP / Chapel Hills RolePlay",
+    heroTitle: "CHRP. A stronger Medium RolePlay direction for Chapel Hills County.",
+    heroSubtitle: "A fictional county in ER:LC built for more alive, more structured, and more mature RP.",
+    heroBody:
+      "CHRP moves the project into Chapel Hills County with two cities, Scottsdale and Yorktown. It is a stronger relaunch after Liberty State RolePlay, with clearer structure, steadier sessions, and a higher roleplay standard.",
+    heroStats: [
+      { label: "Format", value: "Medium-hard RP" },
+      { label: "Base", value: "ER:LC in Roblox" },
+      { label: "County", value: "Chapel Hills County" },
+      { label: "Cities", value: "Scottsdale and Yorktown" }
+    ],
+    heroVisualTitle: "Primary session visual",
+    heroVisualBody:
+      "This area can later hold a key county shot, city scene, or major session photo.",
+    heroVisualItems: ["County view", "Scottsdale", "Yorktown"],
+    primaryCta: "Open Discord",
+    start: {
+      eyebrow: "How to start",
+      title: "Four steps before the first session.",
+      intro: "The entry path is short, clear, and public-facing.",
+      steps: [
+        {
+          title: "Read the rules",
+          body: "They set the baseline for a clear start and a consistent RP standard."
+        },
+        {
+          title: "Get an ID card",
+          body: "The ID card is part of entry into the project flow and later verification."
+        },
+        {
+          title: "Join the Roblox group",
+          body: "That links the account to the project and gives the basic entry point."
+        },
+        {
+          title: "Start playing",
+          body: "After that, the county is open for play and for joining the rhythm of the project."
+        }
+      ]
+    },
+    mediumRp: {
+      eyebrow: "Medium RP",
+      title: "What does it mean?",
+      body:
+        "Medium RP is a mode where players perform a moderate amount of roleplay actions and behave closer to real life. That is the baseline CHRP is built around."
+    },
+    desiredRp: {
+      eyebrow: "What kind of RP we want to see",
+      title: "Daily-life scenes matter more than noise.",
+      intro:
+        "CHRP is built for a world people want to return to, not for constant escalation and empty spectacle.",
+      points: [
+        {
+          title: "High-quality RP",
+          body: "Scenes should be readable, deliberate, and worth continuing instead of burning out quickly."
+        },
+        {
+          title: "Minimum crime",
+          body: "Crime is not meant to dominate the pace of the project or push out everything else."
+        },
+        {
+          title: "Civilian roleplay focus",
+          body: "Civilian stories, services, work, leisure, and public life should stay at the center."
+        },
+        {
+          title: "Concerts, shopping, daily life",
+          body: "We want a county that feels active through concerts, stores, meetings, drives, and ordinary scenes."
+        }
+      ]
+    },
+    visuals: {
+      eyebrow: "Session visuals",
+      title: "A gallery ready for real photos.",
+      intro:
+        "These are simple color placeholders for now. Later they can be replaced with real session images without rebuilding the layout.",
+      placeholders: [
+        "County overview",
+        "Scottsdale street scene",
+        "Yorktown storefronts",
+        "Concert session",
+        "Day traffic",
+        "Evening session"
+      ]
+    },
+    comparison: {
+      eyebrow: "Comparison",
+      title: "Why CHRP is the stronger direction now.",
+      intro:
+        "The table below shows the difference between the earlier stage, the current relaunch, and the usual outside baseline.",
+      libertyLabel: "Liberty State RolePlay",
+      chrpLabel: "Chapel Hills RolePlay",
+      othersLabel: "Other projects",
+      rows: [
+        { label: "RolePlay level", liberty: "Medium", chrp: "Medium-hard", others: "Fun" },
+        { label: "Activity", liberty: "5-10", chrp: "15-20", others: "3-4" },
+        { label: "RolePlay systems", liberty: "Workarounds", chrp: "CROWN", others: "Workarounds" },
+        { label: "Sessions", liberty: "Unpredictable", chrp: "Stable", others: "None" },
+        { label: "Attitude toward players", liberty: "Neutral", chrp: "Positive", others: "Aggressive" },
+        { label: "Events", liberty: "Not always", chrp: "Always", others: "Not held" },
+        { label: "Lore", liberty: "Partial", chrp: "Present", others: "None" }
+      ]
+    },
+    rebirth: {
+      eyebrow: "Rebirth",
+      title: "Liberty State RolePlay is behind us. CHRP sets the stronger direction.",
+      body:
+        "Liberty State RolePlay was an earlier and less developed stage of the project. CHRP is the relaunch with a more mature tone, a clearer environment, and a firmer understanding of what the project should be."
+    },
+    verification: {
+      eyebrow: "Verification",
+      title: "Who we accept",
+      items: [
+        "Only players over 13 are accepted.",
+        "Players must know the basic ER:LC mechanics.",
+        "Applications are reviewed within 48 hours."
+      ]
+    },
+    finalCta: {
+      eyebrow: "Community entry",
+      title: "Join CHRP.",
+      body:
+        "Discord remains the main entry point for rules, verification, announcements, and further coordination.",
+      buttonLabel: "Open Discord"
+    }
+  },  projects: {
     introLabel: "Direction",
     items: {
       chrp: {
@@ -483,6 +607,8 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
+
 
 
 
