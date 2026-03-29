@@ -3162,41 +3162,58 @@ a {
   }
 
   .chrp-session-visual__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem;
+    border-radius: 1.15rem;
+    border: 1px solid rgba(182, 215, 198, 0.18);
+    background: rgba(247, 242, 231, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    isolation: isolate;
+  }
+
+  .chrp-session-visual__indicator {
+    position: absolute;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    left: 0.3rem;
+    width: calc((100% - 0.6rem) / var(--chrp-session-count, 3));
+    border-radius: 0.92rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(236, 241, 247, 0.94));
+    box-shadow: 0 16px 38px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.88), inset 0 -8px 18px rgba(212, 221, 233, 0.28);
+    transform: translateX(calc(var(--chrp-session-index, 0) * 100%));
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
   }
 
   .chrp-session-tab {
-    flex: 1 1 9rem;
-    min-height: 3.2rem;
-    padding: 0.86rem 1rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(182, 215, 198, 0.18);
-    background: rgba(247, 242, 231, 0.035);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    font-size: 0.96rem;
+    position: relative;
+    z-index: 1;
+    min-height: 2.8rem;
+    padding: 0.68rem 0.9rem;
+    border-radius: 0.92rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 0.95rem;
     font-weight: 600;
     color: rgba(236, 229, 212, 0.74);
     text-align: center;
     transition:
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.24s ease,
-      background 0.24s ease,
       color 0.24s ease,
-      box-shadow 0.24s ease;
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .chrp-session-tab:hover {
     transform: translate3d(0, -1px, 0);
-    border-color: rgba(233, 225, 207, 0.32);
     color: #f2f5ee;
   }
 
   .chrp-session-tab.is-active {
-    border-color: rgba(255, 255, 255, 0.28);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(236, 241, 247, 0.94));
-    box-shadow: 0 16px 38px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.88), inset 0 -8px 18px rgba(212, 221, 233, 0.28);
     color: #07131a;
   }
 
@@ -3231,8 +3248,10 @@ a {
 
   .chrp-step {
     display: grid;
+    grid-template-rows: auto auto 1fr auto;
     gap: 0.7rem;
     align-content: start;
+    min-height: 100%;
   }
 
   .chrp-step__number {
@@ -3261,7 +3280,8 @@ a {
   }
 
   .chrp-step__actions {
-    padding-top: 0.2rem;
+    margin-top: auto;
+    padding-top: 1rem;
   }
 
   .chrp-focus-card {
@@ -3398,33 +3418,27 @@ a {
   }
 
   .chrp-verify__item--cta {
-    display: grid;
-    gap: 1rem;
-    align-content: start;
+    justify-content: center;
     text-decoration: none;
-    color: inherit;
-    border-color: rgba(233, 225, 207, 0.28);
-    background: linear-gradient(180deg, rgba(13, 25, 36, 0.92), rgba(8, 15, 23, 0.98));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 20px 40px rgba(2, 6, 12, 0.14);
+    border-color: rgba(255, 255, 255, 0.28);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(236, 241, 247, 0.94));
+    box-shadow: 0 16px 38px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.88), inset 0 -8px 18px rgba(212, 221, 233, 0.28);
+    color: #07131a;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    text-align: center;
     transition:
       transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.24s ease,
-      box-shadow 0.24s ease;
+      box-shadow 0.24s ease,
+      filter 0.24s ease;
   }
 
   .chrp-verify__item--cta:hover {
     transform: translate3d(0, -2px, 0);
-    border-color: rgba(244, 235, 214, 0.42);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 44px rgba(2, 6, 12, 0.2);
-  }
-
-  .chrp-verify__cta-copy {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .chrp-verify__cta-body {
-    margin: 0;
+    box-shadow: 0 20px 44px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -10px 20px rgba(212, 221, 233, 0.32);
+    filter: brightness(1.01);
   }
 
   .chrp-cta {
@@ -3443,12 +3457,6 @@ a {
 
   .chrp-gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .chrp-verify__item--cta {
-    grid-column: span 2;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
   }
 }
 
@@ -3496,17 +3504,15 @@ a {
     min-height: 17rem;
   }
 
-  .chrp-verify {
-    display: grid;
-    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
-    gap: 1.6rem;
-    align-items: start;
+  .chrp-verify__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .chrp-cta {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 }
+
 
 
 

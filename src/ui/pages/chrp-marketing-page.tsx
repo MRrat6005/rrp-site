@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 import { getProjectThemeStyle } from "@/config/site.config";
 import type { SiteMessages } from "@/messages/types";
 
 const DISCORD_URL = "https://discord.gg/mdZjSdJMGh";
-const TIKTOK_URL = "https://www.tiktok.com/";
+const TIKTOK_URL = "https://www.tiktok.com/@chrp_rus?_r=1&_t=ZS-956NBcGxB12";
 const galleryVariants = ["wide", "tall", "square", "square", "wide", "tall"] as const;
 const sessionVisuals = [
   { key: "county", src: "/projects/chrp/main/county-view.png" },
@@ -118,7 +118,18 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               src={activeSessionVisual.src}
             />
 
-            <div className="chrp-session-visual__tabs" role="tablist" aria-label={copy.heroVisualTitle}>
+            <div
+              className="chrp-session-visual__tabs"
+              role="tablist"
+              aria-label={copy.heroVisualTitle}
+              style={
+                {
+                  "--chrp-session-index": activeSessionIndex === -1 ? 0 : activeSessionIndex,
+                  "--chrp-session-count": sessionVisuals.length
+                } as CSSProperties
+              }
+            >
+              <span className="chrp-session-visual__indicator" aria-hidden="true" />
               {sessionVisuals.map((item, index) => {
                 const isActive = activeVisual === item.key;
 
@@ -255,23 +266,14 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
             </article>
           ))}
 
-          <Link
-            href={DISCORD_URL}
-            className="chrp-verify__item chrp-verify__item--cta"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <div className="chrp-verify__cta-copy">
-              <h3 className="chrp-focus-card__title">{copy.verification.discordCardTitle}</h3>
-              <p className="chrp-verify__cta-body">{copy.verification.discordCardBody}</p>
-            </div>
-            <span className="chrp-button-secondary chrp-button-secondary--inline">
-              {copy.verification.discordCardButtonLabel}
-            </span>
+          <Link href={DISCORD_URL} className="chrp-verify__item chrp-verify__item--cta" target="_blank" rel="noreferrer">
+            <span>{copy.verification.discordCardButtonLabel}</span>
           </Link>
         </div>
       </section>
     </main>
   );
 }
+
+
 
