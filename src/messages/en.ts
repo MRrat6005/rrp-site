@@ -21,44 +21,44 @@ export const enMessages = {
   },
   home: {
     eyebrow: "Royal Rats Productions",
-    title: "RRP. The team behind RP projects and systems.",
+    title: "RRP builds RP directions and systems with distinct roles.",
     subtitle:
-      "Royal Rats Productions develops CHRP and CROWN as separate directions. CHRP focuses on roleplay, world, atmosphere, and community; CROWN focuses on modules, settings, control, and management.",
+      "Royal Rats Productions develops CHRP and CROWN as separate directions. CHRP leads into the world, atmosphere, and community of Chapel Hills RolePlay, while CROWN handles modules, settings, access, and the team's working routes.",
     primaryCta: "Open CROWN",
     secondaryCta: "Open CHRP",
-    frameEyebrow: "RRP directions",
-    frameTitle: "CHRP and CROWN serve different roles.",
+    frameEyebrow: "RRP / directions",
+    frameTitle: "CHRP and CROWN sit side by side, but they solve different problems.",
     frameBody:
-      "The homepage keeps both directions clearly separated: CHRP presents the roleplay world and community, while CROWN leads to the system side of management and control.",
+      "CHRP presents the world, atmosphere, and community of Chapel Hills RolePlay. CROWN leads into structure, management, and the internal RRP surfaces.",
     directionsEyebrow: "Directions",
-    directionsTitle: "One team. Two distinct directions.",
+    directionsTitle: "CHRP and CROWN grow separately and for different jobs.",
     directionsIntro:
-      "CHRP focuses on roleplay, setting, atmosphere, and community life. CROWN focuses on modules, settings, access, and day-to-day project management.",
-    brandEyebrow: "The RRP team",
-    brandTitle: "RRP is the creative team behind CHRP, CROWN, and related RP systems.",
+      "RRP connects both directions through one team while keeping a distinct rhythm, tone, and role for each of them.",
+    brandEyebrow: "About RRP",
+    brandTitle: "RRP is the creative team that ties projects, visual tone, and internal systems together.",
     brandBody:
-      "RRP develops projects and internal solutions tied to RP directions. On the homepage, its role is simple: show who stands behind the work and guide visitors to the right direction.",
+      "The team develops RP projects and the supporting systems around them. The public side of RRP exists to introduce those directions clearly and guide visitors toward the work they actually need.",
     finalEyebrow: "Next step",
-    finalTitle: "Open the direction you need.",
+    finalTitle: "Open the direction that matches your task.",
     finalBody:
-      "Choose CHRP for world, atmosphere, and community. Open CROWN for modules, settings, and management.",
+      "Choose CHRP for world, atmosphere, and community entry. Open CROWN for access, structure, and the working environment.",
     notes: [
       {
         title: "RRP",
-        body: "The team develops projects, systems, and supporting solutions for RP directions."
+        body: "One team holding the shared direction, quality, and long-term development of the ecosystem."
       },
       {
         title: "CHRP",
-        body: "The community-facing direction centered on roleplay, worldbuilding, atmosphere, and player presence."
+        body: "The public-facing direction for the world, atmosphere, and community of Chapel Hills RolePlay."
       },
       {
         title: "CROWN",
-        body: "The system-facing direction centered on modules, settings, access, and operational management."
+        body: "The working direction for modules, settings, access, and internal coordination."
       }
     ],
     stats: [
       { label: "Focus", value: "RP projects and systems" },
-      { label: "Routes", value: "CHRP and CROWN" },
+      { label: "Directions", value: "CHRP and CROWN" },
       { label: "Role", value: "Creative team" }
     ]
   },
@@ -483,4 +483,6 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
+
 
