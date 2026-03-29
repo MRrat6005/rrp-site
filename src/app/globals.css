@@ -177,19 +177,16 @@ a {
   }
 
   .logo-tile {
-    @apply relative flex items-center justify-center overflow-hidden border backdrop-blur-xl [font-family:var(--font-display)] font-semibold uppercase text-ink;
-    border-color: color-mix(in srgb, var(--tile-border) 82%, rgba(255, 255, 255, 0.08));
-    background: linear-gradient(180deg, color-mix(in srgb, var(--tile-bg-top) 84%, rgba(255, 255, 255, 0.03)), color-mix(in srgb, var(--tile-bg-bottom) 88%, rgba(8, 12, 18, 0.12)));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 30px rgba(2, 6, 12, 0.14);
+    /* Brand marks stay borderless to avoid framed logo badges across the site. */
+    @apply relative flex items-center justify-center overflow-hidden [font-family:var(--font-display)] font-semibold uppercase text-ink;
   }
 
   .logo-tile__image {
     position: relative;
     z-index: 1;
-    height: 76%;
-    width: 76%;
+    height: 100%;
+    width: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 10px 24px rgba(3, 7, 14, 0.14));
   }
 
   .site-header-shell {
@@ -962,6 +959,7 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
 
 
 
