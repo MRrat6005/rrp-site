@@ -34,7 +34,7 @@ export function SimpleSectionPage({
 }: SimpleSectionPageProps) {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-10 sm:px-8 lg:px-10 lg:gap-14 lg:py-14">
-      <section className="section-frame overflow-hidden reveal-up">
+      <section className="section-frame overflow-hidden reveal-up" data-reveal>
         <div className="hero-aurora" />
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.18fr)_minmax(19rem,0.82fr)] lg:gap-10">
           <div className="space-y-5">
@@ -62,7 +62,7 @@ export function SimpleSectionPage({
             ) : null}
           </div>
 
-          <aside className="glass-panel reveal-up reveal-delay-1">
+          <aside className="glass-panel reveal-up reveal-delay-1" data-reveal>
             <div className="relative z-10">
               <p className="eyebrow">{aside.eyebrow}</p>
               <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -87,11 +87,12 @@ export function SimpleSectionPage({
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" data-reveal>
         {sections.map((section, index) => (
           <article
             key={section.title}
             className={`quiet-surface hover-lift h-full reveal-up ${index === 1 ? "reveal-delay-1" : index === 2 ? "reveal-delay-2" : ""}`}
+            data-reveal
           >
             <h2 className="relative [font-family:var(--font-display)] text-xl font-semibold text-ink">
               {section.title}

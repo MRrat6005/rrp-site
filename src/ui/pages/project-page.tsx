@@ -31,7 +31,7 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 pb-16 pt-10 sm:px-8 lg:gap-14 lg:px-10 lg:pb-20 lg:pt-14">
-      <section className="project-hero-section reveal-up" style={themeStyle}>
+      <section className="project-hero-section reveal-up" style={themeStyle} data-reveal>
         <div className="hero-aurora" />
         <div className="project-hero">
           <div className="space-y-5">
@@ -106,7 +106,7 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
       </section>
 
       <section className="project-story-section" style={themeStyle}>
-        <div className="project-story-overview reveal-up reveal-delay-1">
+        <div className="project-story-overview reveal-up reveal-delay-1" data-reveal>
           <p className="eyebrow">{messages.common.specs}</p>
           <div className="mt-5 space-y-4">
             {copy.specs.map((spec) => (
@@ -118,7 +118,7 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
           </div>
         </div>
 
-        <div className="project-storyboard reveal-up reveal-delay-2">
+        <div className="project-storyboard reveal-up reveal-delay-2" data-reveal>
           {copy.sections.map((section) => (
             <article key={section.title} className="project-story-row">
               <h2 className="[font-family:var(--font-display)] text-2xl font-semibold text-ink">

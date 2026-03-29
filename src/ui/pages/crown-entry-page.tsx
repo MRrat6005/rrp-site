@@ -22,7 +22,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 pb-16 pt-10 sm:px-8 lg:gap-14 lg:px-10 lg:pb-20 lg:pt-14">
-      <section className="project-hero-section reveal-up" style={themeStyle}>
+      <section className="project-hero-section reveal-up" style={themeStyle} data-reveal>
         <div className="hero-aurora" />
         <div className="project-hero">
           <div className="space-y-6">
@@ -94,7 +94,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
       </section>
 
       <section className="project-story-section" style={themeStyle}>
-        <div className="project-story-overview reveal-up reveal-delay-1">
+        <div className="project-story-overview reveal-up reveal-delay-1" data-reveal>
           <p className="eyebrow">{messages.projects.items.crown.surface.eyebrow}</p>
           <h2 className="mt-4 [font-family:var(--font-display)] text-3xl font-semibold text-ink sm:text-4xl">
             {messages.projects.items.crown.surface.title}
@@ -111,7 +111,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           </div>
         </div>
 
-        <div className="project-storyboard reveal-up reveal-delay-2">
+        <div className="project-storyboard reveal-up reveal-delay-2" data-reveal>
           {messages.crownEntry.capabilities.map((item) => (
             <article key={item.title} className="project-story-row">
               <h2 className="[font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -124,7 +124,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
       </section>
 
       <section className="project-flow-section" style={themeStyle}>
-        <div className="project-flow-visual reveal-up reveal-delay-1">
+        <div className="project-flow-visual reveal-up reveal-delay-1" data-reveal>
           <ConfigurableBackdrop background={surface} className="absolute inset-0" />
           <div className="project-flow-visual__shade" />
           <div className="relative z-10 flex h-full flex-col justify-between gap-8">
@@ -151,7 +151,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           </div>
         </div>
 
-        <div className="project-storyboard reveal-up reveal-delay-2">
+        <div className="project-storyboard reveal-up reveal-delay-2" data-reveal>
           {messages.crownEntry.flow.map((item) => (
             <article key={item.title} className="project-story-row">
               <h2 className="[font-family:var(--font-display)] text-2xl font-semibold text-ink">

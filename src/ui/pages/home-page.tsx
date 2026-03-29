@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { useEffect } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import {
   getProjectThemeStyle,
@@ -21,8 +20,29 @@ interface HomePageProps {
   messages: SiteMessages;
 }
 
-function heroDelayStyle(delay: string): CSSProperties {
-  return { animationDelay: delay };
+type HeroMotionStyle = CSSProperties & Record<"--hero-delay", string>;
+
+function heroDelayStyle(delay: string): HeroMotionStyle {
+  return {
+    animationDelay: delay,
+    "--hero-delay": delay
+  };
+}
+
+function HeroRevealLine({
+  children,
+  className = "block",
+  delay
+}: {
+  children: ReactNode;
+  className?: string;
+  delay: string;
+}) {
+  return (
+    <span className={`text-reveal-line ${className}`.trim()} style={heroDelayStyle(delay)}>
+      <span>{children}</span>
+    </span>
+  );
 }
 
 export function HomePage({ locale, messages }: HomePageProps) {
@@ -49,67 +69,22 @@ export function HomePage({ locale, messages }: HomePageProps) {
 
   const [leadProject, supportProject] = projects;
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const revealNodes = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-home-reveal]")
-    );
-
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      !("IntersectionObserver" in window)
-    ) {
-      revealNodes.forEach((node) => node.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.2,
-        rootMargin: "0px 0px -10% 0px"
-      }
-    );
-
-    revealNodes.forEach((node) => observer.observe(node));
-
-    return () => observer.disconnect();
-  }, [locale]);
-
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-6 pb-16 pt-10 sm:px-8 lg:gap-24 lg:px-10 lg:pb-24 lg:pt-14">
-      <section className="home-hero">
+      <section className="home-hero" data-reveal>
         <div className="hero-aurora" />
         <div className="home-hero__grid">
           <div className="max-w-3xl space-y-7">
-            <p className="eyebrow hero-intro-item" style={heroDelayStyle("0.04s")}>
-              {messages.home.eyebrow}
+            <p className="eyebrow">
+              <HeroRevealLine delay="0.04s">{messages.home.eyebrow}</HeroRevealLine>
             </p>
 
             <div className="space-y-5">
-              <h1
-                className="display-title max-w-3xl hero-intro-item home-hero__title"
-                style={heroDelayStyle("0.12s")}
-              >
-                {messages.home.title}
+              <h1 className="display-title max-w-3xl home-hero__title">
+                <HeroRevealLine delay="0.12s">{messages.home.title}</HeroRevealLine>
               </h1>
-              <p
-                className="max-w-2xl text-base leading-8 text-muted sm:text-lg hero-intro-item home-hero__support"
-                style={heroDelayStyle("0.2s")}
-              >
-                {messages.home.subtitle}
+              <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg home-hero__support">
+                <HeroRevealLine delay="0.2s">{messages.home.subtitle}</HeroRevealLine>
               </p>
             </div>
 
@@ -176,7 +151,7 @@ export function HomePage({ locale, messages }: HomePageProps) {
                 >
                   <ConfigurableBackdrop background={project.mediaSurface} className="absolute inset-0" />
                   <div className="home-hero-project__shade" />
-                  <div className="relative z-10 flex h-full flex-col justify-between gap-6">
+                  <div className="relative z-10 flex h-full flex-col justify-between gap-5">
                     <div className="flex items-start justify-between gap-3">
                       <span className="project-tag">{project.categoryLabel}</span>
                       <span className="text-[10px] uppercase tracking-[0.26em] text-white/44">
@@ -216,7 +191,7 @@ export function HomePage({ locale, messages }: HomePageProps) {
         </div>
       </section>
 
-      <section className="home-media-strip reveal-section" data-home-reveal>
+      <section className="home-media-strip reveal-section" data-reveal>
         <div className="home-media-strip__grid">
           <div className="home-media-strip__panel home-media-strip__panel--brand">
             <ConfigurableBackdrop
@@ -266,7 +241,7 @@ export function HomePage({ locale, messages }: HomePageProps) {
         </div>
       </section>
 
-      <section className="space-y-8 reveal-section" data-home-reveal>
+      <section className="space-y-8 reveal-section" data-reveal>
         <div className="max-w-3xl space-y-4">
           <p className="eyebrow">{messages.home.directionsEyebrow}</p>
           <h2 className="[font-family:var(--font-display)] text-3xl font-semibold text-ink sm:text-4xl lg:text-[2.8rem]">
@@ -357,7 +332,7 @@ export function HomePage({ locale, messages }: HomePageProps) {
         </div>
       </section>
 
-      <section className="section-frame reveal-section home-brand-section" data-home-reveal>
+      <section className="section-frame reveal-section home-brand-section" data-reveal>
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(22rem,1.18fr)] lg:items-center">
           <div className="max-w-2xl space-y-5">
             <p className="eyebrow">{messages.home.brandEyebrow}</p>
@@ -409,7 +384,7 @@ export function HomePage({ locale, messages }: HomePageProps) {
         </div>
       </section>
 
-      <section className="reveal-section home-cta-panel" data-home-reveal>
+      <section className="reveal-section home-cta-panel" data-reveal>
         <div className="max-w-3xl space-y-5">
           <p className="eyebrow">{messages.home.finalEyebrow}</p>
           <h2 className="[font-family:var(--font-display)] text-3xl font-semibold text-ink sm:text-4xl lg:text-[2.75rem]">
@@ -430,5 +405,3 @@ export function HomePage({ locale, messages }: HomePageProps) {
     </main>
   );
 }
-
-

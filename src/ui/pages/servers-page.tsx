@@ -47,7 +47,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8 sm:px-8 lg:px-10 lg:gap-8 lg:py-10">
-      <section className="workspace-shell reveal-up overflow-hidden">
+      <section className="workspace-shell reveal-up overflow-hidden" data-reveal>
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl space-y-4">
             <p className="eyebrow">{messages.servers.eyebrow}</p>
@@ -80,7 +80,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.28fr)_minmax(20rem,0.72fr)]">
-        <article className="workspace-panel reveal-up reveal-delay-1 overflow-hidden p-0">
+        <article className="workspace-panel reveal-up reveal-delay-1 overflow-hidden p-0" data-reveal>
           <div className="relative flex items-center justify-between border-b border-white/[0.08] px-6 py-4 sm:px-7">
             <div>
               <p className="workspace-label">{spacesState.eyebrow}</p>
@@ -118,7 +118,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
         </article>
 
         <div className="grid gap-5">
-          <article className="workspace-panel reveal-up reveal-delay-2">
+          <article className="workspace-panel reveal-up reveal-delay-2" data-reveal>
             <div className="relative z-10">
               <p className="workspace-label">{accessState.eyebrow}</p>
               <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -133,7 +133,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
             </div>
           </article>
 
-          <article className="workspace-panel reveal-up reveal-delay-2">
+          <article className="workspace-panel reveal-up reveal-delay-2" data-reveal>
             <div className="relative z-10">
               <p className="workspace-label">{futureState.eyebrow}</p>
               <h2 className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -146,7 +146,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
                 {placeholderRows.map((row) => (
                   <div
                     key={row}
-                    className="flex items-center justify-between rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+                    className="quiet-surface flex items-center justify-between gap-4 px-4 py-3"
                   >
                     <span className="text-sm text-muted">
                       {labels.futureServer} {row}
@@ -163,7 +163,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,0.68fr)_minmax(20rem,0.32fr)]">
-        <article className="workspace-panel reveal-up reveal-delay-2">
+        <article className="workspace-panel reveal-up reveal-delay-2" data-reveal>
           <div className="relative z-10">
             <p className="workspace-label">{labels.workspaceOutline}</p>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -183,7 +183,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
           </div>
         </article>
 
-        <aside className="workspace-panel reveal-up reveal-delay-2">
+        <aside className="workspace-panel reveal-up reveal-delay-2" data-reveal>
           <div className="relative z-10">
             <p className="eyebrow">{messages.servers.rail.eyebrow}</p>
             <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink">
@@ -196,7 +196,7 @@ export function ServersPage({ locale, messages }: ServersPageProps) {
               {messages.servers.rail.items?.map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/[0.08] bg-white/[0.02] px-4 py-3"
+                  className="quiet-surface flex items-center justify-between gap-4 px-4 py-3"
                 >
                   <span className="text-sm text-muted">{item.label}</span>
                   <span className="text-sm font-medium text-ink">{item.value}</span>

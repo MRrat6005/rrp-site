@@ -33,7 +33,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 sm:px-8 lg:px-10 lg:gap-10 lg:py-14">
-      <section className="workspace-shell reveal-up isolate overflow-hidden">
+      <section className="workspace-shell reveal-up isolate overflow-hidden" data-reveal>
         <ConfigurableBackdrop background={siteConfig.visuals.backgrounds.dashboardEntry} />
         <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:gap-10">
           <div className="space-y-6">
@@ -54,7 +54,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
             </div>
           </div>
 
-          <aside className="glass-panel glass-panel-strong hover-lift-sm self-start">
+          <aside className="glass-panel glass-panel-strong hover-lift-sm self-start" data-reveal>
             <div className="relative z-10">
               <p className="eyebrow">{messages.login.panelTitle}</p>
               <p className="mt-4 [font-family:var(--font-display)] text-2xl font-semibold text-ink sm:text-[2rem]">

@@ -12,11 +12,11 @@ interface SiteFooterProps {
 
 export function SiteFooter({ locale, messages }: SiteFooterProps) {
   return (
-    <footer className="relative px-4 pb-6 pt-4 sm:px-6 lg:px-8 lg:pb-8">
+    <footer className="relative px-4 pb-6 pt-6 sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="section-frame overflow-hidden px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <div className="section-frame site-footer-shell overflow-hidden px-6 py-8 sm:px-8 lg:px-10 lg:py-10" data-reveal>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div className="max-w-2xl space-y-4 reveal-up">
+            <div className="max-w-2xl space-y-4">
               <div className="flex items-center gap-4">
                 <LogoTile
                   shortLabel={siteConfig.assetPlaceholders.brand.shortLabel}
@@ -34,7 +34,7 @@ export function SiteFooter({ locale, messages }: SiteFooterProps) {
               <p className="max-w-xl text-sm leading-7 text-muted">{messages.footer.subtitle}</p>
             </div>
 
-            <div className="flex max-w-2xl flex-wrap gap-x-6 gap-y-3 text-sm reveal-up reveal-delay-1">
+            <div className="flex max-w-2xl flex-wrap gap-x-6 gap-y-3 text-sm">
               {siteConfig.navigation.footer.map((item) => (
                 <Link
                   key={item.key}
