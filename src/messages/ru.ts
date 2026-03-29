@@ -417,6 +417,7 @@ export const ruMessages = {
       "Позже здесь может стоять ключевой кадр округа, городской среды или крупной игровой сессии.",
     heroVisualItems: ["Вид округа", "Scottsdale", "Yorktown"],
     primaryCta: "Перейти в Discord",
+    secondaryCta: "Мы в TikTok",
     start: {
       eyebrow: "Как начать",
       title: "Четыре шага до первой игры.",
@@ -424,19 +425,27 @@ export const ruMessages = {
       steps: [
         {
           title: "Ознакомьтесь с правилами",
-          body: "Это база для понятного старта и спокойной игры внутри общего стандарта RP."
+          body: "Это база для понятного старта и спокойной игры внутри общего стандарта RP.",
+          actionLabel: "Читать правила",
+          actionHref: "https://discord.com/channels/1347079709288169523/1347080935975424021"
         },
         {
           title: "Получите ID-карту",
-          body: "ID-карта нужна для входа в проектный контур и дальнейшей верификации."
+          body: "ID-карта нужна для входа в проектный контур и дальнейшей верификации.",
+          actionLabel: "Регистрация",
+          actionHref: "https://docs.google.com/forms/d/e/1FAIpQLSey0sBtLdxim-VW_luMViFKVQZDj8Ulp3boWajF9hZXlQP7AQ/viewform?usp=header"
         },
         {
           title: "Вступите в Roblox-группу",
-          body: "Так аккаунт связывается с проектом и получает базовую точку входа."
+          body: "Так аккаунт связывается с проектом и получает базовую точку входа.",
+          actionLabel: "Вступить",
+          actionHref: "https://www.roblox.com/share/g/32364253"
         },
         {
           title: "Начните играть",
-          body: "После этого можно выходить в Chapel Hills County и включаться в живую среду проекта."
+          body: "После этого можно выходить в Chapel Hills County и включаться в живую среду проекта.",
+          actionLabel: "Играть!",
+          actionHref: "https://discord.gg/mdZjSdJMGh"
         }
       ]
     },
@@ -472,9 +481,9 @@ export const ruMessages = {
     },
     visuals: {
       eyebrow: "Визуалы сессий",
-      title: "Галерея, готовая под реальные кадры.",
+      title: "Кадры округа и игровых сессий.",
       intro:
-        "Пока здесь стоят цветовые плейсхолдеры. Позже их можно заменить фотографиями сессий без перестройки макета.",
+        "Округ, города и ключевые сцены собраны в единую спокойную витрину.",
       placeholders: [
         "Общий вид округа",
         "Улица в Scottsdale",
@@ -515,7 +524,10 @@ export const ruMessages = {
         "Принимаются только игроки старше 13 лет.",
         "Нужно знать базовые механики ER:LC.",
         "Заявки рассматриваются в течение 48 часов."
-      ]
+      ],
+      discordCardTitle: "Основной вход через Discord",
+      discordCardBody: "Правила, объявления и дальнейшая координация остаются в Discord, поэтому вход в сообщество начинается именно там.",
+      discordCardButtonLabel: "Перейти в Discord"
     },
     finalCta: {
       eyebrow: "Вход в сообщество",
@@ -607,6 +619,7 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 
 
 

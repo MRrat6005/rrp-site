@@ -1,19 +1,82 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { getProjectThemeStyle } from "@/config/site.config";
 import type { SiteMessages } from "@/messages/types";
 
 const DISCORD_URL = "https://discord.gg/mdZjSdJMGh";
+const TIKTOK_URL = "https://www.tiktok.com/";
 const galleryVariants = ["wide", "tall", "square", "square", "wide", "tall"] as const;
+const sessionVisuals = [
+  { key: "county", src: "/projects/chrp/main/county-view.png" },
+  { key: "scottsdale", src: "/projects/chrp/main/scottsdale.png" },
+  { key: "yorktown", src: "/projects/chrp/main/yorktown.png" }
+] as const;
+const galleryVisuals = [
+  "/projects/chrp/gallery/county-overview.png",
+  "/projects/chrp/gallery/scottsdale-street.png",
+  "/projects/chrp/gallery/yorktown-storefronts.png",
+  "/projects/chrp/gallery/concert-session.png",
+  "/projects/chrp/gallery/day-traffic.png",
+  "/projects/chrp/gallery/evening-session.png"
+] as const;
+
+type SessionVisualKey = (typeof sessionVisuals)[number]["key"];
 
 interface ChrpMarketingPageProps {
   messages: SiteMessages;
 }
 
+interface ChrpVisualSurfaceProps {
+  alt: string;
+  className: string;
+  priority?: boolean;
+  sizes: string;
+  src: string;
+}
+
+function ChrpVisualSurface({ alt, className, priority = false, sizes, src }: ChrpVisualSurfaceProps) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
+  return (
+    <div className={className}>
+      <div className="chrp-visual-surface__placeholder" aria-hidden="true" />
+      {!hasError ? (
+        <Image
+          fill
+          alt={alt}
+          className="chrp-visual-surface__image"
+          onError={() => setHasError(true)}
+          priority={priority}
+          sizes={sizes}
+          src={src}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
   const copy = messages.chrpPage;
   const themeStyle = getProjectThemeStyle("chrp");
+  const [activeVisual, setActiveVisual] = useState<SessionVisualKey>("county");
 
+  const activeSessionIndex = sessionVisuals.findIndex((item) => item.key === activeVisual);
+  const activeSessionVisual = sessionVisuals[activeSessionIndex === -1 ? 0 : activeSessionIndex];
+  const activeSessionLabel = copy.heroVisualItems[activeSessionIndex === -1 ? 0 : activeSessionIndex] ?? activeSessionVisual.key;
+
+  const galleryItems = copy.visuals.placeholders.map((label, index) => ({
+    label,
+    src: galleryVisuals[Math.min(index, galleryVisuals.length - 1)],
+    variant: galleryVariants[index % galleryVariants.length]
+  }));
   return (
     <main
       className="chrp-marketing-page mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 pb-16 pt-10 sm:px-8 lg:gap-14 lg:px-10 lg:pb-24 lg:pt-14"
@@ -26,9 +89,12 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
           <p className="chrp-hero__subtitle">{copy.heroSubtitle}</p>
           <p className="chrp-hero__body">{copy.heroBody}</p>
 
-          <div className="flex flex-wrap gap-3 pt-1">
+          <div className="chrp-cta-row">
             <Link href={DISCORD_URL} className="button-primary" target="_blank" rel="noreferrer">
               {copy.primaryCta}
+            </Link>
+            <Link href={TIKTOK_URL} className="chrp-button-secondary" target="_blank" rel="noreferrer">
+              {copy.secondaryCta}
             </Link>
           </div>
 
@@ -43,27 +109,32 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
         </div>
 
         <div className="chrp-hero__visual">
-          <div className="chrp-placeholder chrp-placeholder--hero">
-            <div className="chrp-placeholder__top">
-              <span className="project-tag">{copy.visuals.eyebrow}</span>
-              <span className="chrp-placeholder__swap">CHRP</span>
-            </div>
+          <div className="chrp-session-visual">
+            <ChrpVisualSurface
+              alt={`${copy.heroTitle} - ${activeSessionLabel}`}
+              className="chrp-visual-surface chrp-session-visual__media"
+              priority
+              sizes="(min-width: 1024px) 44vw, 100vw"
+              src={activeSessionVisual.src}
+            />
 
-            <div className="chrp-placeholder__canvas" />
+            <div className="chrp-session-visual__tabs" role="tablist" aria-label={copy.heroVisualTitle}>
+              {sessionVisuals.map((item, index) => {
+                const isActive = activeVisual === item.key;
 
-            <div className="chrp-placeholder__footer">
-              <div className="space-y-3">
-                <h2 className="chrp-placeholder__title">{copy.heroVisualTitle}</h2>
-                <p className="chrp-placeholder__body">{copy.heroVisualBody}</p>
-              </div>
-
-              <div className="chrp-placeholder__chips">
-                {copy.heroVisualItems.map((item) => (
-                  <span key={item} className="chrp-chip">
-                    {item}
-                  </span>
-                ))}
-              </div>
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    className={`chrp-session-tab ${isActive ? "is-active" : ""}`}
+                    onClick={() => setActiveVisual(item.key)}
+                  >
+                    {copy.heroVisualItems[index] ?? item.key}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -71,7 +142,6 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
 
       <section className="chrp-section reveal-up reveal-delay-1" data-reveal>
         <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.start.eyebrow}</p>
           <h2 className="chrp-section__title">{copy.start.title}</h2>
           <p className="chrp-section__body">{copy.start.intro}</p>
         </div>
@@ -82,20 +152,23 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               <span className="chrp-step__number">{String(index + 1).padStart(2, "0")}</span>
               <h3 className="chrp-step__title">{step.title}</h3>
               <p className="chrp-step__body">{step.body}</p>
+              <div className="chrp-step__actions">
+                <Link href={step.actionHref} className="chrp-button-secondary" target="_blank" rel="noreferrer">
+                  {step.actionLabel}
+                </Link>
+              </div>
             </article>
           ))}
         </div>
       </section>
 
       <section className="chrp-message-panel reveal-up reveal-delay-1" data-reveal>
-        <p className="eyebrow">{copy.mediumRp.eyebrow}</p>
         <h2 className="chrp-section__title">{copy.mediumRp.title}</h2>
         <p className="chrp-section__body max-w-4xl">{copy.mediumRp.body}</p>
       </section>
 
       <section className="chrp-section reveal-up reveal-delay-2" data-reveal>
         <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.desiredRp.eyebrow}</p>
           <h2 className="chrp-section__title">{copy.desiredRp.title}</h2>
           <p className="chrp-section__body">{copy.desiredRp.intro}</p>
         </div>
@@ -112,18 +185,20 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
 
       <section className="chrp-section reveal-up reveal-delay-2" data-reveal>
         <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.visuals.eyebrow}</p>
           <h2 className="chrp-section__title">{copy.visuals.title}</h2>
           <p className="chrp-section__body">{copy.visuals.intro}</p>
         </div>
 
         <div className="chrp-gallery">
-          {copy.visuals.placeholders.map((item, index) => (
-            <article
-              key={item}
-              className={`chrp-gallery__item chrp-gallery__item--${galleryVariants[index % galleryVariants.length]}`}
-            >
-              <span className="chrp-gallery__label">{item}</span>
+          {galleryItems.map((item) => (
+            <article key={item.label} className={`chrp-gallery__item chrp-gallery__item--${item.variant}`}>
+              <ChrpVisualSurface
+                alt={`${copy.visuals.title} - ${item.label}`}
+                className="chrp-visual-surface chrp-gallery__media"
+                sizes="(min-width: 1024px) 32vw, (min-width: 700px) 48vw, 100vw"
+                src={item.src}
+              />
+              <span className="chrp-gallery__label">{item.label}</span>
             </article>
           ))}
         </div>
@@ -131,7 +206,6 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
 
       <section className="chrp-section reveal-up reveal-delay-2" data-reveal>
         <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.comparison.eyebrow}</p>
           <h2 className="chrp-section__title">{copy.comparison.title}</h2>
           <p className="chrp-section__body">{copy.comparison.intro}</p>
         </div>
@@ -165,14 +239,12 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
       </section>
 
       <section className="chrp-message-panel reveal-up reveal-delay-2" data-reveal>
-        <p className="eyebrow">{copy.rebirth.eyebrow}</p>
         <h2 className="chrp-section__title">{copy.rebirth.title}</h2>
         <p className="chrp-section__body max-w-4xl">{copy.rebirth.body}</p>
       </section>
 
       <section className="chrp-verify reveal-up reveal-delay-2" data-reveal>
         <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.verification.eyebrow}</p>
           <h2 className="chrp-section__title">{copy.verification.title}</h2>
         </div>
 
@@ -182,20 +254,24 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               {item}
             </article>
           ))}
-        </div>
-      </section>
 
-      <section className="chrp-cta reveal-up reveal-delay-2" data-reveal>
-        <div className="chrp-section__intro">
-          <p className="eyebrow">{copy.finalCta.eyebrow}</p>
-          <h2 className="chrp-section__title">{copy.finalCta.title}</h2>
-          <p className="chrp-section__body max-w-3xl">{copy.finalCta.body}</p>
+          <Link
+            href={DISCORD_URL}
+            className="chrp-verify__item chrp-verify__item--cta"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="chrp-verify__cta-copy">
+              <h3 className="chrp-focus-card__title">{copy.verification.discordCardTitle}</h3>
+              <p className="chrp-verify__cta-body">{copy.verification.discordCardBody}</p>
+            </div>
+            <span className="chrp-button-secondary chrp-button-secondary--inline">
+              {copy.verification.discordCardButtonLabel}
+            </span>
+          </Link>
         </div>
-
-        <Link href={DISCORD_URL} className="button-primary" target="_blank" rel="noreferrer">
-          {copy.finalCta.buttonLabel}
-        </Link>
       </section>
     </main>
   );
 }
+

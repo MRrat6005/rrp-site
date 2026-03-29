@@ -417,6 +417,7 @@ export const enMessages = {
       "This area can later hold a key county shot, city scene, or major session photo.",
     heroVisualItems: ["County view", "Scottsdale", "Yorktown"],
     primaryCta: "Open Discord",
+    secondaryCta: "Find us on TikTok",
     start: {
       eyebrow: "How to start",
       title: "Four steps before the first session.",
@@ -424,19 +425,27 @@ export const enMessages = {
       steps: [
         {
           title: "Read the rules",
-          body: "They set the baseline for a clear start and a consistent RP standard."
+          body: "They set the baseline for a clear start and a consistent RP standard.",
+          actionLabel: "Read the rules",
+          actionHref: "https://discord.com/channels/1347079709288169523/1347080935975424021"
         },
         {
           title: "Get an ID card",
-          body: "The ID card is part of entry into the project flow and later verification."
+          body: "The ID card is part of entry into the project flow and later verification.",
+          actionLabel: "Registration",
+          actionHref: "https://docs.google.com/forms/d/e/1FAIpQLSey0sBtLdxim-VW_luMViFKVQZDj8Ulp3boWajF9hZXlQP7AQ/viewform?usp=header"
         },
         {
           title: "Join the Roblox group",
-          body: "That links the account to the project and gives the basic entry point."
+          body: "That links the account to the project and gives the basic entry point.",
+          actionLabel: "Join",
+          actionHref: "https://www.roblox.com/share/g/32364253"
         },
         {
           title: "Start playing",
-          body: "After that, the county is open for play and for joining the rhythm of the project."
+          body: "After that, the county is open for play and for joining the rhythm of the project.",
+          actionLabel: "Play!",
+          actionHref: "https://discord.gg/mdZjSdJMGh"
         }
       ]
     },
@@ -472,9 +481,9 @@ export const enMessages = {
     },
     visuals: {
       eyebrow: "Session visuals",
-      title: "A gallery ready for real photos.",
+      title: "County and session scenes.",
       intro:
-        "These are simple color placeholders for now. Later they can be replaced with real session images without rebuilding the layout.",
+        "County views, city shots, and key session moments sit together in one restrained gallery.",
       placeholders: [
         "County overview",
         "Scottsdale street scene",
@@ -515,7 +524,10 @@ export const enMessages = {
         "Only players over 13 are accepted.",
         "Players must know the basic ER:LC mechanics.",
         "Applications are reviewed within 48 hours."
-      ]
+      ],
+      discordCardTitle: "Discord is still the main entry",
+      discordCardBody: "Rules, announcements, and the next verification steps stay inside Discord, so that remains the primary route into the community.",
+      discordCardButtonLabel: "Open Discord"
     },
     finalCta: {
       eyebrow: "Community entry",
@@ -607,6 +619,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 

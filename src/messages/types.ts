@@ -14,6 +14,11 @@ export interface StepCopy {
   body: string;
 }
 
+export interface ChrpStartStepCopy extends StepCopy {
+  actionLabel: string;
+  actionHref: string;
+}
+
 export interface SectionCopy {
   title: string;
   body: string;
@@ -55,11 +60,12 @@ export interface ChrpPageCopy {
   heroVisualBody: string;
   heroVisualItems: readonly string[];
   primaryCta: string;
+  secondaryCta: string;
   start: {
     eyebrow: string;
     title: string;
     intro: string;
-    steps: readonly StepCopy[];
+    steps: readonly ChrpStartStepCopy[];
   };
   mediumRp: EyebrowSectionCopy;
   desiredRp: {
@@ -88,6 +94,9 @@ export interface ChrpPageCopy {
     eyebrow: string;
     title: string;
     items: readonly string[];
+    discordCardTitle: string;
+    discordCardBody: string;
+    discordCardButtonLabel: string;
   };
   finalCta: {
     eyebrow: string;
@@ -206,3 +215,4 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+
