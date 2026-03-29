@@ -488,7 +488,7 @@ export const enMessages = {
         "County overview",
         "Scottsdale street scene",
         "Yorktown storefronts",
-        "Concert session",
+        "Event sessions",
         "Day traffic",
         "Evening session"
       ]
@@ -619,6 +619,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 

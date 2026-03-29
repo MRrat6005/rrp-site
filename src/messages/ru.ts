@@ -488,7 +488,7 @@ export const ruMessages = {
         "Общий вид округа",
         "Улица в Scottsdale",
         "Витрины Yorktown",
-        "Концертная сцена",
+        "Сессия-ивент",
         "Дневной трафик",
         "Вечерняя сессия"
       ]
@@ -619,6 +619,7 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 
 
 
