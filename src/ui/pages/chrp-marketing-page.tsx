@@ -67,16 +67,26 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
   const copy = messages.chrpPage;
   const themeStyle = getProjectThemeStyle("chrp");
   const [activeVisual, setActiveVisual] = useState<SessionVisualKey>("county");
+  const [activeTimelineTitle, setActiveTimelineTitle] = useState(
+    copy.timeline.stages.find((stage) => stage.isCurrent)?.title ?? copy.timeline.stages[0]?.title ?? ""
+  );
 
   const activeSessionIndex = sessionVisuals.findIndex((item) => item.key === activeVisual);
   const activeSessionVisual = sessionVisuals[activeSessionIndex === -1 ? 0 : activeSessionIndex];
   const activeSessionLabel = copy.heroVisualItems[activeSessionIndex === -1 ? 0 : activeSessionIndex] ?? activeSessionVisual.key;
+  const activeTimelineStage =
+    copy.timeline.stages.find((stage) => stage.title === activeTimelineTitle) ?? copy.timeline.stages[0];
 
   const galleryItems = copy.visuals.placeholders.map((label, index) => ({
     label,
     src: galleryVisuals[Math.min(index, galleryVisuals.length - 1)],
     variant: galleryVariants[index % galleryVariants.length]
   }));
+
+  useEffect(() => {
+    setActiveTimelineTitle(copy.timeline.stages.find((stage) => stage.isCurrent)?.title ?? copy.timeline.stages[0]?.title ?? "");
+  }, [copy.timeline.stages]);
+
   return (
     <main
       className="chrp-marketing-page mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 pb-16 pt-10 sm:px-8 lg:gap-14 lg:px-10 lg:pb-24 lg:pt-14"
@@ -148,6 +158,60 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               })}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="chrp-section chrp-timeline-section reveal-up reveal-delay-1" data-reveal>
+        <div className="chrp-section__intro">
+          <h2 className="chrp-section__title">{copy.timeline.title}</h2>
+          <p className="chrp-section__body">{copy.timeline.intro}</p>
+        </div>
+
+        <div className="chrp-timeline-shell">
+          <div className="chrp-timeline" aria-label={copy.timeline.title}>
+            <span className="chrp-timeline__rail" aria-hidden="true" />
+
+            {copy.timeline.stages.map((stage) => {
+              const isActive = activeTimelineStage?.title === stage.title;
+
+              return (
+                <button
+                  key={stage.title}
+                  type="button"
+                  className={`chrp-timeline__point ${isActive ? "is-active" : ""} ${stage.isCurrent ? "is-current" : ""}`}
+                  aria-pressed={isActive}
+                  aria-controls="chrp-timeline-panel"
+                  onClick={() => setActiveTimelineTitle(stage.title)}
+                >
+                  <span className="chrp-timeline__marker" aria-hidden="true">
+                    <span className="chrp-timeline__marker-core" />
+                  </span>
+                  <span className="chrp-timeline__point-copy">
+                    <span className="chrp-timeline__point-title">{stage.title}</span>
+                    <span className="chrp-timeline__point-years">{stage.years}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {activeTimelineStage ? (
+            <div className="chrp-timeline-card-wrap">
+              <article
+                key={activeTimelineStage.title}
+                id="chrp-timeline-panel"
+                className={`chrp-timeline-card ${activeTimelineStage.isCurrent ? "is-current" : ""}`}
+                aria-live="polite"
+              >
+                <h3 className="chrp-timeline-card__title">{activeTimelineStage.title}</h3>
+                <p className="chrp-timeline-card__meta">
+                  <span className="chrp-timeline-card__meta-label">{copy.timeline.yearsLabel}</span>
+                  <span className="chrp-timeline-card__meta-value">{activeTimelineStage.years}</span>
+                </p>
+                <p className="chrp-timeline-card__body">{activeTimelineStage.body}</p>
+              </article>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -274,6 +338,4 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
     </main>
   );
 }
-
-
 

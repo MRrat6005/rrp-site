@@ -95,6 +95,13 @@ export interface ComparisonRowCopy {
   others: string;
 }
 
+export interface ChrpTimelineStageCopy {
+  title: string;
+  years: string;
+  body: string;
+  isCurrent?: boolean;
+}
+
 export interface ChrpPageCopy {
   heroEyebrow: string;
   heroTitle: string;
@@ -106,6 +113,12 @@ export interface ChrpPageCopy {
   heroVisualItems: readonly string[];
   primaryCta: string;
   secondaryCta: string;
+  timeline: {
+    title: string;
+    intro: string;
+    yearsLabel: string;
+    stages: readonly ChrpTimelineStageCopy[];
+  };
   start: {
     eyebrow: string;
     title: string;
@@ -355,10 +368,4 @@ export interface SiteMessages {
     fallback: string;
   };
 }
-
-
-
-
-
-
 

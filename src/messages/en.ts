@@ -706,6 +706,44 @@ export const enMessages = {
     heroVisualItems: ["County view", "Scottsdale", "Yorktown"],
     primaryCta: "Open Discord",
     secondaryCta: "Find us on TikTok",
+    timeline: {
+      title: "Project timeline",
+      intro: "The path from the earliest servers to the current CHRP stage.",
+      yearsLabel: "Years active",
+      stages: [
+        {
+          title: "Stuttgart RolePlay",
+          years: "March 2024",
+          body:
+            "The team’s first project and the starting point of the entire story. A Medium RP project built in ER:LC around Stuttgart, Germany. This is where the team gained its first recognition and formed its earliest core audience."
+        },
+        {
+          title: "Honolulu RolePlay",
+          years: "April 2024",
+          body:
+            "The team’s second roleplay project, built around a fictional county. This stage marked a visible rise in audience interest, with strong public response and growing demand from players who wanted to join."
+        },
+        {
+          title: "Los Angeles RolePlay",
+          years: "May 2024 - September 2024",
+          body:
+            "The third project and one of the most active stages in the team’s history. Many players and storylines passed through it during that summer, which remains one of the most memorable periods for the community."
+        },
+        {
+          title: "Liberty State RolePlay",
+          years: "November 2024 - January 2026",
+          body:
+            "The fourth project and the most recognizable stage before CHRP. LSRP lived through a long and active period, became a familiar name for many players, and remains one of the team’s most beloved projects."
+        },
+        {
+          title: "Chapel Hills RolePlay",
+          years: "March 2026 - present",
+          body:
+            "The fifth and current project of the team. CHRP continues the path after Liberty and turns accumulated experience into a more mature format, with stronger structure, clearer presentation, and a sharper focus on quality RolePlay.",
+          isCurrent: true
+        }
+      ]
+    },
     start: {
       eyebrow: "How to start",
       title: "Four steps before the first session.",
@@ -907,12 +945,4 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
-
-
-
-
-
-
-
-
 
