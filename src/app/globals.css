@@ -4224,7 +4224,7 @@ a {
   }
 
   .crown-visual__image {
-    object-fit: contain;
+    object-fit: cover;
     object-position: center center;
   }
 

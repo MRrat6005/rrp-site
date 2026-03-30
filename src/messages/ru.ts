@@ -398,6 +398,8 @@ export const ruMessages = {
           note: "Здесь читается доступ к полному слою и расширенным системам."
         }
       ],
+      issueCtaLabel: "Сообщить об ошибке",
+      issueCtaMeta: "Discord-канал для сообщений о сервисных проблемах CROWN",
       visual: {
         eyebrow: "Статусный визуал",
         title: "Статус и телеметрия",
@@ -539,7 +541,7 @@ export const ruMessages = {
       fullLabel: "FULL",
       othersLabel: "Другие боты",
       priceLabel: "Цена",
-      priceFullNote: "За 1 ключ",
+      priceFullNote: "За 1 ключ на 1 месяц",
       rows: [
 
         {

@@ -366,6 +366,7 @@ export const enMessages = {
         { label: "Localization", value: "RU / EN in one product" },
         { label: "Control", value: "One center for RP systems" }
       ],
+
       visual: {
         eyebrow: "Hero product visual",
         title: "Primary CROWN surface",
@@ -398,6 +399,8 @@ export const enMessages = {
           note: "This block can show whether the full layer and advanced systems are available."
         }
       ],
+      issueCtaLabel: "Report an issue",
+      issueCtaMeta: "Discord channel for reporting CROWN service issues",
       visual: {
         eyebrow: "Status visual",
         title: "Status and telemetry",
@@ -451,6 +454,7 @@ export const enMessages = {
         "Module state is readable at a glance",
         "Owners keep control as the server grows"
       ],
+
       visual: {
         eyebrow: "Settings visual",
         title: "CROWN settings screen",
@@ -467,26 +471,31 @@ export const enMessages = {
       items: [
         {
           title: "Bank",
+          shortBody: "Balances, accounts, and money flows inside one controlled layer.",
           body: "Balances, accounts, and money flows inside one controlled layer.",
           slotPath: "/projects/crown/modules/bank.png"
         },
         {
           title: "Social",
+          shortBody: "Profiles, social status, and community-facing mechanics without leaving the core.",
           body: "Profiles, social status, and community-facing mechanics without leaving the core.",
           slotPath: "/projects/crown/modules/social.png"
         },
         {
           title: "Weather",
+          shortBody: "World weather states managed in the rhythm of the RP server itself.",
           body: "World weather states managed in the rhythm of the RP server itself.",
           slotPath: "/projects/crown/modules/weather.png"
         },
         {
           title: "Sessions",
+          shortBody: "Session structure, timing, and operational rhythm in the same management layer.",
           body: "Session structure, timing, and operational rhythm in the same management layer.",
           slotPath: "/projects/crown/modules/sessions.png"
         },
         {
           title: "Radio",
+          shortBody: "Radio, channel, and communication flows in the wider CROWN product logic.",
           body: "Radio, channel, and communication flows in the wider CROWN product logic.",
           slotPath: "/projects/crown/modules/radio.png"
         }
@@ -517,6 +526,7 @@ export const enMessages = {
           body: "New modules and settings are added into the same control center instead of next to it."
         }
       ],
+
       visual: {
         eyebrow: "Localization and branding visual",
         title: "Localization, branding, and access",
@@ -534,7 +544,7 @@ export const enMessages = {
       fullLabel: "FULL",
       othersLabel: "Other bots",
       priceLabel: "Price",
-      priceFullNote: "For 1 key",
+      priceFullNote: "For 1 key for 1 month",
       rows: [
 
         {

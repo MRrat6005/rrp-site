@@ -157,6 +157,8 @@ export interface CrownPageCopy {
     summaryLabel: string;
     summaryValue: string;
     signals: readonly CrownStatusSignalCopy[];
+    issueCtaLabel: string;
+    issueCtaMeta: string;
     visual: CrownVisualSlotCopy;
   };
   capabilities: {

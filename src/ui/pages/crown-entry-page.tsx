@@ -397,8 +397,8 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
               rel="noreferrer"
               className="crown-issue-cta"
             >
-              <span className="crown-issue-cta__label">Сообщить об ошибке</span>
-              <span className="crown-issue-cta__meta">Discord-канал для сообщений о сервисных проблемах CROWN</span>
+              <span className="crown-issue-cta__label">{copy.status.issueCtaLabel}</span>
+              <span className="crown-issue-cta__meta">{copy.status.issueCtaMeta}</span>
             </Link>
           </div>
 
