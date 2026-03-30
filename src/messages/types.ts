@@ -106,6 +106,98 @@ export interface ChrpPageCopy {
   };
 }
 
+export interface CrownFeatureGroupCopy {
+  title: string;
+  body: string;
+  items: readonly string[];
+}
+
+export interface CrownStatusSignalCopy {
+  label: string;
+  value: string;
+  note: string;
+}
+
+export interface CrownComparisonRowCopy {
+  label: string;
+  generic: string;
+  crown: string;
+}
+
+export interface CrownVisualSlotCopy {
+  eyebrow: string;
+  title: string;
+  body: string;
+  slotLabel: string;
+  slotPath: string;
+}
+
+export interface CrownPageCopy {
+  hero: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    summary: string;
+    primaryCta: string;
+    secondaryCta: string;
+    proofStrip: readonly string[];
+    stats: readonly LabeledValue[];
+    visual: CrownVisualSlotCopy;
+  };
+  status: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    summaryLabel: string;
+    summaryValue: string;
+    signals: readonly CrownStatusSignalCopy[];
+    visual: CrownVisualSlotCopy;
+  };
+  capabilities: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    groups: readonly CrownFeatureGroupCopy[];
+  };
+  showcase: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    highlights: readonly string[];
+    visual: CrownVisualSlotCopy;
+  };
+  modules: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: readonly SectionCopy[];
+    footnote: string;
+    visual: CrownVisualSlotCopy;
+  };
+  governance: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    pillars: readonly SectionCopy[];
+    visual: CrownVisualSlotCopy;
+  };
+  comparison: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    genericLabel: string;
+    crownLabel: string;
+    rows: readonly CrownComparisonRowCopy[];
+  };
+  finalCta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    primaryCta: string;
+    secondaryCta: string;
+  };
+}
+
 export interface SiteMessages {
   localeName: string;
   nav: {
@@ -179,16 +271,7 @@ export interface SiteMessages {
     states: readonly EyebrowSectionCopy[];
     rail: PageAsideCopy;
   };
-  crownEntry: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    summary: string;
-    stats: readonly LabeledValue[];
-    capabilities: readonly SectionCopy[];
-    flow: readonly SectionCopy[];
-    shell: PageAsideCopy;
-  };
+  crownEntry: CrownPageCopy;
   chrpPage: ChrpPageCopy;
   projects: {
     introLabel: string;
@@ -215,4 +298,6 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+
+
 
