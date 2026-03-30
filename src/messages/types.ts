@@ -43,6 +43,51 @@ export interface StructuredPageCopy {
   aside: PageAsideCopy;
 }
 
+export interface AboutDirectionCopy extends EyebrowSectionCopy {
+  key: ProjectId;
+  ctaLabel: string;
+}
+
+export interface AboutPageCopy {
+  hero: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    summary: string;
+    primaryCta: string;
+    secondaryCta: string;
+    highlights: readonly string[];
+    visualTitle: string;
+    visualBody: string;
+    visualStats: readonly LabeledValue[];
+  };
+  creates: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    layers: readonly SectionCopy[];
+  };
+  directions: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: readonly AboutDirectionCopy[];
+  };
+  approach: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    principles: readonly SectionCopy[];
+  };
+  finalCta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    primaryCta: string;
+    secondaryCta: string;
+  };
+}
+
 export interface ComparisonRowCopy {
   label: string;
   liberty: string;
@@ -250,7 +295,7 @@ export interface SiteMessages {
     notes: readonly SectionCopy[];
     stats: readonly LabeledValue[];
   };
-  about: StructuredPageCopy;
+  about: AboutPageCopy;
   faq: StructuredPageCopy;
   docs: StructuredPageCopy;
   login: {
@@ -310,6 +355,7 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+
 
 
 

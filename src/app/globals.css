@@ -5179,3 +5179,346 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
+
+@layer components {
+  .about-page {
+    position: relative;
+  }
+
+  .about-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.5rem 0.85rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(235, 241, 249, 0.66);
+  }
+
+  .about-hero {
+    display: grid;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .about-hero__copy,
+  .about-section__lead,
+  .about-final__copy,
+  .about-hero-panel,
+  .about-hero-panel__intro {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .about-hero__copy {
+    position: relative;
+    z-index: 1;
+    align-content: start;
+    max-width: 40rem;
+  }
+
+  .about-hero__title,
+  .about-section__title,
+  .about-card__title,
+  .about-direction-card__title,
+  .about-hero-route__name,
+  .about-hero-panel__fallback-mark,
+  .about-direction-card__fallback-mark {
+    font-family: var(--font-display);
+    letter-spacing: -0.04em;
+    color: #f4f7fb;
+  }
+
+  .about-hero__title {
+    max-width: 11ch;
+    font-size: clamp(2.9rem, 6vw, 5.6rem);
+    line-height: 0.96;
+  }
+
+  .about-section__title {
+    font-size: clamp(2rem, 4.2vw, 3.1rem);
+    line-height: 1.02;
+  }
+
+  .about-card__title,
+  .about-direction-card__title {
+    font-size: clamp(1.35rem, 2vw, 1.7rem);
+    line-height: 1.02;
+  }
+
+  .about-hero__subtitle,
+  .about-section__body,
+  .about-card__body,
+  .about-direction-card__body,
+  .about-hero-panel__body,
+  .about-hero-route__meta,
+  .about-hero-panel__stat-value {
+    color: rgba(231, 237, 246, 0.74);
+  }
+
+  .about-hero__subtitle,
+  .about-section__body,
+  .about-hero-panel__body {
+    max-width: 42rem;
+    font-size: 1.02rem;
+    line-height: 1.8;
+  }
+
+  .about-hero__body {
+    max-width: 36rem;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    color: rgba(231, 237, 246, 0.66);
+  }
+
+  .about-card__body,
+  .about-direction-card__body {
+    margin-top: 0.85rem;
+    font-size: 0.97rem;
+    line-height: 1.75;
+  }
+
+  .about-hero__actions,
+  .about-final__actions,
+  .about-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .about-hero__actions,
+  .about-final__actions {
+    padding-top: 0.2rem;
+  }
+
+  .about-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0.62rem 0.92rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(238, 243, 250, 0.72);
+  }
+
+  .about-hero-panel {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    align-content: start;
+  }
+
+  .about-hero-panel__brand {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .about-hero-panel__mark-shell,
+  .about-direction-card__mark-shell,
+  .about-hero-route__mark-shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .about-hero-panel__mark-shell {
+    min-height: 11rem;
+    border-radius: 1.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      radial-gradient(circle at center, rgba(255, 255, 255, 0.12), transparent 56%),
+      rgba(255, 255, 255, 0.03);
+  }
+
+  .about-hero-panel__mark {
+    width: min(10.5rem, 52%);
+    height: auto;
+    filter: drop-shadow(0 24px 50px rgba(1, 3, 7, 0.32));
+  }
+
+  .about-hero-panel__fallback-mark,
+  .about-direction-card__fallback-mark {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
+  .about-hero-panel__routes,
+  .about-hero-panel__stats,
+  .about-creates-grid,
+  .about-directions-grid,
+  .about-principles-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .about-hero-route {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.95rem;
+    align-items: center;
+    border-radius: 1.35rem;
+    border: 1px solid var(--project-border);
+    background: linear-gradient(180deg, var(--project-surface-top), var(--project-surface-bottom));
+    padding: 0.95rem 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .about-hero-route__mark-shell {
+    width: 4.35rem;
+    min-width: 4.35rem;
+    aspect-ratio: 1;
+    border-radius: 1.05rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .about-hero-route__mark {
+    width: min(3rem, 70%);
+    height: auto;
+  }
+
+  .about-hero-route__copy {
+    display: grid;
+    gap: 0.22rem;
+  }
+
+  .about-hero-route__name {
+    font-size: 1rem;
+    line-height: 1.05;
+  }
+
+  .about-hero-route__meta,
+  .about-direction-card__name,
+  .about-hero-panel__stat-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-hero-route__meta {
+    color: var(--project-tag);
+  }
+
+  .about-hero-panel__stat {
+    display: grid;
+    gap: 0.35rem;
+    border-radius: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0.95rem 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .about-hero-panel__stat-label,
+  .about-direction-card__name {
+    color: rgba(235, 241, 249, 0.44);
+  }
+
+  .about-hero-panel__stat-value {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .about-section {
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .about-section__lead,
+  .about-final__copy {
+    max-width: 44rem;
+  }
+
+  .about-direction-card {
+    display: grid;
+    gap: 1.25rem;
+    min-height: 22rem;
+  }
+
+  .about-direction-card__top,
+  .about-direction-card__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .about-direction-card__top {
+    align-items: flex-start;
+  }
+
+  .about-direction-card__footer {
+    margin-top: auto;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .about-direction-card__mark-shell {
+    width: 7.25rem;
+    min-width: 7.25rem;
+    aspect-ratio: 1;
+    border-radius: 1.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .about-direction-card__mark {
+    width: min(5rem, 72%);
+    height: auto;
+  }
+
+  .about-direction-card__cta {
+    color: #edf3fb;
+  }
+
+  .about-final {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @media (min-width: 700px) {
+    .about-hero-panel__brand {
+      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .about-hero-panel__stats,
+    .about-principles-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .about-hero {
+      grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.82fr);
+      gap: 2rem;
+    }
+
+    .about-creates-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .about-directions-grid,
+    .about-final {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .about-principles-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+}

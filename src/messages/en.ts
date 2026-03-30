@@ -63,33 +63,98 @@ export const enMessages = {
     ]
   },
   about: {
-    eyebrow: "About RRP",
-    title: "RRP is a creative team and project ecosystem.",
-    intro:
-      "Royal Rats Productions brings projects, internal tools, concepts, and public directions together under one structure. The site serves as the public entry point into that ecosystem and introduces its main contours at a glance.",
-    sections: [
-      {
-        title: "Creative foundation",
-        body: "RRP is built around ideas, worlds, and their long-term development. The team shapes a connected environment rather than a loose set of separate pieces."
-      },
-      {
-        title: "Public direction",
-        body: "The outward side of RRP is presented as a clear and composed system. It introduces visitors to the directions, materials, and tone of the ecosystem."
-      },
-      {
-        title: "Internal layer",
-        body: "CROWN gathers workspaces, modules, and operational surfaces into the stricter side of project work within RRP."
-      }
-    ],
-    aside: {
-      eyebrow: "Position",
-      title: "RRP operates as one environment, not a set of disconnected pages.",
-      body: "The ecosystem is built around a clear structure, a steady visual language, and a defined separation between public and internal directions.",
-      items: [
-        { label: "Status", value: "Creative team" },
-        { label: "Scope", value: "Projects, systems, concepts" },
-        { label: "Tone", value: "Official and restrained" }
+    hero: {
+      eyebrow: "About RRP",
+      title: "RRP is the team creating RP projects and the systems behind them.",
+      subtitle:
+        "Royal Rats Productions leads CHRP and CROWN, bringing project direction, working logic, and clear presentation into one body of work.",
+      summary:
+        "What matters here is not only the idea itself, but how clearly it is built, presented, and carried into practice.",
+      primaryCta: "Open CHRP",
+      secondaryCta: "Open CROWN",
+      highlights: ["RP projects", "Systems and modules", "Clear execution"],
+      visualTitle: "What sits inside the work",
+      visualBody:
+        "CHRP carries the roleplay and community side. CROWN carries systems, settings, and control.",
+      visualStats: [
+        { label: "Role", value: "Team behind CHRP and CROWN" },
+        { label: "Focus", value: "RP projects and systems" },
+        { label: "Standard", value: "Structure, quality, clarity" }
       ]
+    },
+    creates: {
+      eyebrow: "What RRP creates",
+      title: "Three layers, one body of work.",
+      intro:
+        "RRP is built around the project itself, the systems behind it, and the execution quality that keeps everything coherent.",
+      layers: [
+        {
+          title: "Projects",
+          body: "RRP develops directions with a distinct tone, a clear role, and a readable point of entry."
+        },
+        {
+          title: "Systems",
+          body: "The team builds modules, settings, and internal logic that support the project in day-to-day work."
+        },
+        {
+          title: "Execution",
+          body: "The goal is not only to shape the idea, but to carry it into a clear structure, composed presentation, and reliable result."
+        }
+      ]
+    },
+    directions: {
+      eyebrow: "Main directions",
+      title: "CHRP and CROWN serve different roles.",
+      intro:
+        "They are led by the same team, but each direction is responsible for a different side of the work.",
+      items: [
+        {
+          key: "chrp",
+          eyebrow: "CHRP",
+          title: "Roleplay direction",
+          body: "CHRP carries atmosphere, worldbuilding, sessions, and community. It is where the project opens in its live and public-facing form.",
+          ctaLabel: "Open CHRP"
+        },
+        {
+          key: "crown",
+          eyebrow: "CROWN",
+          title: "Systems direction",
+          body: "CROWN carries modules, settings, control, and central logic. It holds the systems side of the project and its daily operational order.",
+          ctaLabel: "Open CROWN"
+        }
+      ]
+    },
+    approach: {
+      eyebrow: "Approach",
+      title: "A short statement of standards.",
+      intro:
+        "RRP works with clear structure and without excess noise. The point is not more words, but stronger execution.",
+      principles: [
+        {
+          title: "Structure",
+          body: "Each part has its role, and the movement between them stays easy to understand."
+        },
+        {
+          title: "Atmosphere",
+          body: "Presentation supports the character of the project instead of turning into decoration for its own sake."
+        },
+        {
+          title: "Quality",
+          body: "Work is carried to a state that feels solid to use and worth returning to."
+        },
+        {
+          title: "Consistency",
+          body: "Copy, visuals, and working logic should speak in one voice."
+        }
+      ]
+    },
+    finalCta: {
+      eyebrow: "Where to go next",
+      title: "Open the direction you need.",
+      body:
+        "Choose CHRP for world, atmosphere, and community. Open CROWN for systems, settings, and control.",
+      primaryCta: "Go to CHRP",
+      secondaryCta: "Go to CROWN"
     }
   },
   faq: {
@@ -842,6 +907,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 
