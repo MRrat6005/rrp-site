@@ -352,226 +352,243 @@ export const enMessages = {
   crownEntry: {
     hero: {
       eyebrow: "CROWN / RP Systems Core",
-      title: "We are #1 RolePlay system core. CROWN centralizes the systems serious RP communities run on.",
+      title: "CROWN keeps RP systems, settings, and control in one center.",
       intro:
-        "CROWN is not a generic Discord utility bot. It is a modular RP Systems Core that brings configuration, modules, governance, and entitlements into one controlled surface.",
+        "It is one core for Bank, Social, Weather, Sessions, and Rentals instead of a stack of disconnected bots, spreadsheets, and manual workarounds.",
       summary:
-        "From UI-first settings to owner-level monitoring, CROWN keeps each guild isolated, localized, and easier to operate at scale.",
+        "One working surface for the owner and team: settings, access, localization, status, and module rollout inside the same product layer.",
       primaryCta: "Open Dashboard",
       secondaryCta: "View Features",
       proofStrip: ["UI-first", "RU / EN", "Per-guild", "Modular", "License-protected"],
       stats: [
-        { label: "Core", value: "RP systems control surface" },
         { label: "Modules", value: "Bank, Social, Weather, Sessions, Rentals" },
-        { label: "Operations", value: "Per-guild isolation and owner monitoring" },
-        { label: "Rollout", value: "License and entitlement driven" }
+        { label: "Management", value: "Settings, roles, access, status" },
+        { label: "Localization", value: "RU / EN in one product" },
+        { label: "Control", value: "One center for RP systems" }
       ],
       visual: {
         eyebrow: "Hero product visual",
-        title: "Centralized control surface",
-        body: "Placeholder zone for a future flagship CROWN dashboard render.",
+        title: "Primary CROWN surface",
+        body: "This slot is reserved for the main PNG of the CROWN home screen or core control view.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/hero-product.png"
       }
     },
     status: {
       eyebrow: "System Status",
-      title: "A polished status surface, ready for live service data.",
+      title: "A status layer for service, dashboard, and access.",
       intro:
-        "This section is designed to expose real bot health, service reachability, entitlement checks, and owner alerts without turning the page into a noisy technical panel.",
+        "This section stays on the page as the place for live CROWN status without turning into a noisy technical panel. It keeps the essential service state inside the product story.",
       summaryLabel: "Current mode",
-      summaryValue: "Placeholder-ready status surface",
+      summaryValue: "Ready for live status data",
       signals: [
         {
-          label: "Core service",
-          value: "Awaiting live heartbeat",
-          note: "Drop in API or shard health later."
+          label: "Service",
+          value: "Heartbeat pending",
+          note: "This is where core, API, and key service checks can appear."
         },
         {
-          label: "Dashboard reachability",
-          value: "Awaiting live endpoint checks",
-          note: "Keep UI and service status side by side."
+          label: "Dashboard",
+          value: "Endpoint checks pending",
+          note: "It should be clear at a glance whether the entry surface is reachable."
         },
         {
-          label: "Licenses and entitlements",
-          value: "Awaiting live verification",
-          note: "Expose access gating and entitlement state here."
+          label: "Access",
+          value: "License checks pending",
+          note: "This block can show whether the full layer and advanced systems are available."
         }
       ],
       visual: {
         eyebrow: "Status visual",
-        title: "Live telemetry slot",
-        body: "Replace with a future PNG or wire this surface to live CROWN status data.",
+        title: "Status and telemetry",
+        body: "PNG slot for a status surface, service indicators, or a future live telemetry view.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/status-surface.png"
       }
     },
     capabilities: {
       eyebrow: "What CROWN can do",
-      title: "One core surface for the systems that usually get scattered.",
+      title: "One center for modules, settings, and day-to-day management.",
       intro:
-        "CROWN groups RP operations into clear product layers instead of leaving communities to stitch together unrelated bots, spreadsheets, and manual checks.",
+        "CROWN removes the split between RP modules and the work of operating them. The team stays in one system instead of jumping between commands, spreadsheets, and separate admin tools.",
       groups: [
         {
-          title: "Control",
-          body: "Operate settings and ownership from a UI-first layer built for admins, not command memorization.",
+          title: "Settings",
+          body: "Server, role, and module parameters are gathered into one UI layer.",
           items: [
-            "UI-first settings surfaces",
-            "Per-guild configuration isolation",
-            "Central control over server systems"
+            "One configuration flow per guild",
+            "Faster setup without command-heavy routine",
+            "Readable control over changes"
           ]
         },
         {
-          title: "Modules",
-          body: "Bring essential RP systems under one modular core and expand only where the community needs depth.",
+          title: "Management",
+          body: "Owners and staff can read the whole system instead of isolated parts.",
           items: [
-            "Bank and Social foundations",
-            "Weather, Sessions, and Rentals modules",
-            "Consistent module behavior across communities"
+            "Central view of modules and status",
+            "Control over access and system enablement",
+            "One logic for daily operations"
           ]
         },
         {
-          title: "Stability / Governance",
-          body: "Run with tighter safeguards, clearer licensing, and direct owner visibility over what is deployed.",
+          title: "RP systems",
+          body: "Bank, Social, Weather, Sessions, and Rentals live inside one product logic.",
           items: [
-            "Unified license and entitlement system",
-            "Owner-level monitoring",
-            "Controlled growth without configuration drift"
+            "Consistent module behavior",
+            "Connected system relationships",
+            "Growth without breaking the interface"
           ]
         }
       ]
     },
     showcase: {
-      eyebrow: "Product Showcase",
-      title: "Designed for settings-heavy RP operations, not generic bot menus.",
+      eyebrow: "CROWN interface",
+      title: "Settings stay readable at every layer.",
       intro:
-        "CROWN’s product value is the interface itself: clear module surfaces, readable controls, and a stronger sense of system ownership.",
+        "The value of CROWN is not button count. It is that module and management screens feel like parts of one product.",
       highlights: [
-        "UI-first settings surfaces",
-        "Clear module boundaries",
-        "Operator-focused navigation"
+        "Settings live in one surface",
+        "Module state is readable at a glance",
+        "Owners keep control as the server grows"
       ],
       visual: {
-        eyebrow: "Settings UI visual",
-        title: "Settings and control preview",
-        body: "Large placeholder zone for future dashboard and settings screenshots.",
+        eyebrow: "Settings visual",
+        title: "CROWN settings screen",
+        body: "PNG slot for a settings page, central management screen, or operating overview.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/settings-ui.png"
       }
     },
     modules: {
       eyebrow: "Modules",
-      title: "Key module groups already map to real RP operations.",
+      title: "Modules switch like parts of one product.",
       intro:
-        "CROWN organizes the systems communities actually run, then keeps them under one core instead of splitting them across disconnected tools.",
+        "Pick a category and the right side changes to its own future PNG slot. That keeps the module showcase alive now and easy to replace with real visuals later.",
       items: [
         {
           title: "Bank",
-          body: "Accounts, balances, and money flows in one controlled module surface."
+          body: "Balances, accounts, and money flows inside one controlled layer.",
+          slotPath: "/projects/crown/modules/bank.png"
         },
         {
           title: "Social",
-          body: "Social identity, profile, and community-facing systems without leaving the core."
+          body: "Profiles, social status, and community-facing mechanics without leaving the core.",
+          slotPath: "/projects/crown/modules/social.png"
         },
         {
           title: "Weather",
-          body: "World-state weather control that stays aligned with the server’s RP rhythm."
+          body: "World weather states managed in the rhythm of the RP server itself.",
+          slotPath: "/projects/crown/modules/weather.png"
         },
         {
           title: "Sessions",
-          body: "Session structure, timing, and operational support inside the same environment."
+          body: "Session structure, timing, and operational rhythm in the same management layer.",
+          slotPath: "/projects/crown/modules/sessions.png"
         },
         {
           title: "Rentals",
-          body: "Rental logic and access flows managed through the same product core."
+          body: "Rental logic, access, and related flows in the wider CROWN product logic.",
+          slotPath: "/projects/crown/modules/rentals.png"
         }
       ],
       footnote:
-        "More modules can expand from the same architecture without breaking the product surface.",
-      visual: {
-        eyebrow: "Modules visual",
-        title: "Module overview slot",
-        body: "Placeholder area for a future modules overview image.",
-        slotLabel: "PNG slot",
-        slotPath: "/projects/crown/modules-overview.png"
-      }
+        "Each slot on the right expects its own PNG under public/projects/crown/modules/ without changing the section structure."
     },
     governance: {
-      eyebrow: "Localization, Branding, Entitlements",
-      title: "Why CROWN feels like a product system, not a generic bot install.",
+      eyebrow: "Localization, branding, access",
+      title: "Central control does not end with modules.",
       intro:
-        "The strength of CROWN is not only what modules exist, but how communities control them, localize them, and grow them without losing structure.",
+        "CROWN ties settings, localization, access, and server identity into one managed layer. That matters for RP projects that grow without wanting to lose consistency.",
       pillars: [
         {
-          title: "RU / EN localization",
-          body: "Operate one core with deliberate Russian and English surfaces instead of treating localization as an afterthought."
+          title: "Localization",
+          body: "RU and EN stay inside one product instead of splitting by module or screen."
         },
         {
-          title: "Per-guild branding",
-          body: "Keep community identity and server-specific presentation isolated without polluting the rest of the network."
+          title: "Server branding",
+          body: "Each guild keeps its own presentation and setup without bleeding into the wider network."
         },
         {
-          title: "License and entitlements",
-          body: "Gate access, module rights, and rollout boundaries through one unified entitlement model."
+          title: "Access and licenses",
+          body: "Entry into the full system is controlled deliberately, not manually and not ad hoc."
         },
         {
-          title: "Controlled growth",
-          body: "Expand by policy and entitlement, not by stacking unmanaged add-ons and staff workarounds."
+          title: "Scaling",
+          body: "New modules and settings are added into the same control center instead of next to it."
         }
       ],
       visual: {
         eyebrow: "Localization and branding visual",
-        title: "Branding and entitlement slot",
-        body: "Placeholder zone for localization, branding, and license UI screenshots.",
+        title: "Localization, branding, and access",
+        body: "PNG slot for localization screens, server branding, licenses, or the full FULL-access layer.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/localization-branding.png"
       }
     },
     comparison: {
-      eyebrow: "Generic bots vs CROWN",
-      title: "Built for RP systems governance, not generic utility coverage.",
+      eyebrow: "FREE, FULL, and other bots",
+      title: "Where the entry layer ends and full CROWN begins.",
       intro:
-        "The comparison is about product fit: CROWN is designed around RP operations, settings UX, and controlled deployment.",
-      genericLabel: "Generic bots",
-      crownLabel: "CROWN",
+        "The table compares the base layer, the full CROWN product surface, and the usual mix of other bots without loud claims or direct competitor names.",
+      freeLabel: "FREE",
+      fullLabel: "FULL",
+      othersLabel: "Other bots",
       rows: [
         {
-          label: "Settings UX",
-          generic: "Command-heavy or fragmented setup.",
-          crown: "UI-first surfaces built around configuration clarity."
+          label: "Module set",
+          free: "Basic coverage without deep linkage.",
+          full: "Full Bank, Social, Weather, Sessions, and Rentals package.",
+          others: "Depends on the stack and the tools combined."
         },
         {
-          label: "RP-first design",
-          generic: "Utility-first features adapted to RP later.",
-          crown: "Core product structure shaped around RP systems from the start."
+          label: "Settings management",
+          free: "Basic control over key parameters.",
+          full: "One UI layer for modules, roles, and configuration.",
+          others: "Often split between commands and separate panels."
         },
         {
           label: "Localization",
-          generic: "Partial or inconsistent language coverage.",
-          crown: "RU and EN are part of the product surface."
+          free: "Limited coverage.",
+          full: "Consistent RU / EN surfaces.",
+          others: "Partial or uneven."
         },
         {
-          label: "Modularity",
-          generic: "Disconnected features layered together.",
-          crown: "Modules live under one intentional core."
+          label: "Unified control center",
+          free: "Only the main entry points.",
+          full: "One center for status, modules, access, and settings.",
+          others: "Usually fragmented across services."
         },
         {
-          label: "Licensing",
-          generic: "Loose access patterns and ad-hoc enablement.",
-          crown: "Unified license and entitlement control."
+          label: "RP orientation",
+          free: "Enough for entry-level use.",
+          full: "Built around RP scenarios and server logic.",
+          others: "Usually utility-first."
         },
         {
-          label: "Governance",
-          generic: "Limited owner visibility once deployed.",
-          crown: "Owner-level monitoring and controlled growth."
+          label: "Scaling flexibility",
+          free: "Fits a smaller operating layer.",
+          full: "Grows inside the same architecture.",
+          others: "Depends on manual assembly."
+        },
+        {
+          label: "Access to advanced systems",
+          free: "Core capabilities only.",
+          full: "Full access to advanced layers and future modules.",
+          others: "Inconsistent and setup-dependent."
+        },
+        {
+          label: "Module-to-module connection",
+          free: "Minimal.",
+          full: "Modules operate as parts of one product.",
+          others: "Often disconnected."
         }
       ]
     },
     finalCta: {
       eyebrow: "Next step",
-      title: "Open the core control surface.",
+      title: "Open the CROWN control center.",
       body:
-        "If you need one place to run RP systems with clearer governance, modular depth, and stronger settings UX, CROWN is the next layer.",
+        "If you need one product layer for RP systems, settings, and full control, CROWN stays the main entry point.",
       primaryCta: "Open Dashboard",
       secondaryCta: "View Features"
     }
@@ -795,6 +812,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 

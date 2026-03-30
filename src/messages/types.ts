@@ -112,6 +112,10 @@ export interface CrownFeatureGroupCopy {
   items: readonly string[];
 }
 
+export interface CrownModuleItemCopy extends SectionCopy {
+  slotPath: string;
+}
+
 export interface CrownStatusSignalCopy {
   label: string;
   value: string;
@@ -120,8 +124,9 @@ export interface CrownStatusSignalCopy {
 
 export interface CrownComparisonRowCopy {
   label: string;
-  generic: string;
-  crown: string;
+  free: string;
+  full: string;
+  others: string;
 }
 
 export interface CrownVisualSlotCopy {
@@ -170,9 +175,8 @@ export interface CrownPageCopy {
     eyebrow: string;
     title: string;
     intro: string;
-    items: readonly SectionCopy[];
+    items: readonly CrownModuleItemCopy[];
     footnote: string;
-    visual: CrownVisualSlotCopy;
   };
   governance: {
     eyebrow: string;
@@ -185,8 +189,9 @@ export interface CrownPageCopy {
     eyebrow: string;
     title: string;
     intro: string;
-    genericLabel: string;
-    crownLabel: string;
+    freeLabel: string;
+    fullLabel: string;
+    othersLabel: string;
     rows: readonly CrownComparisonRowCopy[];
   };
   finalCta: {
@@ -298,6 +303,8 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+
+
 
 
 
