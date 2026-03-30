@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState } from "react";
 
 import { siteConfig, getProjectThemeStyle, type Locale } from "@/config/site.config";
 import { getLocalizedPath } from "@/lib/i18n";
@@ -204,6 +204,7 @@ function CrownVisualSurface({
 }: CrownVisualSurfaceProps) {
   const [hasError, setHasError] = useState(false);
   const surface = siteConfig.visuals.backgrounds.dashboardEntry;
+  const showFallback = hasError;
 
   useEffect(() => {
     setHasError(false);
@@ -215,27 +216,31 @@ function CrownVisualSurface({
       <div className={`crown-visual__shade crown-visual__shade--${variant}`} />
 
       <div className="crown-visual__content">
-        <div className="crown-visual__media">
-          <div className="crown-visual__placeholder" aria-hidden="true" />
-          {!hasError ? (
-            <Image
-              fill
-              alt={alt}
-              className="crown-visual__image"
-              onError={() => setHasError(true)}
-              priority={variant === "hero"}
-              sizes={variant === "hero" ? "(min-width: 1024px) 48vw, 100vw" : "(min-width: 1024px) 52vw, 100vw"}
-              src={slotPath}
-            />
+        <div className={`crown-visual__media crown-visual__media--${variant}`}>
+          {!showFallback ? (
+            <div className="crown-visual__image-frame">
+              <Image
+                fill
+                alt={alt}
+                className="crown-visual__image"
+                onError={() => setHasError(true)}
+                priority={variant === "hero"}
+                sizes={variant === "hero" ? "(min-width: 1024px) 42vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
+                src={slotPath}
+              />
+            </div>
           ) : null}
 
-          <div className="crown-visual__fallback" aria-hidden="true">
-            {variant === "hero" ? <CrownHeroFallback markPath={markPath} /> : null}
-            {variant === "status" ? <CrownStatusFallback /> : null}
-            {variant === "settings" ? <CrownSettingsFallback /> : null}
-            {variant === "branding" ? <CrownBrandingFallback /> : null}
-            {variant === "module" ? <CrownModuleFallback label={moduleLabel ?? title} /> : null}
-          </div>
+          {showFallback ? <div className="crown-visual__placeholder" aria-hidden="true" /> : null}
+          {showFallback ? (
+            <div className="crown-visual__fallback" aria-hidden="true">
+              {variant === "hero" ? <CrownHeroFallback markPath={markPath} /> : null}
+              {variant === "status" ? <CrownStatusFallback /> : null}
+              {variant === "settings" ? <CrownSettingsFallback /> : null}
+              {variant === "branding" ? <CrownBrandingFallback /> : null}
+              {variant === "module" ? <CrownModuleFallback label={moduleLabel ?? title} /> : null}
+            </div>
+          ) : null}
         </div>
 
         <div className="crown-visual__footer">
@@ -261,6 +266,27 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
   useEffect(() => {
     setActiveModuleIndex(0);
   }, [locale]);
+
+  const handleLearnMoreClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    const target = document.getElementById("crown-features");
+
+    if (!target) {
+      return;
+    }
+
+    const stickyHeader = document.querySelector("header.sticky");
+    const headerOffset =
+      stickyHeader instanceof HTMLElement ? stickyHeader.getBoundingClientRect().height + 20 : 96;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.scrollTo({
+      top: Math.max(targetTop, 0),
+      behavior: prefersReducedMotion ? "auto" : "smooth"
+    });
+  };
 
   const activeModule =
     copy.modules.items[Math.min(activeModuleIndex, Math.max(copy.modules.items.length - 1, 0))] ??
@@ -289,7 +315,12 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             <Link href={dashboardHref} className="button-primary">
               {copy.hero.primaryCta}
             </Link>
-            <Link href={learnMoreHref} className="crown-button-secondary">
+            <Link
+              href={learnMoreHref}
+              aria-controls="crown-features"
+              className="crown-button-secondary"
+              onClick={handleLearnMoreClick}
+            >
               {copy.hero.secondaryCta}
             </Link>
           </div>
@@ -521,7 +552,12 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           <Link href={dashboardHref} className="button-primary">
             {copy.finalCta.primaryCta}
           </Link>
-          <Link href={learnMoreHref} className="crown-button-secondary">
+          <Link
+            href={learnMoreHref}
+            aria-controls="crown-features"
+            className="crown-button-secondary"
+            onClick={handleLearnMoreClick}
+          >
             {copy.finalCta.secondaryCta}
           </Link>
         </div>
@@ -529,3 +565,4 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+

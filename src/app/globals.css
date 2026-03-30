@@ -3590,7 +3590,7 @@ a {
 
   .crown-hero {
     display: grid;
-    gap: 1.6rem;
+    gap: clamp(1.6rem, 2.4vw, 2.4rem);
   }
 
   .crown-hero__copy,
@@ -3602,11 +3602,20 @@ a {
     gap: 1rem;
   }
 
+  .crown-hero__copy {
+    align-content: center;
+    gap: 1.1rem;
+  }
+
   .crown-section__lead {
     position: relative;
     z-index: 1;
     display: grid;
     gap: 0.85rem;
+  }
+
+  #crown-features {
+    scroll-margin-top: clamp(5.5rem, 9vw, 7rem);
   }
 
   .crown-hero__identity {
@@ -3646,7 +3655,7 @@ a {
   }
 
   .crown-hero__title {
-    max-width: 9.5ch;
+    max-width: 12.5ch;
     font-family: var(--font-display);
     font-size: clamp(2.9rem, 5.4vw, 5.3rem);
     font-weight: 600;
@@ -3675,7 +3684,7 @@ a {
   }
 
   .crown-hero__intro {
-    max-width: 41rem;
+    max-width: 46rem;
     font-size: clamp(1.08rem, 1.7vw, 1.42rem);
     line-height: 1.56;
     color: rgba(242, 244, 248, 0.88);
@@ -3703,7 +3712,7 @@ a {
   .crown-hero__summary,
   .crown-final-cta__body,
   .crown-section__body {
-    max-width: 44rem;
+    max-width: 48rem;
   }
 
   .crown-cta-row {
@@ -3769,7 +3778,7 @@ a {
   .crown-modules-grid,
   .crown-governance-grid {
     display: grid;
-    gap: 1.4rem;
+    gap: clamp(1.4rem, 2.2vw, 2rem);
     margin-top: 1.5rem;
   }
 
@@ -3824,7 +3833,7 @@ a {
   }
 
   .crown-showcase-panel {
-    align-content: start;
+    align-content: center;
   }
 
   .crown-showcase-panel__copy {
@@ -3882,7 +3891,7 @@ a {
   }
 
   .crown-module-selector {
-    align-content: start;
+    align-content: center;
   }
 
   .crown-module-tab {
@@ -3991,7 +4000,7 @@ a {
   .crown-visual {
     position: relative;
     overflow: hidden;
-    min-height: 24rem;
+    min-height: clamp(26rem, 44vw, 35rem);
     border-radius: 2rem;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -3999,7 +4008,14 @@ a {
   }
 
   .crown-visual--hero {
-    min-height: clamp(30rem, 52vw, 42rem);
+    min-height: clamp(34rem, 56vw, 46rem);
+  }
+
+  .crown-visual--status,
+  .crown-visual--settings,
+  .crown-visual--branding,
+  .crown-visual--module {
+    min-height: clamp(28rem, 46vw, 38rem);
   }
 
   .crown-visual__shade {
@@ -4030,18 +4046,42 @@ a {
     display: flex;
     min-height: inherit;
     flex-direction: column;
-    gap: 1rem;
-    padding: 1.15rem;
+    gap: 1.1rem;
+    padding: clamp(1.15rem, 1.8vw, 1.4rem);
   }
 
   .crown-visual__media {
     position: relative;
     flex: 1;
-    min-height: 16rem;
+    min-height: 18rem;
     overflow: hidden;
-    border-radius: 1.6rem;
-    background: rgba(7, 8, 11, 0.56);
+    border-radius: 1.7rem;
+    background:
+      radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 58%),
+      rgba(7, 8, 11, 0.56);
     border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .crown-visual__media--hero {
+    min-height: clamp(24rem, 42vw, 34rem);
+  }
+
+  .crown-visual__media--status,
+  .crown-visual__media--settings,
+  .crown-visual__media--branding,
+  .crown-visual__media--module {
+    min-height: clamp(20rem, 32vw, 28rem);
+  }
+
+  .crown-visual__image-frame {
+    position: absolute;
+    inset: clamp(0.9rem, 1.8vw, 1.4rem);
+    overflow: hidden;
+    border-radius: 1.35rem;
+    background:
+      radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 52%),
+      rgba(5, 7, 10, 0.42);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 
   .crown-visual__placeholder,
@@ -4080,7 +4120,8 @@ a {
   }
 
   .crown-visual__image {
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center center;
   }
 
   .crown-visual__fallback {
@@ -4349,21 +4390,29 @@ a {
 
   @media (min-width: 1024px) {
     .crown-hero {
-      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
       align-items: center;
-      gap: 1.8rem;
+      gap: clamp(1.8rem, 2.6vw, 2.8rem);
     }
 
-    .crown-status-grid,
-    .crown-modules-grid,
-    .crown-governance-grid {
+    .crown-status-grid {
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      align-items: stretch;
+      align-items: center;
+    }
+
+    .crown-modules-grid {
+      grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+      align-items: center;
+    }
+
+    .crown-governance-grid {
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      align-items: center;
     }
 
     .crown-showcase-grid {
-      grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
-      align-items: start;
+      grid-template-columns: minmax(0, 1.14fr) minmax(0, 0.86fr);
+      align-items: center;
     }
 
     .crown-capability-grid {
@@ -4371,7 +4420,7 @@ a {
     }
 
     .crown-pillar-grid {
-      align-content: start;
+      align-content: center;
     }
 
     .crown-final-cta {
@@ -4399,3 +4448,4 @@ a {
   }
 
 }
+
