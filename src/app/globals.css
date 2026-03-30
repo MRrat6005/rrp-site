@@ -3821,9 +3821,7 @@ a {
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .crown-trust__logo-slot:hover {
-    transform: scale(1.04);
-  }
+
 
   .crown-trust--final .crown-trust__logo-slot {
     min-height: 9rem;
@@ -3838,9 +3836,7 @@ a {
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .crown-trust__logo-slot:hover .crown-trust__logo-image {
-    transform: scale(1.04);
-  }
+
 
   .crown-trust--final .crown-trust__logo-image {
     max-height: 9rem;
@@ -4104,11 +4100,7 @@ a {
       box-shadow 0.24s ease;
   }
 
-  .crown-module-tab:hover {
-    transform: translate3d(0, -2px, 0);
-    border-color: rgba(255, 255, 255, 0.11);
-    background: rgba(255, 255, 255, 0.04);
-  }
+
 
   .crown-module-tab.is-active {
     border-color: rgba(255, 255, 255, 0.2);
@@ -4242,9 +4234,9 @@ a {
     color: inherit;
     appearance: none;
     font: inherit;
-    cursor: default;
-    pointer-events: none;
+    cursor: pointer;
     text-align: center;
+    text-decoration: none;
   }
 
   .crown-price-placeholder__main {
@@ -4689,11 +4681,7 @@ a {
       filter 0.24s ease;
   }
 
-  .crown-issue-cta:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow: 0 30px 64px rgba(1, 3, 7, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.68);
-    filter: brightness(1.02);
-  }
+
 
   .crown-issue-cta__label {
     font-family: var(--font-display);
@@ -4761,29 +4749,63 @@ a {
 
   .crown-page .button-primary,
   .crown-page .crown-button-secondary,
-  .crown-page .crown-issue-cta {
+  .crown-page .crown-issue-cta,
+  .crown-page .crown-price-placeholder,
+  .crown-page .crown-module-tab {
+    position: relative;
+    overflow: hidden;
     backface-visibility: hidden;
     transform: translateZ(0);
     will-change: transform, box-shadow, border-color, background-color, filter;
-  }
-
-  .crown-page .button-primary {
     transition:
       transform var(--crown-motion-fast) var(--crown-motion-ease),
       box-shadow var(--crown-motion-fast) ease,
       filter var(--crown-motion-fast) ease,
-      background var(--crown-motion-fast) ease;
+      background var(--crown-motion-fast) ease,
+      border-color var(--crown-motion-fast) ease,
+      color var(--crown-motion-fast) ease;
   }
 
-  .crown-page .button-primary::after {
-    opacity: 0.78;
+  .crown-page .button-primary::after,
+  .crown-page .crown-button-secondary::after,
+  .crown-page .crown-issue-cta::after,
+  .crown-page .crown-price-placeholder::after,
+  .crown-page .crown-module-tab::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.12) 52%, transparent 74%);
+    opacity: 0;
+    transform: translateX(-138%);
     transition:
       transform 0.82s var(--crown-motion-ease),
       opacity 0.24s ease;
+    pointer-events: none;
+  }
+
+  .crown-page .button-primary:hover,
+  .crown-page .crown-button-secondary:hover,
+  .crown-page .crown-issue-cta:hover,
+  .crown-page .crown-price-placeholder:hover,
+  .crown-page .crown-module-tab:hover {
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .crown-page .button-primary:hover::after,
+  .crown-page .button-primary:focus-visible::after,
+  .crown-page .crown-button-secondary:hover::after,
+  .crown-page .crown-button-secondary:focus-visible::after,
+  .crown-page .crown-issue-cta:hover::after,
+  .crown-page .crown-issue-cta:focus-visible::after,
+  .crown-page .crown-price-placeholder:hover::after,
+  .crown-page .crown-price-placeholder:focus-visible::after,
+  .crown-page .crown-module-tab:hover::after,
+  .crown-page .crown-module-tab:focus-visible::after {
+    opacity: 1;
+    transform: translateX(134%);
   }
 
   .crown-page .button-primary:hover {
-    transform: translate3d(0, -3px, 0);
     box-shadow: 0 24px 52px rgba(255, 255, 255, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.94), inset 0 -11px 21px rgba(212, 221, 233, 0.34);
     filter: brightness(1.015);
   }
@@ -4798,47 +4820,11 @@ a {
       inset 0 -11px 21px rgba(212, 221, 233, 0.34);
   }
 
-  .crown-page .button-primary:active {
-    transform: translate3d(0, -1px, 0) scale(0.992);
-    box-shadow: 0 16px 34px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -8px 16px rgba(212, 221, 233, 0.28);
-  }
-
-  .crown-button-secondary {
-    position: relative;
-    overflow: hidden;
-    transition:
-      transform var(--crown-motion-fast) var(--crown-motion-ease),
-      background var(--crown-motion-fast) ease,
-      border-color var(--crown-motion-fast) ease,
-      color var(--crown-motion-fast) ease,
-      box-shadow var(--crown-motion-fast) ease;
-  }
-
-  .crown-button-secondary::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.12) 52%, transparent 74%);
-    opacity: 0;
-    transform: translateX(-138%);
-    transition:
-      transform 0.76s var(--crown-motion-ease),
-      opacity 0.24s ease;
-    pointer-events: none;
-  }
-
   .crown-button-secondary:hover {
-    transform: translate3d(0, -2px, 0);
     border-color: rgba(255, 255, 255, 0.22);
     background: rgba(255, 255, 255, 0.065);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 36px rgba(1, 3, 7, 0.18);
     color: #ffffff;
-  }
-
-  .crown-button-secondary:hover::after,
-  .crown-button-secondary:focus-visible::after {
-    opacity: 1;
-    transform: translateX(134%);
   }
 
   .crown-button-secondary:focus-visible {
@@ -4848,22 +4834,50 @@ a {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 36px rgba(1, 3, 7, 0.18);
   }
 
-  .crown-button-secondary:active,
-  .crown-issue-cta:active {
-    transform: translate3d(0, 0, 0) scale(0.992);
-  }
-
-  .crown-issue-cta {
-    transition:
-      transform var(--crown-motion-fast) var(--crown-motion-ease),
-      box-shadow var(--crown-motion-fast) ease,
-      filter var(--crown-motion-fast) ease;
+  .crown-issue-cta:hover {
+    box-shadow: 0 30px 64px rgba(1, 3, 7, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+    filter: brightness(1.02);
   }
 
   .crown-issue-cta:focus-visible {
     outline: none;
     transform: translate3d(0, -2px, 0);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08), 0 30px 64px rgba(1, 3, 7, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  }
+
+  .crown-price-placeholder:hover {
+    border-color: rgba(17, 19, 23, 0.16);
+    background: rgba(255, 255, 255, 0.34);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 18px 36px rgba(17, 19, 23, 0.12);
+    filter: brightness(1.02);
+  }
+
+  .crown-price-placeholder:focus-visible {
+    outline: none;
+    transform: translate3d(0, -2px, 0);
+    border-color: rgba(17, 19, 23, 0.18);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 18px 36px rgba(17, 19, 23, 0.12);
+  }
+
+  .crown-module-tab:hover {
+    border-color: rgba(255, 255, 255, 0.11);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 18px 34px rgba(1, 3, 7, 0.16);
+  }
+
+  .crown-module-tab:focus-visible {
+    outline: none;
+    transform: translate3d(0, -2px, 0);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06), 0 18px 34px rgba(1, 3, 7, 0.16);
+  }
+
+  .crown-page .button-primary:active,
+  .crown-page .crown-button-secondary:active,
+  .crown-page .crown-issue-cta:active,
+  .crown-page .crown-price-placeholder:active,
+  .crown-page .crown-module-tab:active {
+    transform: translate3d(0, -1px, 0) scale(0.992);
   }
 
   .crown-visual,
@@ -5005,22 +5019,7 @@ a {
     animation: none;
   }
 
-  @media (hover: hover) {
-    .crown-visual:hover .crown-visual__media {
-      transform: translate3d(0, -2px, 0);
-      border-color: rgba(255, 255, 255, 0.11);
-      box-shadow: 0 30px 76px rgba(1, 3, 7, 0.24);
-    }
 
-    .crown-visual:hover .crown-visual__image {
-      transform: scale(1.018);
-      filter: contrast(1.04) brightness(1.02);
-    }
-
-    .crown-visual--hero:hover .crown-visual__media {
-      transform: translate3d(0, -1px, 0);
-    }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .crown-motion-intro,
@@ -5177,11 +5176,3 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
-
-
-
-
-
-
-
-

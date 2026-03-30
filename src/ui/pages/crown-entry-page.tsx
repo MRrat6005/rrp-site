@@ -710,7 +710,13 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                     </td>
                     <td className={isPriceRow ? "is-highlighted crown-comparison-table__price-cell" : "is-highlighted"}>
                       {isPriceRow ? (
-                        <button type="button" className="crown-price-placeholder" aria-disabled="true">
+                        <Link
+                          href={heroDiscordHref}
+                          className="crown-price-placeholder"
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="Открыть покупку CROWN FULL в Discord"
+                        >
                           <span className="crown-price-placeholder__main">
                             <img
                               src={ROBUX_ICON_SRC}
@@ -721,7 +727,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                             <span className="crown-price-placeholder__amount">650</span>
                           </span>
                           <span className="crown-price-placeholder__note">{copy.comparison.priceFullNote}</span>
-                        </button>
+                        </Link>
                       ) : (
                         row.full
                       )}
