@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type MouseEvent, useEffect, useState } from "react";
+import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from "react";
 
 import { siteConfig, getProjectThemeStyle, type Locale } from "@/config/site.config";
 import { getLocalizedPath } from "@/lib/i18n";
@@ -33,6 +33,7 @@ const TRUSTED_LOGOS = [
 interface CrownVisualSurfaceProps {
   alt: string;
   body: string;
+  className?: string;
   markPath: string | null;
   slotPath: string;
   title: string;
@@ -234,6 +235,7 @@ function CrownModuleFallback({ label }: { label: string }) {
 function CrownVisualSurface({
   alt,
   body,
+  className,
   markPath,
   slotPath,
   title,
@@ -249,7 +251,7 @@ function CrownVisualSurface({
   }, [slotPath]);
 
   return (
-    <article className={`crown-visual crown-visual--${variant}`}>
+    <article className={`crown-visual crown-visual--${variant} ${className ?? ""}`.trim()}>
       <ConfigurableBackdrop background={surface} className="absolute inset-0" />
       <div className={`crown-visual__shade crown-visual__shade--${variant}`} />
 
@@ -299,10 +301,68 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
   const markPath = siteConfig.visuals.projects.crown.markPath;
   const categoryLabel = messages.projects.items.crown.categoryLabel;
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
+  const [displayedModuleIndex, setDisplayedModuleIndex] = useState(0);
+  const [departingModuleIndex, setDepartingModuleIndex] = useState<number | null>(null);
+  const [isModuleTransitioning, setIsModuleTransitioning] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const moduleTransitionTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
 
   useEffect(() => {
     setActiveModuleIndex(0);
+    setDisplayedModuleIndex(0);
+    setDepartingModuleIndex(null);
+    setIsModuleTransitioning(false);
   }, [locale]);
+
+  useEffect(
+    () => () => {
+      if (moduleTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(moduleTransitionTimeoutRef.current);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (activeModuleIndex === displayedModuleIndex) {
+      return;
+    }
+
+    if (moduleTransitionTimeoutRef.current !== null) {
+      window.clearTimeout(moduleTransitionTimeoutRef.current);
+    }
+
+    if (prefersReducedMotion) {
+      setDisplayedModuleIndex(activeModuleIndex);
+      setDepartingModuleIndex(null);
+      setIsModuleTransitioning(false);
+      return;
+    }
+
+    setDepartingModuleIndex(displayedModuleIndex);
+    setDisplayedModuleIndex(activeModuleIndex);
+    setIsModuleTransitioning(true);
+
+    moduleTransitionTimeoutRef.current = window.setTimeout(() => {
+      setDepartingModuleIndex(null);
+      setIsModuleTransitioning(false);
+      moduleTransitionTimeoutRef.current = null;
+    }, 420);
+  }, [activeModuleIndex, displayedModuleIndex, prefersReducedMotion]);
 
   const handleLearnMoreClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -315,19 +375,29 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
 
     const stickyHeader = document.querySelector("header.sticky");
     const headerOffset =
-      stickyHeader instanceof HTMLElement ? stickyHeader.getBoundingClientRect().height + 20 : 96;
+      stickyHeader instanceof HTMLElement ? stickyHeader.getBoundingClientRect().height + 28 : 108;
     const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     window.scrollTo({
       top: Math.max(targetTop, 0),
-      behavior: prefersReducedMotion ? "auto" : "smooth"
+      behavior: reducedMotion ? "auto" : "smooth"
     });
   };
 
-  const activeModule =
-    copy.modules.items[Math.min(activeModuleIndex, Math.max(copy.modules.items.length - 1, 0))] ??
+  const displayedModule =
+    copy.modules.items[Math.min(displayedModuleIndex, Math.max(copy.modules.items.length - 1, 0))] ??
     copy.modules.items[0];
+  const departingModule =
+    departingModuleIndex === null
+      ? null
+      : copy.modules.items[Math.min(departingModuleIndex, Math.max(copy.modules.items.length - 1, 0))] ??
+        null;
+
+  const heroMotionStyle = (delay: string) =>
+    ({
+      "--crown-motion-delay": delay
+    }) as CSSProperties;
 
   return (
     <main
@@ -336,7 +406,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     >
       <section className="crown-hero reveal-up" data-reveal>
         <div className="crown-hero__copy">
-          <div className="crown-hero__identity">
+          <div className="crown-hero__identity crown-motion-intro" style={heroMotionStyle("0.03s")}>
             <LogoTile shortLabel={asset.shortLabel} label={asset.label} imagePath={markPath} />
             <div className="space-y-1">
               <p className="crown-hero__product">{siteConfig.projects.crown.title}</p>
@@ -344,11 +414,17 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             </div>
           </div>
 
-          <h1 className="crown-hero__title">{copy.hero.title}</h1>
-          <p className="crown-hero__intro">{copy.hero.intro}</p>
-          <p className="crown-hero__summary">{copy.hero.summary}</p>
+          <h1 className="crown-hero__title crown-motion-intro crown-motion-intro--title" style={heroMotionStyle("0.12s")}>
+            {copy.hero.title}
+          </h1>
+          <p className="crown-hero__intro crown-motion-intro" style={heroMotionStyle("0.2s")}>
+            {copy.hero.intro}
+          </p>
+          <p className="crown-hero__summary crown-motion-intro" style={heroMotionStyle("0.28s")}>
+            {copy.hero.summary}
+          </p>
 
-          <div className="crown-cta-row">
+          <div className="crown-cta-row crown-motion-intro" style={heroMotionStyle("0.35s")}>
             <Link href={heroDiscordHref} className="button-primary" target="_blank" rel="noreferrer">
               {copy.hero.primaryCta}
             </Link>
@@ -362,8 +438,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             </Link>
           </div>
 
-
-          <dl className="crown-hero__stats">
+          <dl className="crown-hero__stats crown-motion-intro" style={heroMotionStyle("0.42s")}>
             {copy.hero.stats.map((item) => (
               <div key={item.label} className="crown-hero__stat">
                 <dt className="crown-hero__stat-label">{item.label}</dt>
@@ -439,12 +514,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
               ))}
             </div>
 
-            <Link
-              href={issueReportHref}
-              target="_blank"
-              rel="noreferrer"
-              className="crown-issue-cta"
-            >
+            <Link href={issueReportHref} target="_blank" rel="noreferrer" className="crown-issue-cta">
               <span className="crown-issue-cta__label">{copy.status.issueCtaLabel}</span>
               <span className="crown-issue-cta__meta">{copy.status.issueCtaMeta}</span>
             </Link>
@@ -520,6 +590,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                   type="button"
                   role="tab"
                   aria-selected={isActive}
+                  data-active={isActive ? "true" : "false"}
                   className={`crown-module-tab ${isActive ? "is-active" : ""}`}
                   onClick={() => setActiveModuleIndex(index)}
                 >
@@ -530,17 +601,36 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             })}
           </div>
 
-          {activeModule ? (
-            <CrownVisualSurface
-              key={activeModule.slotPath}
-              alt={`${siteConfig.projects.crown.title} ${activeModule.title} visual`}
-              body={activeModule.body}
-              markPath={markPath}
-              moduleLabel={activeModule.title}
-              slotPath={activeModule.slotPath}
-              title={activeModule.title}
-              variant="module"
-            />
+          {displayedModule ? (
+            <div
+              className={`crown-module-visual-stack ${isModuleTransitioning ? "is-transitioning" : ""}`}
+              data-reduced-motion={prefersReducedMotion ? "true" : "false"}
+            >
+              {departingModule ? (
+                <CrownVisualSurface
+                  alt={`${siteConfig.projects.crown.title} ${departingModule.title} visual`}
+                  body={departingModule.body}
+                  className="crown-module-visual-layer crown-module-visual-layer--out"
+                  markPath={markPath}
+                  moduleLabel={departingModule.title}
+                  slotPath={departingModule.slotPath}
+                  title={departingModule.title}
+                  variant="module"
+                />
+              ) : null}
+
+              <CrownVisualSurface
+                key={displayedModule.slotPath}
+                alt={`${siteConfig.projects.crown.title} ${displayedModule.title} visual`}
+                body={displayedModule.body}
+                className={`crown-module-visual-layer crown-module-visual-layer--in ${isModuleTransitioning ? "is-transitioning" : "is-static"}`}
+                markPath={markPath}
+                moduleLabel={displayedModule.title}
+                slotPath={displayedModule.slotPath}
+                title={displayedModule.title}
+                variant="module"
+              />
+            </div>
           ) : null}
         </div>
       </section>
@@ -620,11 +710,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                     </td>
                     <td className={isPriceRow ? "is-highlighted crown-comparison-table__price-cell" : "is-highlighted"}>
                       {isPriceRow ? (
-                        <button
-                          type="button"
-                          className="crown-price-placeholder"
-                          aria-disabled="true"
-                        >
+                        <button type="button" className="crown-price-placeholder" aria-disabled="true">
                           <span className="crown-price-placeholder__main">
                             <img
                               src={ROBUX_ICON_SRC}
@@ -634,9 +720,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                             />
                             <span className="crown-price-placeholder__amount">650</span>
                           </span>
-                          <span className="crown-price-placeholder__note">
-                            {copy.comparison.priceFullNote}
-                          </span>
+                          <span className="crown-price-placeholder__note">{copy.comparison.priceFullNote}</span>
                         </button>
                       ) : (
                         row.full
@@ -650,19 +734,6 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           </table>
         </div>
       </section>
-
-
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-

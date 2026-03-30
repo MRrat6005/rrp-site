@@ -352,75 +352,74 @@ export const enMessages = {
   crownEntry: {
     hero: {
       eyebrow: "CROWN / RP Systems Core",
-      title: "CROWN keeps RP systems, settings, and control in one center.",
+      title: "CROWN is the central RP systems core for serious server operations.",
       intro:
-        "CROWN brings Bank, Social, Weather, Sessions, and Radio into one management system.",
+        "Bank, Social, Weather, Sessions, and Radio run inside one control center instead of a stack of disconnected tools.",
       summary:
-        "Settings, access, localization, status, and modules live inside one product.",
+        "Settings, access, localization, licenses, and service status stay inside one product.",
       primaryCta: "Go to Discord",
       secondaryCta: "View Features",
-      proofStrip: ["Unified UI", "RU / EN", "Per server", "Modular", "Licensed"],
+      proofStrip: ["Control Center", "RU / EN", "Per Guild", "Modular", "Licensed"],
       stats: [
         { label: "Modules", value: "Bank, Social, Weather, Sessions, Radio" },
-        { label: "Management", value: "Settings, roles, access, status" },
-        { label: "Localization", value: "RU / EN in one product" },
-        { label: "Control", value: "One center for RP systems" }
+        { label: "Operations", value: "Settings, roles, access, status" },
+        { label: "Localization", value: "RU / EN for staff and players" },
+        { label: "Separation", value: "Independent control per server" }
       ],
-
       visual: {
         eyebrow: "Hero product visual",
         title: "CROWN control center",
-        body: "Modules, settings, and access in one working screen.",
+        body: "Modules, access, and core settings in one interface.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/hero-product.png"
       }
     },
     status: {
-      eyebrow: "System Status",
-      title: "Key service and access signals.",
+      eyebrow: "Status and Access",
+      title: "Service status without the noise.",
       intro:
-        "Service health, dashboard reachability, and access status stay readable on one screen.",
-      summaryLabel: "Current mode",
-      summaryValue: "Key signals in one place",
+        "CROWN keeps the signals that matter readable at a glance: core health, dashboard reachability, and full-access state.",
+      summaryLabel: "Under control",
+      summaryValue: "Core, panel, and access",
       signals: [
         {
           label: "Service",
-          value: "Core and API",
-          note: "Service health and essential checks."
+          value: "Core / API",
+          note: "Health of the CROWN core and key services."
         },
         {
           label: "Dashboard",
-          value: "Entry and panel",
-          note: "Availability of the main panel and entry point."
+          value: "Entry / panel",
+          note: "Availability of the main entry point and control panel."
         },
         {
           label: "Access",
-          value: "Licenses and access",
-          note: "Access state for advanced capabilities."
+          value: "Licenses / access",
+          note: "State of full access and advanced capabilities."
         }
       ],
       issueCtaLabel: "Report an issue",
-      issueCtaMeta: "Discord channel for reporting CROWN service issues",
+      issueCtaMeta: "Discord channel for CROWN service incidents",
       visual: {
         eyebrow: "Status visual",
         title: "CROWN status",
-        body: "Service signals and access control in one panel.",
+        body: "Key service and access signals in one panel.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/status-surface.png"
       }
     },
     capabilities: {
-      eyebrow: "What CROWN can do",
-      title: "One center for modules, settings, and day-to-day management.",
+      eyebrow: "What CROWN does",
+      title: "One center for modules, settings, and daily operations.",
       intro:
-        "CROWN removes the split between RP modules and the work of operating them. The team stays in one system instead of jumping between commands, spreadsheets, and separate admin tools.",
+        "CROWN removes the mess from running RP systems: instead of commands, spreadsheets, and scattered panels, the team works from one product.",
       groups: [
         {
           title: "Settings",
-          body: "Server, role, and module parameters are gathered into one UI layer.",
+          body: "Server, role, and module settings live in one interface.",
           items: [
-            "One configuration flow per guild",
-            "Faster setup without command-heavy routine",
+            "One setup logic per server",
+            "Faster launch without command-heavy routine",
             "Readable control over changes"
           ]
         },
@@ -429,16 +428,16 @@ export const enMessages = {
           body: "Owners and staff can read the whole system instead of isolated parts.",
           items: [
             "Central view of modules and status",
-            "Control over access and system enablement",
-            "One logic for daily operations"
+            "Control over roles, access, and system enablement",
+            "One operating logic for daily work"
           ]
         },
         {
           title: "RP systems",
-          body: "Bank, Social, Weather, Sessions, and Radio live inside one product logic.",
+          body: "Bank, Social, Weather, Sessions, and Radio operate as parts of one product.",
           items: [
             "Consistent module behavior",
-            "Connected system relationships",
+            "Connected systems without manual assembly",
             "Growth without breaking the interface"
           ]
         }
@@ -448,181 +447,178 @@ export const enMessages = {
       eyebrow: "CROWN interface",
       title: "Settings stay clear at a glance.",
       intro:
-        "Module and management screens feel like parts of one product.",
+        "CROWN surfaces the essentials without clutter: roles, language, modules, licenses, and core server settings.",
       highlights: [
-        "Settings live in one surface",
+        "Core settings on one screen",
         "Module state is readable at a glance",
-        "Owners keep control as the server grows"
+        "Control stays strong as the server grows"
       ],
-      summaryTitle: "What is visible on one screen",
+      summaryTitle: "Visible on one screen",
       summaryRows: [
         "Language and localization",
-        "Admin role and permissions",
-        "Modules and their status",
+        "Roles and permissions",
+        "Modules and status",
         "Logs and license"
       ],
-
       visual: {
         eyebrow: "Settings visual",
-        title: "CROWN settings",
-        body: "Server, role, and module settings in one interface.",
+        title: "CROWN server settings",
+        body: "Roles, modules, and core settings without extra hops.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/settings-ui.png"
       }
     },
     modules: {
       eyebrow: "Modules",
-      title: "Modules switch like parts of one product.",
+      title: "Every module feels native to the same system.",
       intro:
-        "Each module opens inside the same interface and keeps the same operating logic.",
+        "Bank, Social, Weather, Sessions, and Radio open inside one interface and follow one control model.",
       items: [
         {
           title: "Bank",
-          shortBody: "Balances, accounts, and money flows inside one controlled layer.",
-          body: "Balances, accounts, and money flows inside one controlled layer.",
+          shortBody: "Server economy with balances, accounts, and money flow under clear control.",
+          body: "Server economy with balances, accounts, and money flow under clear control.",
           slotPath: "/projects/crown/modules/bank.png"
         },
         {
           title: "Social",
-          shortBody: "Profiles, statuses, and social mechanics inside CROWN.",
-          body: "Profiles, statuses, and social mechanics inside CROWN.",
+          shortBody: "Profiles, statuses, and social mechanics inside the same product.",
+          body: "Profiles, statuses, and social mechanics inside the same product.",
           slotPath: "/projects/crown/modules/social.png"
         },
         {
           title: "Weather",
-          shortBody: "World weather states managed in the rhythm of the server.",
-          body: "World weather states managed in the rhythm of the server.",
+          shortBody: "World weather managed as part of the server, not as a detached add-on.",
+          body: "World weather managed as part of the server, not as a detached add-on.",
           slotPath: "/projects/crown/modules/weather.png"
         },
         {
           title: "Sessions",
-          shortBody: "Session structure, timing, and operational rhythm in one center.",
-          body: "Session structure, timing, and operational rhythm in one center.",
+          shortBody: "Session rhythm, timing, and operational control in one panel.",
+          body: "Session rhythm, timing, and operational control in one panel.",
           slotPath: "/projects/crown/modules/sessions.png"
         },
         {
           title: "Radio",
-          shortBody: "Radio, channels, and communication flows in one server logic.",
-          body: "Radio, channels, and communication flows in one server logic.",
+          shortBody: "Voice channels and radio logic kept inside the same server layer.",
+          body: "Voice channels and radio logic kept inside the same server layer.",
           slotPath: "/projects/crown/modules/radio.png"
         }
       ],
       footnote:
-        "Modules keep one interface and one management logic."
+        "One interface, one control model, predictable growth."
     },
     governance: {
       eyebrow: "Localization, branding, access",
-      title: "Central control does not end with modules.",
+      title: "CROWN controls more than modules.",
       intro:
-        "Localization, access, and server identity stay under one management layer.",
+        "Localization, server identity, permissions, and licensing live in the same place as the RP systems themselves.",
       pillars: [
         {
           title: "Localization",
-          body: "RU and EN stay inside one product without splitting by screen."
+          body: "RU and EN switch inside one product without breaking the interface."
         },
         {
           title: "Server branding",
-          body: "Each server keeps its own identity and settings without losing consistency."
+          body: "Each server keeps its own identity while the product stays consistent."
         },
         {
           title: "Access and licenses",
-          body: "Access to the full system is controlled clearly and predictably."
+          body: "Full access is issued clearly and controlled without manual chaos."
         },
         {
           title: "Scaling",
-          body: "New modules and settings are added into the same control center."
+          body: "New modules and settings fit into the same management system."
         },
         {
           title: "Change preview",
-          body: "See what changes before new settings go live."
+          body: "See what changes before anything goes live."
         },
         {
           title: "Status and monitoring",
-          body: "Module and service state stays visible in one place."
+          body: "Service and module state stays readable in one place."
         }
       ],
-
       visual: {
         eyebrow: "Localization and branding visual",
         title: "Localization, branding, and access",
-        body: "Localization, branding, and access in one interface.",
+        body: "Language, access, and server identity in one interface.",
         slotLabel: "PNG slot",
         slotPath: "/projects/crown/localization-branding.png"
       }
     },
     comparison: {
       eyebrow: "FREE, FULL, and other bots",
-      title: "Where the entry layer ends and full CROWN begins.",
+      title: "Where FREE ends and full CROWN begins.",
       intro:
-        "The table compares the base layer, the full CROWN product surface, and the usual mix of other bots without loud claims or direct competitor names.",
+        "Below is the difference between the base entry layer, full CROWN, and the usual stack of separate bots.",
       freeLabel: "FREE",
       fullLabel: "FULL",
       othersLabel: "Other bots",
       priceLabel: "Price",
-      priceFullNote: "For 1 key for 1 month",
+      priceFullNote: "1 key / 1 month",
       rows: [
-
         {
           label: "Module set",
           free: "Basic coverage without deep linkage.",
           full: "Full Bank, Social, Weather, Sessions, and Radio package.",
-          others: "Depends on the stack and the tools combined."
+          others: "Depends on the bot mix and manual assembly."
         },
         {
           label: "Settings management",
-          free: "Basic control over key parameters.",
-          full: "One UI layer for modules, roles, and configuration.",
+          free: "Core parameters only.",
+          full: "One interface for modules, roles, and configuration.",
           others: "Often split between commands and separate panels."
         },
         {
           label: "Localization",
-          free: "Limited coverage.",
-          full: "Consistent RU / EN surfaces.",
-          others: "Partial or uneven."
+          free: "Partial coverage.",
+          full: "Full RU / EN interfaces.",
+          others: "Uneven or inconsistent."
         },
         {
           label: "Unified control center",
-          free: "Only the main entry points.",
+          free: "Only the basic entry points.",
           full: "One center for status, modules, access, and settings.",
-          others: "Usually fragmented across services."
+          others: "Usually spread across multiple services."
         },
         {
           label: "RP orientation",
-          free: "Enough for entry-level use.",
-          full: "Built around RP scenarios and server logic.",
+          free: "Enough for getting started.",
+          full: "Built around RP server logic.",
           others: "Usually utility-first."
         },
         {
           label: "Scaling flexibility",
-          free: "Fits a smaller operating layer.",
-          full: "Grows inside the same architecture.",
-          others: "Depends on manual assembly."
+          free: "Comfortable at smaller scale.",
+          full: "Grows without changing the control model.",
+          others: "Limited by manual assembly."
         },
         {
           label: "Access to advanced systems",
           free: "Core capabilities only.",
-          full: "Full access to advanced layers and future modules.",
-          others: "Inconsistent and setup-dependent."
+          full: "Full access to advanced systems and modules.",
+          others: "Depends on the stack and its limits."
         },
         {
           label: "Module-to-module connection",
-          free: "Minimal.",
-          full: "Modules operate as parts of one product.",
-          others: "Often disconnected."
+          free: "Minimal linkage.",
+          full: "Modules work as one product.",
+          others: "Most often disconnected."
         },
         {
           label: "Price",
           free: "0",
           full: "650",
-          others: "—"
+          others: "-"
         }
       ]
     },
     finalCta: {
       eyebrow: "Next step",
-      title: "Open the CROWN control center.",
+      title: "Open CROWN.",
       body:
-        "Trusted by active projects, CROWN gives teams a clear and reliable control layer without unnecessary risk at launch.",
+        "CROWN gives serious servers one control center for modules, access, localization, and daily operations.",
       primaryCta: "Open Dashboard",
       secondaryCta: "View Features"
     }
@@ -846,6 +842,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 
