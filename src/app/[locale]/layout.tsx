@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { siteConfig } from "@/config/site.config";
-import { getMessages, resolveLocale } from "@/lib/i18n";
+import { resolveLocale } from "@/lib/i18n";
 import { getSharedPreviewMetadata } from "@/lib/site-metadata";
-import { SiteShell } from "@/ui/layout/site-shell";
 
 interface LocaleLayoutProps {
   children: ReactNode;
@@ -27,12 +26,7 @@ export default function LocaleLayout({
   children,
   params
 }: LocaleLayoutProps) {
-  const locale = resolveLocale(params.locale);
-  const messages = getMessages(locale);
+  resolveLocale(params.locale);
 
-  return (
-    <SiteShell locale={locale} messages={messages}>
-      {children}
-    </SiteShell>
-  );
+  return children;
 }

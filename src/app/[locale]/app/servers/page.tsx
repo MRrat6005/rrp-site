@@ -1,5 +1,6 @@
-import { getMessages, resolveLocale } from "@/lib/i18n";
-import { ServersPage } from "@/ui/pages/servers-page";
+import { resolveLocale } from "@/lib/i18n";
+import { getDashboardServers } from "@/lib/dashboard-mock";
+import { DashboardServersPage } from "@/ui/dashboard/dashboard-servers-page";
 
 interface ServersRoutePageProps {
   params: {
@@ -7,11 +8,8 @@ interface ServersRoutePageProps {
   };
 }
 
-export default function ServersRoutePage({
-  params
-}: ServersRoutePageProps) {
+export default function ServersRoutePage({ params }: ServersRoutePageProps) {
   const locale = resolveLocale(params.locale);
-  const messages = getMessages(locale);
 
-  return <ServersPage locale={locale} messages={messages} />;
+  return <DashboardServersPage locale={locale} servers={getDashboardServers()} />;
 }
