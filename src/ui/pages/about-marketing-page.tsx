@@ -35,14 +35,6 @@ export function AboutMarketingPage({ locale, messages }: AboutMarketingPageProps
               {copy.hero.secondaryCta}
             </Link>
           </div>
-
-          <div className="about-chip-row" aria-label={copy.hero.visualTitle}>
-            {copy.hero.highlights.map((item) => (
-              <span key={item} className="about-chip">
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
 
         <aside className="about-hero-panel glass-panel glass-panel-strong reveal-up reveal-delay-1" data-reveal>
@@ -233,3 +225,4 @@ export function AboutMarketingPage({ locale, messages }: AboutMarketingPageProps
     </main>
   );
 }
+
