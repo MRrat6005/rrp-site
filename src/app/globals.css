@@ -3324,16 +3324,7 @@ a {
   }
 
   .chrp-timeline__rail::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -0.38rem;
-    width: 0.68rem;
-    height: 0.68rem;
-    border-right: 2px solid rgba(246, 235, 212, 0.96);
-    border-bottom: 2px solid rgba(246, 235, 212, 0.96);
-    transform: translateX(-50%) rotate(45deg);
-    filter: drop-shadow(0 0 8px rgba(117, 185, 153, 0.32));
+    content: none;
   }
 
   .chrp-timeline__point {
@@ -3388,6 +3379,16 @@ a {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
   }
 
+  .chrp-timeline__point:not(.is-current) .chrp-timeline__marker {
+    border-color: rgba(245, 234, 209, 0.94);
+  }
+
+  .chrp-timeline__point:not(.is-current) .chrp-timeline__marker-core {
+    border-color: rgba(117, 185, 153, 0.92);
+    background: rgba(117, 185, 153, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+
   .chrp-timeline__point-copy {
     display: grid;
     gap: 0.2rem;
@@ -3437,6 +3438,17 @@ a {
     color: rgba(245, 234, 209, 0.78);
   }
 
+  .chrp-timeline__point:not(.is-current):hover .chrp-timeline__marker,
+  .chrp-timeline__point:not(.is-current).is-active .chrp-timeline__marker {
+    border-color: rgba(245, 234, 209, 0.98);
+  }
+
+  .chrp-timeline__point:not(.is-current):hover .chrp-timeline__marker-core,
+  .chrp-timeline__point:not(.is-current).is-active .chrp-timeline__marker-core {
+    border-color: rgba(131, 196, 167, 0.98);
+    background: rgba(117, 185, 153, 0.18);
+  }
+
   .chrp-timeline__point.is-current .chrp-timeline__marker {
     width: 1.85rem;
     height: 1.85rem;
@@ -3461,7 +3473,7 @@ a {
     position: relative;
     overflow: hidden;
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
     min-height: 100%;
     padding: 1.3rem 1.3rem 1.35rem;
     border-radius: 1.7rem;
@@ -3494,11 +3506,19 @@ a {
     box-shadow: 0 30px 64px rgba(2, 6, 12, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.58);
   }
 
+  .chrp-timeline-card__content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.75rem;
+  }
+
   .chrp-timeline-card__title {
     position: relative;
     z-index: 1;
     font-size: clamp(1.4rem, 2.8vw, 1.85rem);
     line-height: 1.05;
+    max-width: 16ch;
   }
 
   .chrp-timeline-card__meta {
@@ -3535,6 +3555,39 @@ a {
     line-height: 1.8;
     color: inherit;
     text-wrap: pretty;
+  }
+
+  .chrp-timeline-card__visual-shell {
+    position: relative;
+    overflow: hidden;
+    min-height: 11rem;
+    border-radius: 1.35rem;
+    border: 1px solid rgba(244, 235, 214, 0.2);
+    background: rgba(5, 15, 20, 0.26);
+    clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .chrp-timeline-card__visual-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      linear-gradient(135deg, rgba(244, 235, 214, 0.2) 0%, rgba(244, 235, 214, 0.02) 24%, transparent 25%),
+      linear-gradient(180deg, rgba(6, 13, 18, 0.06), rgba(6, 13, 18, 0.24));
+    pointer-events: none;
+  }
+
+  .chrp-timeline-card__visual {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .chrp-timeline-card.is-current .chrp-timeline-card__visual-shell {
+    border-color: rgba(122, 178, 156, 0.38);
+    background: rgba(122, 178, 156, 0.08);
   }
   .chrp-step,
   .chrp-focus-card,
@@ -3853,14 +3906,19 @@ a {
   }
 
   .chrp-timeline-card {
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
-    align-items: start;
-    column-gap: 2rem;
-    row-gap: 0.65rem;
+    grid-template-columns: minmax(0, 0.86fr) minmax(13rem, 0.64fr);
+    align-items: stretch;
+    column-gap: 1.4rem;
   }
 
-  .chrp-timeline-card__body {
-    align-self: center;
+  .chrp-timeline-card__content {
+    align-content: start;
+    padding-right: 0.5rem;
+  }
+
+  .chrp-timeline-card__visual-shell {
+    min-height: 100%;
+    height: 100%;
   }
 
   .chrp-hero {

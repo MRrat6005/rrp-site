@@ -23,6 +23,13 @@ const galleryVisuals = [
   "/projects/chrp/gallery/day-traffic.png",
   "/projects/chrp/gallery/evening-session.png"
 ] as const;
+const timelineVisuals: Record<string, string> = {
+  "Stuttgart RolePlay": "/projects/chrp/timeline/stuttgart-roleplay.png",
+  "Honolulu RolePlay": "/projects/chrp/timeline/honolulu-roleplay.png",
+  "Los Angeles RolePlay": "/projects/chrp/timeline/los-angeles-roleplay.png",
+  "Liberty State RolePlay": "/projects/chrp/timeline/liberty-state-roleplay.png",
+  "Chapel Hills RolePlay": "/projects/chrp/timeline/chapel-hills-roleplay.png"
+};
 
 type SessionVisualKey = (typeof sessionVisuals)[number]["key"];
 
@@ -76,6 +83,7 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
   const activeSessionLabel = copy.heroVisualItems[activeSessionIndex === -1 ? 0 : activeSessionIndex] ?? activeSessionVisual.key;
   const activeTimelineStage =
     copy.timeline.stages.find((stage) => stage.title === activeTimelineTitle) ?? copy.timeline.stages[0];
+  const activeTimelineVisual = timelineVisuals[activeTimelineStage.title] ?? timelineVisuals["Chapel Hills RolePlay"];
 
   const galleryItems = copy.visuals.placeholders.map((label, index) => ({
     label,
@@ -203,12 +211,23 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
                 className={`chrp-timeline-card ${activeTimelineStage.isCurrent ? "is-current" : ""}`}
                 aria-live="polite"
               >
-                <h3 className="chrp-timeline-card__title">{activeTimelineStage.title}</h3>
-                <p className="chrp-timeline-card__meta">
-                  <span className="chrp-timeline-card__meta-label">{copy.timeline.yearsLabel}</span>
-                  <span className="chrp-timeline-card__meta-value">{activeTimelineStage.years}</span>
-                </p>
-                <p className="chrp-timeline-card__body">{activeTimelineStage.body}</p>
+                <div className="chrp-timeline-card__content">
+                  <h3 className="chrp-timeline-card__title">{activeTimelineStage.title}</h3>
+                  <p className="chrp-timeline-card__meta">
+                    <span className="chrp-timeline-card__meta-label">{copy.timeline.yearsLabel}</span>
+                    <span className="chrp-timeline-card__meta-value">{activeTimelineStage.years}</span>
+                  </p>
+                  <p className="chrp-timeline-card__body">{activeTimelineStage.body}</p>
+                </div>
+
+                <div className="chrp-timeline-card__visual-shell">
+                  <ChrpVisualSurface
+                    alt={`${activeTimelineStage.title} - timeline visual`}
+                    className="chrp-visual-surface chrp-timeline-card__visual"
+                    sizes="(min-width: 1024px) 24vw, 100vw"
+                    src={activeTimelineVisual}
+                  />
+                </div>
               </article>
             </div>
           ) : null}
