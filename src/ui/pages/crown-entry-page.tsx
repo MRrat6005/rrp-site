@@ -464,7 +464,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                   onClick={() => setActiveModuleIndex(index)}
                 >
                   <span className="crown-module-tab__name">{item.title}</span>
-                  <span className="crown-module-tab__body">{item.body}</span>
+                  <span className="crown-module-tab__body">{item.shortBody ?? item.body}</span>
                 </button>
               );
             })}

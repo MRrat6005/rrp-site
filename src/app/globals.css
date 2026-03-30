@@ -4613,3 +4613,29 @@ a {
   .crown-visual--status .crown-visual__image {
     object-position: center 35%;
   }
+  .crown-visual--module {
+    min-height: clamp(26.5rem, 38vw, 33rem);
+  }
+
+  .crown-visual--module .crown-visual__content {
+    gap: 0.7rem;
+  }
+
+  .crown-visual--module .crown-visual__media {
+    flex: 1.1;
+    min-height: clamp(17.5rem, 23vw, 21.5rem);
+  }
+
+  .crown-visual--module .crown-visual__image {
+    object-position: center top;
+  }
+
+  .crown-visual--module .crown-visual__footer {
+    min-height: 0;
+    padding: 0.35rem 0.2rem 0.05rem;
+  }
+
+  .crown-visual--module .crown-visual__body {
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }

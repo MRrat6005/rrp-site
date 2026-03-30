@@ -113,6 +113,7 @@ export interface CrownFeatureGroupCopy {
 }
 
 export interface CrownModuleItemCopy extends SectionCopy {
+  shortBody?: string;
   slotPath: string;
 }
 
