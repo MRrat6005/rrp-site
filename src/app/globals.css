@@ -4216,6 +4216,11 @@ a {
     align-items: end;
   }
 
+  .crown-final-cta__copy {
+    align-self: start;
+    padding-top: 0.2rem;
+  }
+
   .crown-final-cta__actions {
     display: grid;
     gap: 1.1rem;
@@ -4698,6 +4703,12 @@ a {
 
     .crown-final-cta {
       grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+
+    .crown-final-cta__copy {
+      padding-top: 0;
+      padding-bottom: 2.2rem;
     }
   }
 
@@ -4769,6 +4780,7 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
+
 
 
 

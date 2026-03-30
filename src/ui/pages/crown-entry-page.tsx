@@ -371,7 +371,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
       </section>
 
       <section className="crown-final-cta reveal-up reveal-delay-2" data-reveal>
-        <div className="space-y-4">
+        <div className="crown-final-cta__copy space-y-4">
           <h2 className="crown-final-cta__title">{copy.finalCta.title}</h2>
           <p className="crown-final-cta__body">{copy.finalCta.body}</p>
         </div>
@@ -642,6 +642,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
 
 
 

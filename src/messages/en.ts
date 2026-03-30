@@ -622,7 +622,7 @@ export const enMessages = {
       eyebrow: "Next step",
       title: "Open the CROWN control center.",
       body:
-        "CROWN brings RP systems, settings, and control into one center.",
+        "Trusted by active projects, CROWN gives teams a clear and reliable control layer without unnecessary risk at launch.",
       primaryCta: "Open Dashboard",
       secondaryCta: "View Features"
     }
@@ -846,6 +846,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 

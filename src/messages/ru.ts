@@ -619,7 +619,7 @@ export const ruMessages = {
       eyebrow: "Следующий шаг",
       title: "Открыть центр управления CROWN",
       body:
-        "CROWN объединяет RP-системы, настройки и контроль в одном центре управления.",
+        "Нам доверяют действующие проекты, поэтому CROWN дает понятный и надежный контур управления без лишнего риска на старте.",
       primaryCta: "Открыть Dashboard",
       secondaryCta: "Посмотреть возможности"
     }
@@ -843,6 +843,7 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 
 
 
