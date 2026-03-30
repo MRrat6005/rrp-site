@@ -349,14 +349,6 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             </Link>
           </div>
 
-          <div className="crown-trust" aria-label="Нам доверяют">
-            <p className="crown-trust__label">Нам доверяют:</p>
-            <div className="crown-trust__logos">
-              {TRUSTED_LOGO_PATHS.map((src, index) => (
-                <CrownTrustLogoSlot key={src} src={src} alt={`Партнер ${index + 1}`} />
-              ))}
-            </div>
-          </div>
 
           <dl className="crown-hero__stats">
             {copy.hero.stats.map((item) => (
@@ -384,18 +376,29 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           <p className="crown-final-cta__body">{copy.finalCta.body}</p>
         </div>
 
-        <div className="crown-cta-row crown-cta-row--final">
-          <Link href={dashboardHref} className="button-primary">
-            {copy.finalCta.primaryCta}
-          </Link>
-          <Link
-            href={learnMoreHref}
-            aria-controls="crown-features"
-            className="crown-button-secondary"
-            onClick={handleLearnMoreClick}
-          >
-            {copy.finalCta.secondaryCta}
-          </Link>
+        <div className="crown-final-cta__actions">
+          <div className="crown-cta-row crown-cta-row--final">
+            <Link href={dashboardHref} className="button-primary">
+              {copy.finalCta.primaryCta}
+            </Link>
+            <Link
+              href={learnMoreHref}
+              aria-controls="crown-features"
+              className="crown-button-secondary"
+              onClick={handleLearnMoreClick}
+            >
+              {copy.finalCta.secondaryCta}
+            </Link>
+          </div>
+
+          <div className="crown-trust crown-trust--final" aria-label="Нам доверяют">
+            <p className="crown-trust__label crown-trust__label--final">Нам доверяют:</p>
+            <div className="crown-trust__logos crown-trust__logos--final">
+              {TRUSTED_LOGO_PATHS.map((src, index) => (
+                <CrownTrustLogoSlot key={src} src={src} alt={`Партнер ${index + 1}`} />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -639,6 +642,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
 
 
 
