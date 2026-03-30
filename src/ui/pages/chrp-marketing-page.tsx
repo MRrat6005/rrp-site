@@ -24,6 +24,10 @@ const galleryVisuals = [
   "/projects/chrp/gallery/evening-session.png"
 ] as const;
 const timelineVisuals: Record<string, string> = {
+  "Рязань РолеПлей": "/projects/chrp/timeline/ryazan-roleplay.png",
+  "Хабаровск РолеПлей": "/projects/chrp/timeline/khabarovsk-roleplay.png",
+  "Ryazan RolePlay": "/projects/chrp/timeline/ryazan-roleplay.png",
+  "Khabarovsk RolePlay": "/projects/chrp/timeline/khabarovsk-roleplay.png",
   "Stuttgart RolePlay": "/projects/chrp/timeline/stuttgart-roleplay.png",
   "Honolulu RolePlay": "/projects/chrp/timeline/honolulu-roleplay.png",
   "Los Angeles RolePlay": "/projects/chrp/timeline/los-angeles-roleplay.png",
@@ -83,7 +87,7 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
   const activeSessionLabel = copy.heroVisualItems[activeSessionIndex === -1 ? 0 : activeSessionIndex] ?? activeSessionVisual.key;
   const activeTimelineStage =
     copy.timeline.stages.find((stage) => stage.title === activeTimelineTitle) ?? copy.timeline.stages[0];
-  const activeTimelineVisual = timelineVisuals[activeTimelineStage.title] ?? timelineVisuals["Chapel Hills RolePlay"];
+  const activeTimelineVisual = timelineVisuals[activeTimelineStage.title] ?? "/projects/chrp/timeline/chapel-hills-roleplay.png";
 
   const galleryItems = copy.visuals.placeholders.map((label, index) => ({
     label,
@@ -213,10 +217,7 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               >
                 <div className="chrp-timeline-card__content">
                   <h3 className="chrp-timeline-card__title">{activeTimelineStage.title}</h3>
-                  <p className="chrp-timeline-card__meta">
-                    <span className="chrp-timeline-card__meta-label">{copy.timeline.yearsLabel}</span>
-                    <span className="chrp-timeline-card__meta-value">{activeTimelineStage.years}</span>
-                  </p>
+                  <p className="chrp-timeline-card__meta-value">{activeTimelineStage.years}</p>
                   <p className="chrp-timeline-card__body">{activeTimelineStage.body}</p>
                 </div>
 

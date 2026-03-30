@@ -2717,7 +2717,7 @@ a {
   .home-direction__title,
   .home-support__title,
   .home-closing__title {
-    max-width: 14ch;
+    max-width: 11ch;
     font-size: clamp(2.3rem, 4.4vw, 4.4rem);
     line-height: 0.98;
   }
@@ -3521,30 +3521,14 @@ a {
     max-width: 16ch;
   }
 
-  .chrp-timeline-card__meta {
+  .chrp-timeline-card__meta-value {
     position: relative;
     z-index: 1;
-    display: grid;
-    gap: 0.18rem;
     margin: 0;
-  }
-
-  .chrp-timeline-card__meta-label {
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(247, 242, 231, 0.72);
-  }
-
-  .chrp-timeline-card.is-current .chrp-timeline-card__meta-label {
-    color: rgba(18, 50, 40, 0.64);
-  }
-
-  .chrp-timeline-card__meta-value {
     font-size: 0.98rem;
     line-height: 1.45;
     color: inherit;
+    font-weight: 600;
   }
 
   .chrp-timeline-card__body {
@@ -3866,9 +3850,9 @@ a {
 }
 @media (min-width: 1024px) {
   .chrp-timeline {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: start;
-    gap: 1.2rem;
+    gap: 0.78rem;
     padding: 0.35rem 0 0;
   }
 
@@ -3902,7 +3886,7 @@ a {
   }
 
   .chrp-timeline__point-title {
-    max-width: 14ch;
+    max-width: 11ch;
   }
 
   .chrp-timeline-card {
