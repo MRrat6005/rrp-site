@@ -218,17 +218,15 @@ function CrownVisualSurface({
       <div className="crown-visual__content">
         <div className={`crown-visual__media crown-visual__media--${variant}`}>
           {!showFallback ? (
-            <div className="crown-visual__image-frame">
-              <Image
-                fill
-                alt={alt}
-                className="crown-visual__image"
-                onError={() => setHasError(true)}
-                priority={variant === "hero"}
-                sizes={variant === "hero" ? "(min-width: 1024px) 42vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
-                src={slotPath}
-              />
-            </div>
+            <Image
+              fill
+              alt={alt}
+              className="crown-visual__image"
+              onError={() => setHasError(true)}
+              priority={variant === "hero"}
+              sizes={variant === "hero" ? "(min-width: 1024px) 42vw, 100vw" : "(min-width: 1024px) 50vw, 100vw"}
+              src={slotPath}
+            />
           ) : null}
 
           {showFallback ? <div className="crown-visual__placeholder" aria-hidden="true" /> : null}
@@ -246,7 +244,6 @@ function CrownVisualSurface({
         <div className="crown-visual__footer">
           <h3 className="crown-visual__title">{title}</h3>
           <p className="crown-visual__body">{body}</p>
-          <p className="crown-visual__slot-path">{slotPath}</p>
         </div>
       </div>
     </article>

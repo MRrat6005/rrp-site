@@ -492,7 +492,7 @@ export const enMessages = {
         }
       ],
       footnote:
-        "Each slot on the right expects its own PNG under public/projects/crown/modules/ without changing the section structure."
+        "Each slot on the right can be replaced with its own module visual later without changing the section composition."
     },
     governance: {
       eyebrow: "Localization, branding, access",
@@ -812,14 +812,4 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
-
-
-
-
-
-
-
-
-
-
 

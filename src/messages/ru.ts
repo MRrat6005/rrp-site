@@ -492,7 +492,7 @@ export const ruMessages = {
         }
       ],
       footnote:
-        "Каждый слот справа рассчитан на отдельный PNG в public/projects/crown/modules/ без перестройки секции."
+        "Каждый слот справа можно позже заменить отдельным модульным визуалом без перестройки композиции секции."
     },
     governance: {
       eyebrow: "Локализация, брендинг, права",
@@ -812,15 +812,4 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
-
-
-
-
-
-
-
-
-
-
-
 
