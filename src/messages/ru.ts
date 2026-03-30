@@ -354,14 +354,14 @@ export const ruMessages = {
       eyebrow: "CROWN / RP Systems Core",
       title: "CROWN держит RP-системы, настройки и управление в одном центре.",
       intro:
-        "Это единое ядро для Bank, Social, Weather, Sessions и Rentals вместо набора несвязанных ботов, таблиц и ручных обходов.",
+        "Это единое ядро для Bank, Social, Weather, Sessions и Radio вместо набора несвязанных ботов, таблиц и ручных обходов.",
       summary:
         "Одна рабочая поверхность для владельца и команды: настройки, права, локализация, статусы и запуск модулей в общем контуре.",
       primaryCta: "Открыть Dashboard",
       secondaryCta: "Посмотреть возможности",
       proofStrip: ["UI-first", "RU / EN", "Per-guild", "Modular", "License-protected"],
       stats: [
-        { label: "Модули", value: "Bank, Social, Weather, Sessions, Rentals" },
+        { label: "Модули", value: "Bank, Social, Weather, Sessions, Radio" },
         { label: "Управление", value: "Настройки, роли, права, статусы" },
         { label: "Локализация", value: "RU / EN в одном продукте" },
         { label: "Контур", value: "Единый центр для RP-систем" }
@@ -432,7 +432,7 @@ export const ruMessages = {
         },
         {
           title: "RP-системы",
-          body: "Bank, Social, Weather, Sessions и Rentals живут в общей продуктовой логике.",
+          body: "Bank, Social, Weather, Sessions и Radio живут в общей продуктовой логике.",
           items: [
             "Согласованное поведение модулей",
             "Связь между системами",
@@ -486,9 +486,9 @@ export const ruMessages = {
           slotPath: "/projects/crown/modules/sessions.png"
         },
         {
-          title: "Rentals",
-          body: "Аренда, доступы и связанные сценарии в общей продуктовой логике CROWN.",
-          slotPath: "/projects/crown/modules/rentals.png"
+          title: "Radio",
+          body: "Радио, каналы и связанные сценарии связи в общей продуктовой логике CROWN.",
+          slotPath: "/projects/crown/modules/radio.png"
         }
       ],
       footnote:
@@ -537,7 +537,7 @@ export const ruMessages = {
         {
           label: "Набор модулей",
           free: "Базовый набор без глубокой связки.",
-          full: "Полный пакет Bank, Social, Weather, Sessions и Rentals.",
+          full: "Полный пакет Bank, Social, Weather, Sessions и Radio.",
           others: "Зависит от сборки и набора инструментов."
         },
         {
@@ -812,6 +812,8 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
+
 
 
 

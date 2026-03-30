@@ -354,14 +354,14 @@ export const enMessages = {
       eyebrow: "CROWN / RP Systems Core",
       title: "CROWN keeps RP systems, settings, and control in one center.",
       intro:
-        "It is one core for Bank, Social, Weather, Sessions, and Rentals instead of a stack of disconnected bots, spreadsheets, and manual workarounds.",
+        "It is one core for Bank, Social, Weather, Sessions, and Radio instead of a stack of disconnected bots, spreadsheets, and manual workarounds.",
       summary:
         "One working surface for the owner and team: settings, access, localization, status, and module rollout inside the same product layer.",
       primaryCta: "Open Dashboard",
       secondaryCta: "View Features",
       proofStrip: ["UI-first", "RU / EN", "Per-guild", "Modular", "License-protected"],
       stats: [
-        { label: "Modules", value: "Bank, Social, Weather, Sessions, Rentals" },
+        { label: "Modules", value: "Bank, Social, Weather, Sessions, Radio" },
         { label: "Management", value: "Settings, roles, access, status" },
         { label: "Localization", value: "RU / EN in one product" },
         { label: "Control", value: "One center for RP systems" }
@@ -432,7 +432,7 @@ export const enMessages = {
         },
         {
           title: "RP systems",
-          body: "Bank, Social, Weather, Sessions, and Rentals live inside one product logic.",
+          body: "Bank, Social, Weather, Sessions, and Radio live inside one product logic.",
           items: [
             "Consistent module behavior",
             "Connected system relationships",
@@ -486,9 +486,9 @@ export const enMessages = {
           slotPath: "/projects/crown/modules/sessions.png"
         },
         {
-          title: "Rentals",
-          body: "Rental logic, access, and related flows in the wider CROWN product logic.",
-          slotPath: "/projects/crown/modules/rentals.png"
+          title: "Radio",
+          body: "Radio, channel, and communication flows in the wider CROWN product logic.",
+          slotPath: "/projects/crown/modules/radio.png"
         }
       ],
       footnote:
@@ -537,7 +537,7 @@ export const enMessages = {
         {
           label: "Module set",
           free: "Basic coverage without deep linkage.",
-          full: "Full Bank, Social, Weather, Sessions, and Rentals package.",
+          full: "Full Bank, Social, Weather, Sessions, and Radio package.",
           others: "Depends on the stack and the tools combined."
         },
         {
@@ -812,6 +812,8 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
+
 
 
 
