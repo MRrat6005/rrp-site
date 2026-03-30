@@ -290,6 +290,7 @@ function CrownVisualSurface({
 
 export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
   const copy = messages.crownEntry;
+  const heroDiscordHref = "https://discord.gg/TAm6NWhEka";
   const dashboardHref = getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard);
   const learnMoreHref = "#crown-features";
   const issueReportHref = "https://discord.com/channels/1193156662941466659/1451640659353014413";
@@ -348,7 +349,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           <p className="crown-hero__summary">{copy.hero.summary}</p>
 
           <div className="crown-cta-row">
-            <Link href={dashboardHref} className="button-primary">
+            <Link href={heroDiscordHref} className="button-primary" target="_blank" rel="noreferrer">
               {copy.hero.primaryCta}
             </Link>
             <Link
@@ -654,6 +655,8 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
+
 
 
 

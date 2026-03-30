@@ -357,7 +357,7 @@ export const ruMessages = {
         "CROWN объединяет Bank, Social, Weather, Sessions и Radio в одной системе управления.",
       summary:
         "Настройки, роли, локализация, статусы и модули собраны в одном продукте.",
-      primaryCta: "Открыть центр управления",
+      primaryCta: "Перейти в Discord",
       secondaryCta: "Посмотреть возможности",
       proofStrip: ["Единый интерфейс", "RU / EN", "На сервер", "Модульно", "По лицензии"],
       stats: [
@@ -843,6 +843,7 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 
 
 

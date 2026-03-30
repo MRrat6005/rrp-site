@@ -1769,7 +1769,13 @@ a {
   }
 
   .site-footer-shell {
+    border-color: transparent;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.008));
+    box-shadow: none;
+  }
+
+  .site-footer-shell::before {
+    background: none;
   }
 
   .section-divider {
@@ -4790,6 +4796,7 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
+
 
 
 

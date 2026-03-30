@@ -357,7 +357,7 @@ export const enMessages = {
         "CROWN brings Bank, Social, Weather, Sessions, and Radio into one management system.",
       summary:
         "Settings, access, localization, status, and modules live inside one product.",
-      primaryCta: "Open Control Center",
+      primaryCta: "Go to Discord",
       secondaryCta: "View Features",
       proofStrip: ["Unified UI", "RU / EN", "Per server", "Modular", "Licensed"],
       stats: [
@@ -846,6 +846,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 
 
