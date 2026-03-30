@@ -346,6 +346,27 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
         />
       </section>
 
+      <section className="crown-final-cta reveal-up reveal-delay-2" data-reveal>
+        <div className="space-y-4">
+          <h2 className="crown-final-cta__title">{copy.finalCta.title}</h2>
+          <p className="crown-final-cta__body">{copy.finalCta.body}</p>
+        </div>
+
+        <div className="crown-cta-row crown-cta-row--final">
+          <Link href={dashboardHref} className="button-primary">
+            {copy.finalCta.primaryCta}
+          </Link>
+          <Link
+            href={learnMoreHref}
+            aria-controls="crown-features"
+            className="crown-button-secondary"
+            onClick={handleLearnMoreClick}
+          >
+            {copy.finalCta.secondaryCta}
+          </Link>
+        </div>
+      </section>
+
       <section className="crown-section crown-section--status reveal-up reveal-delay-1" data-reveal>
         <div className="crown-status-grid">
           <div className="crown-status-panel">
@@ -414,30 +435,6 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             <div className="crown-showcase-panel__copy">
               <h3 className="crown-subtitle">{copy.showcase.title}</h3>
               <p className="crown-copy">{copy.showcase.intro}</p>
-            </div>
-
-            <div className="crown-capability-grid">
-              {copy.capabilities.groups.map((group) => (
-                <article key={group.title} className="crown-capability-card">
-                  <h4 className="crown-subtitle crown-subtitle--sm">{group.title}</h4>
-                  <p className="crown-copy">{group.body}</p>
-
-                  <ul className="crown-detail-list">
-                    {group.items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-
-            <div className="crown-highlight-stack">
-              {copy.showcase.highlights.map((item) => (
-                <article key={item} className="crown-highlight-row">
-                  <span className="crown-highlight-row__dot" aria-hidden="true" />
-                  <p>{item}</p>
-                </article>
-              ))}
             </div>
           </div>
         </div>
@@ -585,7 +582,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                         row.full
                       )}
                     </td>
-                    <td>{isPriceRow ? "—" : row.others}</td>
+                    <td className={isPriceRow ? "crown-comparison-table__price-other-cell" : undefined}>{isPriceRow ? "—" : row.others}</td>
                   </tr>
                 );
               })}
@@ -594,26 +591,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
         </div>
       </section>
 
-      <section className="crown-final-cta reveal-up reveal-delay-2" data-reveal>
-        <div className="space-y-4">
-          <h2 className="crown-final-cta__title">{copy.finalCta.title}</h2>
-          <p className="crown-final-cta__body">{copy.finalCta.body}</p>
-        </div>
 
-        <div className="crown-cta-row crown-cta-row--final">
-          <Link href={dashboardHref} className="button-primary">
-            {copy.finalCta.primaryCta}
-          </Link>
-          <Link
-            href={learnMoreHref}
-            aria-controls="crown-features"
-            className="crown-button-secondary"
-            onClick={handleLearnMoreClick}
-          >
-            {copy.finalCta.secondaryCta}
-          </Link>
-        </div>
-      </section>
     </main>
   );
 }

@@ -3372,7 +3372,7 @@ a {
     padding: 0 1rem 1rem;
     font-size: 1rem;
     line-height: 1.25;
-    text-align: left;
+    text-align: center;
     vertical-align: bottom;
   }
 
@@ -3921,7 +3921,7 @@ a {
     gap: 0.35rem;
     min-height: 100%;
     padding: 1rem 1.05rem;
-    text-align: left;
+    text-align: center;
     transition:
       transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
       border-color 0.24s ease,
@@ -3979,7 +3979,7 @@ a {
     padding: 0 1rem 1rem;
     font-size: 1rem;
     line-height: 1.2;
-    text-align: left;
+    text-align: center;
     vertical-align: bottom;
   }
 
@@ -4026,6 +4026,7 @@ a {
   .crown-price-value {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.65rem;
     font-weight: 600;
     color: rgba(248, 249, 252, 0.96);
@@ -4043,16 +4044,19 @@ a {
   }
 
   .crown-comparison-table__price-value-cell,
-  .crown-comparison-table__price-cell {
+  .crown-comparison-table__price-cell,
+  .crown-comparison-table__price-other-cell {
     text-align: center;
   }
 
   .crown-price-placeholder {
     display: inline-flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
     gap: 0.2rem;
-    min-width: 10.5rem;
+    width: 100%;
+    min-width: 0;
     margin-inline: auto;
     padding: 0.95rem 1.05rem;
     border: 1px solid rgba(17, 19, 23, 0.08);
@@ -4064,13 +4068,15 @@ a {
     font: inherit;
     cursor: default;
     pointer-events: none;
-    text-align: left;
+    text-align: center;
   }
 
   .crown-price-placeholder__main {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
+    width: 100%;
   }
 
   .crown-price-placeholder__icon {
@@ -4087,7 +4093,7 @@ a {
   }
 
   .crown-price-placeholder__note {
-    padding-left: 2.15rem;
+    padding-left: 0;
     font-size: 0.78rem;
     line-height: 1.2;
     font-weight: 600;
@@ -4106,14 +4112,14 @@ a {
   }
 
   .crown-visual--hero {
-    min-height: clamp(34rem, 56vw, 46rem);
+    min-height: clamp(37rem, 58vw, 49rem);
   }
 
   .crown-visual--status,
   .crown-visual--settings,
   .crown-visual--branding,
   .crown-visual--module {
-    min-height: clamp(30rem, 48vw, 40rem);
+    min-height: clamp(31rem, 49vw, 41rem);
   }
 
   .crown-visual__shade {
@@ -4163,14 +4169,14 @@ a {
   }
 
   .crown-visual__media--hero {
-    min-height: clamp(25rem, 44vw, 35rem);
+    min-height: clamp(29rem, 48vw, 39rem);
   }
 
   .crown-visual__media--status,
   .crown-visual__media--settings,
   .crown-visual__media--branding,
   .crown-visual__media--module {
-    min-height: clamp(22rem, 34vw, 30rem);
+    min-height: clamp(23rem, 35vw, 31rem);
   }
 
   .crown-visual--status .crown-visual__footer,
@@ -4587,3 +4593,23 @@ a {
 }
 
 
+
+  .crown-hero > .crown-visual,
+  .crown-status-grid > .crown-visual,
+  .crown-modules-grid > .crown-visual {
+    height: 100%;
+  }
+
+  .crown-hero > .crown-visual .crown-visual__content,
+  .crown-status-grid > .crown-visual .crown-visual__content,
+  .crown-modules-grid > .crown-visual .crown-visual__content {
+    height: 100%;
+  }
+
+  .crown-visual--hero .crown-visual__image {
+    object-position: center 38%;
+  }
+
+  .crown-visual--status .crown-visual__image {
+    object-position: center 35%;
+  }
