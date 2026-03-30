@@ -3591,6 +3591,7 @@ a {
   .crown-hero {
     display: grid;
     gap: clamp(1.6rem, 2.4vw, 2.4rem);
+    min-height: clamp(38rem, 56vw, 49rem);
   }
 
   .crown-hero__copy,
@@ -3605,6 +3606,7 @@ a {
   .crown-hero__copy {
     align-content: center;
     gap: 1.1rem;
+    padding-right: clamp(0rem, 1.2vw, 1rem);
   }
 
   .crown-section__lead {
@@ -3747,6 +3749,7 @@ a {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.9rem;
+    width: min(100%, 40rem);
     margin: 0;
   }
 
@@ -3779,6 +3782,9 @@ a {
 
   .crown-status-panel {
     align-content: start;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 1.1rem;
+    height: 100%;
     padding: clamp(1.1rem, 2vw, 1.6rem);
     border-radius: 1.9rem;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
@@ -3802,6 +3808,11 @@ a {
   .crown-module-selector {
     display: grid;
     gap: 0.85rem;
+  }
+
+  .crown-status-panel__signals {
+    align-content: start;
+    grid-auto-rows: 1fr;
   }
 
   .crown-status-signal,
@@ -3829,6 +3840,7 @@ a {
 
   .crown-showcase-panel {
     align-content: start;
+    grid-template-rows: auto auto auto;
     height: 100%;
     padding: clamp(1.1rem, 2vw, 1.6rem);
     border-radius: 1.9rem;
@@ -3876,6 +3888,7 @@ a {
     display: flex;
     align-items: center;
     gap: 0.95rem;
+    min-height: 100%;
     padding: 0.9rem 1rem;
   }
 
@@ -3894,6 +3907,7 @@ a {
 
   .crown-module-selector {
     align-content: start;
+    grid-auto-rows: 1fr;
     height: 100%;
     padding: clamp(1rem, 1.8vw, 1.35rem);
     border-radius: 1.9rem;
@@ -3903,7 +3917,9 @@ a {
 
   .crown-module-tab {
     display: grid;
+    align-content: start;
     gap: 0.35rem;
+    min-height: 100%;
     padding: 1rem 1.05rem;
     text-align: left;
     transition:
@@ -4026,7 +4042,7 @@ a {
   .crown-visual--settings,
   .crown-visual--branding,
   .crown-visual--module {
-    min-height: clamp(28rem, 46vw, 38rem);
+    min-height: clamp(30rem, 48vw, 40rem);
   }
 
   .crown-visual__shade {
@@ -4076,14 +4092,22 @@ a {
   }
 
   .crown-visual__media--hero {
-    min-height: clamp(24rem, 42vw, 34rem);
+    min-height: clamp(25rem, 44vw, 35rem);
   }
 
   .crown-visual__media--status,
   .crown-visual__media--settings,
   .crown-visual__media--branding,
   .crown-visual__media--module {
-    min-height: clamp(20rem, 32vw, 28rem);
+    min-height: clamp(22rem, 34vw, 30rem);
+  }
+
+  .crown-visual--status .crown-visual__footer,
+  .crown-visual--settings .crown-visual__footer,
+  .crown-visual--module .crown-visual__footer {
+    min-height: 8.5rem;
+    margin-top: auto;
+    padding: 0.7rem 0.4rem 0.15rem;
   }
 
 
@@ -4383,6 +4407,45 @@ a {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .crown-issue-cta {
+    display: grid;
+    gap: 0.35rem;
+    width: 100%;
+    margin-top: auto;
+    padding: 1.05rem 1.2rem;
+    border-radius: 1.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(214, 219, 228, 0.9));
+    box-shadow: 0 26px 54px rgba(1, 3, 7, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    color: #090a0d;
+    transition:
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.24s ease,
+      filter 0.24s ease;
+  }
+
+  .crown-issue-cta:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 30px 64px rgba(1, 3, 7, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+    filter: brightness(1.02);
+  }
+
+  .crown-issue-cta__label {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .crown-issue-cta__meta {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(17, 19, 23, 0.62);
+  }
+
   @media (min-width: 700px) {
     .crown-capability-grid,
     .crown-pillar-grid {
@@ -4392,17 +4455,17 @@ a {
 
   @media (min-width: 1024px) {
     .crown-hero {
-      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
       align-items: center;
       gap: clamp(1.8rem, 2.6vw, 2.8rem);
     }
 
     .crown-status-grid {
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
     }
 
     .crown-modules-grid {
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
     }
 
     .crown-governance-grid {
@@ -4410,11 +4473,16 @@ a {
     }
 
     .crown-showcase-grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
     }
 
     .crown-capability-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .crown-highlight-stack {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-content: end;
     }
 
     .crown-pillar-grid {
@@ -4446,4 +4514,5 @@ a {
   }
 
 }
+
 

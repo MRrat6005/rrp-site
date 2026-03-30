@@ -254,6 +254,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
   const copy = messages.crownEntry;
   const dashboardHref = getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard);
   const learnMoreHref = "#crown-features";
+  const issueReportHref = "https://discord.com/channels/1193156662941466659/1451640659353014413";
   const themeStyle = getProjectThemeStyle("crown");
   const asset = siteConfig.assetPlaceholders.projects.crown;
   const markPath = siteConfig.visuals.projects.crown.markPath;
@@ -365,6 +366,16 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                 </article>
               ))}
             </div>
+
+            <Link
+              href={issueReportHref}
+              target="_blank"
+              rel="noreferrer"
+              className="crown-issue-cta"
+            >
+              <span className="crown-issue-cta__label">Сообщить об ошибке</span>
+              <span className="crown-issue-cta__meta">Discord-канал для сообщений о сервисных проблемах CROWN</span>
+            </Link>
           </div>
 
           <CrownVisualSurface
@@ -562,4 +573,6 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
+
 
