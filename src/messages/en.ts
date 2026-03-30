@@ -454,6 +454,13 @@ export const enMessages = {
         "Module state is readable at a glance",
         "Owners keep control as the server grows"
       ],
+      summaryTitle: "What is visible on one screen",
+      summaryRows: [
+        "Language and localization",
+        "Admin role and permissions",
+        "Modules and their status",
+        "Logs and license"
+      ],
 
       visual: {
         eyebrow: "Settings visual",
@@ -524,6 +531,14 @@ export const enMessages = {
         {
           title: "Scaling",
           body: "New modules and settings are added into the same control center instead of next to it."
+        },
+        {
+          title: "Change preview",
+          body: "Before applying new settings, CROWN shows exactly what will change. That makes configuration easier to review in advance and reduces mistakes."
+        },
+        {
+          title: "Status and monitoring",
+          body: "Key module and service states are gathered in one place. That makes the server easier to control and problems easier to catch early."
         }
       ],
 
@@ -831,4 +846,7 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
+
+
 

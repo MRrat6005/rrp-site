@@ -19,6 +19,10 @@ type CrownVisualVariant = "hero" | "status" | "settings" | "branding" | "module"
 
 const ROBUX_ICON_SRC =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Robux_2019_Logo_gold.svg/960px-Robux_2019_Logo_gold.svg.png";
+const TRUSTED_LOGO_PATHS = [
+  "/assets/projects/crown/trusted-logo-01.png",
+  "/assets/projects/crown/trusted-logo-02.png"
+] as const;
 
 interface CrownVisualSurfaceProps {
   alt: string;
@@ -28,6 +32,25 @@ interface CrownVisualSurfaceProps {
   title: string;
   variant: CrownVisualVariant;
   moduleLabel?: string;
+}
+
+function CrownTrustLogoSlot({ src, alt }: { src: string; alt: string }) {
+  const [imageReady, setImageReady] = useState(true);
+
+  return (
+    <div className="crown-trust__logo-slot" aria-label={alt}>
+      {imageReady ? (
+        <Image
+          src={src}
+          alt={alt}
+          width={208}
+          height={72}
+          className="crown-trust__logo-image"
+          onError={() => setImageReady(false)}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 function CrownHeroFallback({ markPath }: { markPath: string | null }) {
@@ -326,6 +349,15 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             </Link>
           </div>
 
+          <div className="crown-trust" aria-label="Нам доверяют">
+            <p className="crown-trust__label">Нам доверяют:</p>
+            <div className="crown-trust__logos">
+              {TRUSTED_LOGO_PATHS.map((src, index) => (
+                <CrownTrustLogoSlot key={src} src={src} alt={`Партнер ${index + 1}`} />
+              ))}
+            </div>
+          </div>
+
           <dl className="crown-hero__stats">
             {copy.hero.stats.map((item) => (
               <div key={item.label} className="crown-hero__stat">
@@ -435,6 +467,18 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
             <div className="crown-showcase-panel__copy">
               <h3 className="crown-subtitle">{copy.showcase.title}</h3>
               <p className="crown-copy">{copy.showcase.intro}</p>
+            </div>
+
+            <div className="crown-showcase-summary" aria-label={copy.showcase.summaryTitle}>
+              <h4 className="crown-showcase-summary__title">{copy.showcase.summaryTitle}</h4>
+              <ul className="crown-showcase-summary__list">
+                {copy.showcase.summaryRows.map((item) => (
+                  <li key={item} className="crown-showcase-summary__row">
+                    <span className="crown-showcase-summary__marker" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -595,6 +639,8 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
+
 
 
 

@@ -172,6 +172,8 @@ export interface CrownPageCopy {
     title: string;
     intro: string;
     highlights: readonly string[];
+    summaryTitle: string;
+    summaryRows: readonly string[];
     visual: CrownVisualSlotCopy;
   };
   modules: {
@@ -308,6 +310,7 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+
 
 
 
