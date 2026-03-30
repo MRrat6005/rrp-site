@@ -4653,6 +4653,19 @@ a {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
+    .crown-governance-grid > .crown-visual--branding {
+      height: 100%;
+    }
+
+    .crown-governance-grid > .crown-visual--branding .crown-visual__content {
+      height: 100%;
+    }
+
+    .crown-governance-grid > .crown-visual--branding .crown-visual__media {
+      min-height: 0;
+      height: 100%;
+    }
+
     .crown-showcase-grid {
       grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
     }
@@ -4743,5 +4756,6 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
+
 
 

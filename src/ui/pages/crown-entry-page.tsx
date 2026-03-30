@@ -20,8 +20,8 @@ type CrownVisualVariant = "hero" | "status" | "settings" | "branding" | "module"
 const ROBUX_ICON_SRC =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Robux_2019_Logo_gold.svg/960px-Robux_2019_Logo_gold.svg.png";
 const TRUSTED_LOGO_PATHS = [
-  "/assets/projects/crown/trusted-logo-01.png",
-  "/assets/projects/crown/trusted-logo-02.png"
+  "/projects/crown/trusted-logo-01.png",
+  "/projects/crown/trusted-logo-02.png"
 ] as const;
 
 interface CrownVisualSurfaceProps {
@@ -639,6 +639,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
 
 
 
