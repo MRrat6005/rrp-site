@@ -546,7 +546,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                     <th scope="row" className="crown-comparison-table__feature">
                       {row.label}
                     </th>
-                    <td>
+                    <td className={isPriceRow ? "crown-comparison-table__price-value-cell" : undefined}>
                       {isPriceRow ? (
                         <span className="crown-price-value crown-price-value--free">
                           <img
@@ -561,7 +561,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
                         row.free
                       )}
                     </td>
-                    <td className="is-highlighted">
+                    <td className={isPriceRow ? "is-highlighted crown-comparison-table__price-cell" : "is-highlighted"}>
                       {isPriceRow ? (
                         <button
                           type="button"

@@ -536,12 +536,7 @@ export const enMessages = {
       priceLabel: "Price",
       priceFullNote: "For 1 key",
       rows: [
-        {
-          label: "Price",
-          free: "0",
-          full: "650",
-          others: "—"
-        },
+
         {
           label: "Module set",
           free: "Basic coverage without deep linkage.",
@@ -589,6 +584,12 @@ export const enMessages = {
           free: "Minimal.",
           full: "Modules operate as parts of one product.",
           others: "Often disconnected."
+        },
+        {
+          label: "Price",
+          free: "0",
+          full: "650",
+          others: "—"
         }
       ]
     },

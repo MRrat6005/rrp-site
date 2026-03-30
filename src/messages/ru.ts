@@ -536,12 +536,7 @@ export const ruMessages = {
       priceLabel: "Цена",
       priceFullNote: "За 1 ключ",
       rows: [
-        {
-          label: "Цена",
-          free: "0",
-          full: "650",
-          others: "—"
-        },
+
         {
           label: "Набор модулей",
           free: "Базовый набор без глубокой связки.",
@@ -589,6 +584,12 @@ export const ruMessages = {
           free: "Минимальная.",
           full: "Модули работают как части одного продукта.",
           others: "Чаще всего несвязанные."
+        },
+        {
+          label: "Цена",
+          free: "0",
+          full: "650",
+          others: "—"
         }
       ]
     },
