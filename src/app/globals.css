@@ -3858,9 +3858,9 @@ a {
 
   .chrp-timeline__rail {
     top: 0.92rem;
-    right: calc(10% + 0.8rem);
+    right: calc(100% / 14);
     bottom: auto;
-    left: calc(10% + 0.8rem);
+    left: calc(100% / 14);
     width: auto;
     height: 2px;
   }
