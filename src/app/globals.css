@@ -4723,7 +4723,6 @@ a {
   .crown-page .crown-final-cta[data-reveal],
   .crown-page .crown-hero[data-reveal] {
     transform: translate3d(0, 24px, 0) scale(0.995);
-    filter: blur(8px);
     transition-duration: var(--crown-motion-slow);
     transition-timing-function: var(--crown-motion-ease);
   }
