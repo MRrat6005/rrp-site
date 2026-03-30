@@ -533,7 +533,15 @@ export const ruMessages = {
       freeLabel: "FREE",
       fullLabel: "FULL",
       othersLabel: "Другие боты",
+      priceLabel: "Цена",
+      priceFullNote: "За 1 ключ",
       rows: [
+        {
+          label: "Цена",
+          free: "0",
+          full: "650",
+          others: "—"
+        },
         {
           label: "Набор модулей",
           free: "Базовый набор без глубокой связки.",

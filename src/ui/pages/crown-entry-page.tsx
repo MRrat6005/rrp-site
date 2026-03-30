@@ -17,6 +17,9 @@ interface CrownEntryPageProps {
 
 type CrownVisualVariant = "hero" | "status" | "settings" | "branding" | "module";
 
+const ROBUX_ICON_SRC =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Robux_2019_Logo_gold.svg/960px-Robux_2019_Logo_gold.svg.png";
+
 interface CrownVisualSurfaceProps {
   alt: string;
   body: string;
@@ -535,16 +538,57 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
               </tr>
             </thead>
             <tbody>
-              {copy.comparison.rows.map((row) => (
-                <tr key={row.label}>
-                  <th scope="row" className="crown-comparison-table__feature">
-                    {row.label}
-                  </th>
-                  <td>{row.free}</td>
-                  <td className="is-highlighted">{row.full}</td>
-                  <td>{row.others}</td>
-                </tr>
-              ))}
+              {copy.comparison.rows.map((row) => {
+                const isPriceRow = row.label === copy.comparison.priceLabel;
+
+                return (
+                  <tr key={row.label}>
+                    <th scope="row" className="crown-comparison-table__feature">
+                      {row.label}
+                    </th>
+                    <td>
+                      {isPriceRow ? (
+                        <span className="crown-price-value crown-price-value--free">
+                          <img
+                            src={ROBUX_ICON_SRC}
+                            alt=""
+                            aria-hidden="true"
+                            className="crown-price-value__icon"
+                          />
+                          <span>0</span>
+                        </span>
+                      ) : (
+                        row.free
+                      )}
+                    </td>
+                    <td className="is-highlighted">
+                      {isPriceRow ? (
+                        <button
+                          type="button"
+                          className="crown-price-placeholder"
+                          aria-disabled="true"
+                        >
+                          <span className="crown-price-placeholder__main">
+                            <img
+                              src={ROBUX_ICON_SRC}
+                              alt=""
+                              aria-hidden="true"
+                              className="crown-price-placeholder__icon"
+                            />
+                            <span className="crown-price-placeholder__amount">650</span>
+                          </span>
+                          <span className="crown-price-placeholder__note">
+                            {copy.comparison.priceFullNote}
+                          </span>
+                        </button>
+                      ) : (
+                        row.full
+                      )}
+                    </td>
+                    <td>{isPriceRow ? "—" : row.others}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

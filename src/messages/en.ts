@@ -533,7 +533,15 @@ export const enMessages = {
       freeLabel: "FREE",
       fullLabel: "FULL",
       othersLabel: "Other bots",
+      priceLabel: "Price",
+      priceFullNote: "For 1 key",
       rows: [
+        {
+          label: "Price",
+          free: "0",
+          full: "650",
+          others: "—"
+        },
         {
           label: "Module set",
           free: "Basic coverage without deep linkage.",

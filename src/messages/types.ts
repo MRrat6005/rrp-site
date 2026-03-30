@@ -192,6 +192,8 @@ export interface CrownPageCopy {
     freeLabel: string;
     fullLabel: string;
     othersLabel: string;
+    priceLabel: string;
+    priceFullNote: string;
     rows: readonly CrownComparisonRowCopy[];
   };
   finalCta: {
