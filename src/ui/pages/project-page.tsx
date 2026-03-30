@@ -45,7 +45,6 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
               />
               <div>
                 <h1 className="display-title">{project.title}</h1>
-                <p className="mt-2 text-sm text-white/52">{copy.categoryLabel}</p>
               </div>
             </div>
 
@@ -66,12 +65,7 @@ export function ProjectPage({ locale, projectId, messages }: ProjectPageProps) {
             <ConfigurableBackdrop background={surface} className="absolute inset-0" />
             <div className={`project-hero-media__shade project-hero-media__shade--${projectId}`} />
             <div className="relative z-10 flex h-full flex-col justify-between gap-8">
-              <div className="flex items-start justify-between gap-4">
-                <span className="project-tag">{copy.categoryLabel}</span>
-                <span className="text-[10px] uppercase tracking-[0.26em] text-white/44">
-                  {copy.specs[0]?.label}
-                </span>
-              </div>
+
 
               <div className="project-hero-media__mark-shell">
                 {markPath ? (
