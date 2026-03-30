@@ -19,9 +19,15 @@ type CrownVisualVariant = "hero" | "status" | "settings" | "branding" | "module"
 
 const ROBUX_ICON_SRC =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Robux_2019_Logo_gold.svg/960px-Robux_2019_Logo_gold.svg.png";
-const TRUSTED_LOGO_PATHS = [
-  "/projects/crown/trusted-logo-01.png",
-  "/projects/crown/trusted-logo-02.png"
+const TRUSTED_LOGOS = [
+  {
+    src: "/projects/crown/trusted-logo-01.png",
+    href: "https://discord.gg/mdZjSdJMGh"
+  },
+  {
+    src: "/projects/crown/trusted-logo-02.png",
+    href: "https://discord.gg/47TQHbXF59"
+  }
 ] as const;
 
 interface CrownVisualSurfaceProps {
@@ -34,11 +40,17 @@ interface CrownVisualSurfaceProps {
   moduleLabel?: string;
 }
 
-function CrownTrustLogoSlot({ src, alt }: { src: string; alt: string }) {
+function CrownTrustLogoSlot({ src, alt, href }: { src: string; alt: string; href: string }) {
   const [imageReady, setImageReady] = useState(true);
 
   return (
-    <div className="crown-trust__logo-slot" aria-label={alt}>
+    <Link
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="crown-trust__logo-slot"
+      aria-label={alt}
+    >
       {imageReady ? (
         <Image
           src={src}
@@ -49,7 +61,7 @@ function CrownTrustLogoSlot({ src, alt }: { src: string; alt: string }) {
           onError={() => setImageReady(false)}
         />
       ) : null}
-    </div>
+    </Link>
   );
 }
 
@@ -394,8 +406,8 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
           <div className="crown-trust crown-trust--final" aria-label="Нам доверяют">
             <p className="crown-trust__label crown-trust__label--final">Нам доверяют:</p>
             <div className="crown-trust__logos crown-trust__logos--final">
-              {TRUSTED_LOGO_PATHS.map((src, index) => (
-                <CrownTrustLogoSlot key={src} src={src} alt={`Партнер ${index + 1}`} />
+              {TRUSTED_LOGOS.map((item, index) => (
+                <CrownTrustLogoSlot key={item.src} src={item.src} href={item.href} alt={`Партнер ${index + 1}`} />
               ))}
             </div>
           </div>
@@ -642,6 +654,7 @@ export function CrownEntryPage({ locale, messages }: CrownEntryPageProps) {
     </main>
   );
 }
+
 
 
 

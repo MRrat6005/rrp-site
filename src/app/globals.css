@@ -3762,6 +3762,11 @@ a {
     align-items: center;
     justify-content: center;
     width: 100%;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .crown-trust__logo-slot:hover {
+    transform: scale(1.04);
   }
 
   .crown-trust--final .crown-trust__logo-slot {
@@ -3774,6 +3779,11 @@ a {
     max-width: 100%;
     object-fit: contain;
     opacity: 0.96;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .crown-trust__logo-slot:hover .crown-trust__logo-image {
+    transform: scale(1.04);
   }
 
   .crown-trust--final .crown-trust__logo-image {
@@ -4780,6 +4790,7 @@ a {
     font-size: 0.96rem;
     line-height: 1.5;
   }
+
 
 
 
