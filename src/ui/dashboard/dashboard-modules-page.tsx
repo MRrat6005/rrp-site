@@ -26,7 +26,7 @@ export function DashboardModulesPage({
           {server.modules.map((module) => (
             <div
               key={module.key}
-              className="flex flex-col gap-4 rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
@@ -45,3 +45,4 @@ export function DashboardModulesPage({
     </DashboardPanel>
   );
 }
+

@@ -18,7 +18,7 @@ export function DashboardPanel({
   return (
     <section
       className={cx(
-        "rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,19,22,0.98),rgba(12,13,15,0.98))] shadow-[0_12px_32px_rgba(0,0,0,0.16)]",
+        "rounded-[1.4rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(17,18,20,0.94),rgba(12,13,15,0.94))] shadow-[0_8px_24px_rgba(0,0,0,0.12)]",
         className
       )}
       {...props}
@@ -34,10 +34,10 @@ interface DashboardStatusPillProps {
 }
 
 const toneClasses: Record<DashboardTone, string> = {
-  positive: "border-white/16 bg-white/[0.06] text-white",
-  warning: "border-white/14 bg-white/[0.04] text-white/78",
-  info: "border-white/12 bg-white/[0.035] text-white/72",
-  muted: "border-white/10 bg-transparent text-white/54"
+  positive: "border-white/[0.08] bg-white/[0.035] text-white/76",
+  warning: "border-white/[0.07] bg-white/[0.025] text-white/66",
+  info: "border-white/[0.06] bg-white/[0.02] text-white/62",
+  muted: "border-white/[0.06] bg-transparent text-white/44"
 };
 
 export function DashboardStatusPill({
@@ -47,7 +47,7 @@ export function DashboardStatusPill({
   return (
     <span
       className={cx(
-        "inline-flex items-center rounded-full border px-3 py-1.5 text-[11px] font-medium tracking-[0.16em] uppercase",
+        "inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium tracking-[0.14em] uppercase",
         toneClasses[tone]
       )}
     >
@@ -67,8 +67,8 @@ export function DashboardSectionHeading({
 }: DashboardSectionHeadingProps) {
   return (
     <div className="space-y-1.5">
-      <h2 className="text-base font-semibold text-white">{title}</h2>
-      {body ? <p className="text-sm leading-6 text-white/56">{body}</p> : null}
+      <h2 className="text-base font-medium text-white/92">{title}</h2>
+      {body ? <p className="text-sm leading-6 text-white/52">{body}</p> : null}
     </div>
   );
 }

@@ -27,7 +27,7 @@ export function DashboardBrandingPage({
               {server.branding.assets.map((asset) => (
                 <div
                   key={asset.label}
-                  className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4"
+                  className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4"
                 >
                   <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
                     {asset.label}
@@ -47,7 +47,7 @@ export function DashboardBrandingPage({
               {server.branding.fields.map((field) => (
                 <div
                   key={field.label}
-                  className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4"
+                  className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4"
                 >
                   <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
                     {field.label}
@@ -68,3 +68,4 @@ export function DashboardBrandingPage({
     </div>
   );
 }
+

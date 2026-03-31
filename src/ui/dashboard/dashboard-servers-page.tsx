@@ -65,7 +65,7 @@ export function DashboardServersPage({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={copy.servers.searchPlaceholder}
-            className="w-full rounded-[1rem] border border-white/10 bg-[#111214] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/28 focus:border-white/16"
+            className="w-full rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3 text-sm text-white/84 outline-none transition placeholder:text-white/24 focus:border-white/[0.1] focus:bg-white/[0.02]"
           />
         </label>
       </DashboardPanel>
@@ -78,12 +78,12 @@ export function DashboardServersPage({
               href={getLocalizedPath(locale, `dashboard/server/${server.id}/overview`)}
               className="group"
             >
-              <DashboardPanel className="h-full p-5 transition hover:border-white/14 hover:bg-[linear-gradient(180deg,rgba(20,21,24,0.98),rgba(13,14,16,0.98))] sm:p-6">
+              <DashboardPanel className="h-full p-5 transition hover:border-white/[0.09] hover:bg-[linear-gradient(180deg,rgba(19,20,23,0.95),rgba(13,14,16,0.95))] sm:p-6">
                 <div className="flex h-full flex-col gap-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-start gap-3">
                       <div
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.95rem] border border-white/10 text-sm font-semibold text-white"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.06] text-sm font-medium text-white/84"
                         style={{ backgroundColor: `${server.accent}20` }}
                       >
                         {server.iconLabel}
@@ -104,19 +104,19 @@ export function DashboardServersPage({
                   <p className="text-sm leading-6 text-white/58">{server.description}</p>
 
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.members}
                       </p>
                       <p className="mt-2 text-sm text-white/76">{server.members}</p>
                     </div>
-                    <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.region}
                       </p>
                       <p className="mt-2 text-sm text-white/76">{server.region}</p>
                     </div>
-                    <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.environment}
                       </p>
@@ -124,9 +124,9 @@ export function DashboardServersPage({
                     </div>
                   </div>
 
-                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/8 pt-4">
+                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
                     <span className="text-sm text-white/44">{server.plan}</span>
-                    <span className="text-sm text-white/72 transition group-hover:text-white">
+                    <span className="text-sm text-white/60 transition group-hover:text-white/78">
                       {getDashboardStateAction(locale, server.state)}
                     </span>
                   </div>
@@ -146,3 +146,5 @@ export function DashboardServersPage({
     </DashboardServerShell>
   );
 }
+
+

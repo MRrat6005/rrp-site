@@ -48,7 +48,7 @@ export function DashboardLicensesPage({
             {server.licenses.entitlements.map((item) => (
               <div
                 key={item.label}
-                className="flex flex-col gap-3 rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <p className="text-sm text-white/76">{item.label}</p>
                 <DashboardStatusPill tone={item.tone}>{item.value}</DashboardStatusPill>
@@ -60,3 +60,4 @@ export function DashboardLicensesPage({
     </div>
   );
 }
+

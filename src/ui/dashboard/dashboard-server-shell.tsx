@@ -105,19 +105,19 @@ export function DashboardServerShell({
     : [{ key: "servers", href: getLocalizedPath(locale, "dashboard/servers") }];
 
   const sidebar = (
-    <div className="flex h-full flex-col gap-4">
-      <DashboardPanel className="p-4">
+    <div className="flex h-full flex-col gap-3.5">
+      <DashboardPanel className="p-3.5">
         <div className="flex items-center gap-3">
           <LogoTile
             shortLabel="CR"
             label={siteConfig.brand.dashboardBrand}
             imagePath={siteConfig.visuals.projects.crown.markPath}
             size="sm"
-            className="bg-white/[0.04]"
+            className="bg-white/[0.02]"
           />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{copy.brand}</p>
-            <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
+            <p className="truncate text-sm font-medium text-white/86">{copy.brand}</p>
+            <p className="text-[11px] uppercase tracking-[0.24em] text-white/30">
               {copy.subtitle}
             </p>
           </div>
@@ -125,26 +125,26 @@ export function DashboardServerShell({
       </DashboardPanel>
 
       {server ? (
-        <DashboardPanel className="p-4">
-          <div className="space-y-4">
+        <DashboardPanel className="p-3.5">
+          <div className="space-y-3.5">
             <div className="flex items-start gap-3">
               <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.95rem] border border-white/10 text-sm font-semibold text-white"
-                style={{ backgroundColor: `${server.accent}20` }}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.06] text-sm font-medium text-white/82"
+                style={{ backgroundColor: `${server.accent}16` }}
               >
                 {server.iconLabel}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="truncate text-sm font-semibold text-white">{server.name}</p>
-                <p className="text-sm leading-6 text-white/52">{server.description}</p>
+                <p className="truncate text-sm font-medium text-white/88">{server.name}</p>
+                <p className="text-sm leading-6 text-white/46">{server.description}</p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-white/38">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-white/30">
                 {copy.sidebar.shellState}
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 <DashboardStatusPill tone={stateTone}>
                   {getDashboardStateLabel(locale, server.state)}
                 </DashboardStatusPill>
@@ -154,17 +154,17 @@ export function DashboardServerShell({
           </div>
         </DashboardPanel>
       ) : (
-        <DashboardPanel className="p-4">
+        <DashboardPanel className="p-3.5">
           <div className="space-y-2">
-            <p className="text-sm font-semibold text-white">{copy.nav.servers}</p>
-            <p className="text-sm leading-6 text-white/52">{copy.descriptions.servers}</p>
+            <p className="text-sm font-medium text-white/86">{copy.nav.servers}</p>
+            <p className="text-sm leading-6 text-white/46">{copy.descriptions.servers}</p>
             <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
           </div>
         </DashboardPanel>
       )}
 
-      <DashboardPanel className="flex-1 p-2.5">
-        <nav className="grid gap-1.5">
+      <DashboardPanel className="flex-1 p-2">
+        <nav className="grid gap-1">
           {navItems.map((item) => {
             const isActive = item.key === activePage;
 
@@ -174,13 +174,16 @@ export function DashboardServerShell({
                 href={item.href}
                 onClick={() => setDrawerOpen(false)}
                 className={cx(
-                  "rounded-[1rem] border px-3 py-3 text-sm transition",
+                  "group relative rounded-[0.95rem] px-3 py-2.5 text-sm transition",
                   isActive
-                    ? "border-white/16 bg-white/[0.07] text-white"
-                    : "border-transparent text-white/56 hover:border-white/10 hover:bg-white/[0.03] hover:text-white"
+                    ? "bg-white/[0.035] text-white/82"
+                    : "text-white/50 hover:bg-white/[0.02] hover:text-white/68"
                 )}
               >
-                {getDashboardPageTitle(locale, item.key)}
+                {isActive ? (
+                  <span className="absolute inset-y-2 left-0 w-px rounded-full bg-white/28" />
+                ) : null}
+                <span className="block pl-2">{getDashboardPageTitle(locale, item.key)}</span>
               </Link>
             );
           })}
@@ -190,13 +193,13 @@ export function DashboardServerShell({
       <div className="grid gap-2">
         <Link
           href={getLocalizedPath(locale, "dashboard/servers")}
-          className="rounded-[1rem] border border-white/10 px-4 py-3 text-sm text-white/68 transition hover:border-white/14 hover:text-white"
+          className="rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/62 transition hover:bg-white/[0.02] hover:text-white/76"
         >
           {copy.sidebar.allServers}
         </Link>
         <Link
           href={getLocalizedPath(locale)}
-          className="rounded-[1rem] border border-white/10 px-4 py-3 text-sm text-white/52 transition hover:border-white/14 hover:text-white/78"
+          className="rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/46 transition hover:bg-white/[0.02] hover:text-white/68"
         >
           {copy.sidebar.publicSite}
         </Link>
@@ -205,7 +208,7 @@ export function DashboardServerShell({
   );
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_24%),linear-gradient(180deg,#0f1012_0%,#0b0c0d_100%)] text-white">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.035),transparent_22%),linear-gradient(180deg,#0e0f11_0%,#0b0c0d_100%)] text-white">
       <div className="mx-auto flex min-h-screen w-full max-w-[1500px] gap-4 px-4 py-4 sm:px-6 lg:gap-6 lg:px-8 lg:py-6">
         <aside className="hidden w-[280px] shrink-0 lg:block">{sidebar}</aside>
 
@@ -216,26 +219,26 @@ export function DashboardServerShell({
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(true)}
-                  className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/68 transition hover:border-white/14 hover:text-white lg:hidden"
+                  className="rounded-full border border-white/[0.06] px-4 py-2 text-sm text-white/62 transition hover:bg-white/[0.02] hover:text-white/76 lg:hidden"
                 >
                   {copy.sidebar.menu}
                 </button>
                 <div className="space-y-2">
-                  <p className="text-[11px] uppercase tracking-[0.26em] text-white/38">
+                  <p className="text-[11px] uppercase tracking-[0.26em] text-white/30">
                     {server ? server.name : copy.brand}
                   </p>
                   <div className="space-y-1">
-                    <h1 className="text-2xl font-semibold text-white sm:text-[2rem]">
+                    <h1 className="text-2xl font-medium text-white/92 sm:text-[2rem]">
                       {getDashboardPageTitle(locale, activePage)}
                     </h1>
-                    <p className="max-w-2xl text-sm leading-6 text-white/56">
+                    <p className="max-w-2xl text-sm leading-6 text-white/52">
                       {copy.descriptions[activePage]}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-wrap justify-end gap-2">
+              <div className="flex flex-wrap justify-end gap-1.5">
                 {server ? (
                   <>
                     <DashboardStatusPill tone={stateTone}>
@@ -259,9 +262,9 @@ export function DashboardServerShell({
               type="button"
               aria-label="Close menu"
               onClick={() => setDrawerOpen(false)}
-              className="absolute inset-0 bg-[rgba(0,0,0,0.58)]"
+              className="absolute inset-0 bg-[rgba(0,0,0,0.52)]"
             />
-            <div className="absolute left-0 top-0 h-full w-[min(21rem,88vw)] border-r border-white/10 bg-[#0d0e10] p-4">
+            <div className="absolute left-0 top-0 h-full w-[min(21rem,88vw)] border-r border-white/[0.06] bg-[#0c0d0f] p-4">
               {sidebar}
             </div>
           </div>
