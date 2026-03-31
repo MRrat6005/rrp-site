@@ -1,166 +1,211 @@
+import type {
+  DashboardPageKey,
+  DashboardServerState,
+  DashboardTone
+} from "@/lib/dashboard-mock";
 import type { Locale } from "@/config/site.config";
 
 const dashboardCopy = {
   en: {
+    brand: "CROWN Dashboard",
+    subtitle: "Server control surface",
+    nav: {
+      servers: "Servers",
+      overview: "Overview",
+      settings: "Settings",
+      modules: "Modules",
+      branding: "Branding",
+      licenses: "Licenses",
+      status: "Status"
+    },
+    descriptions: {
+      servers: "Select a server first, then enter its dashboard.",
+      overview: "Identity, short status, modules, and recent notices.",
+      settings: "Core server settings kept intentionally shallow.",
+      modules: "Minimal module management rows for the main feature set.",
+      branding: "Sparse identity controls for visual assets and naming.",
+      licenses: "Plan and entitlement structure without billing logic.",
+      status: "Grouped health placeholders with a restrained system view."
+    },
+    sidebar: {
+      allServers: "All servers",
+      publicSite: "Public site",
+      shellState: "Shell state",
+      mockMode: "Mock data only",
+      menu: "Menu"
+    },
     servers: {
-      eyebrow: "Server selection",
-      title: "Choose a server before opening the dashboard shell.",
-      body: "A clean Juniper-style server list comes first: search, review state, and step into an app workspace without touching live integrations.",
-      searchPlaceholder: "Search servers, plans, or regions",
-      emptyTitle: "No servers matched",
-      emptyBody: "Adjust the search input or clear the filter to see the full mock list.",
-      resultsLabel: "Visible servers",
-      openCta: "Open dashboard",
-      inviteCta: "Invite bot",
-      inactiveCta: "Review archive",
-      testCta: "Open sandbox",
+      searchPlaceholder: "Search servers",
+      emptyTitle: "No servers found",
+      emptyBody: "Try a different name, region, or plan.",
       members: "Members",
       region: "Region",
-      modules: "Modules",
-      status: {
-        connected: "Connected",
-        invite: "Invite bot",
-        inactive: "Inactive",
-        test: "Test server"
-      }
-    },
-    workspace: {
-      eyebrow: "Workspace entry",
-      title: "Start from a clear server entry, then branch into the app sections.",
-      body: "This page acts as the first stop after selecting a server, giving you a fast summary and a disciplined set of section links instead of dumping everything into one screen.",
-      routesTitle: "Dashboard sections",
-      routesBody: "Each section is a separate route with the same shell, sidebar, and title bar.",
-      profileTitle: "Server profile",
-      summaryTitle: "Selection summary"
+      environment: "Environment"
     },
     overview: {
-      eyebrow: "Overview",
-      modulesTitle: "Module overview",
-      activityTitle: "Recent activity",
-      actionsTitle: "Quick actions"
-    },
-    modules: {
-      eyebrow: "Modules",
-      title: "Feature modules",
-      body: "List each module with clear state, short context, and a direct placeholder action.",
-      stateEnabled: "Enabled",
-      stateDisabled: "Disabled"
+      identity: "Server identity",
+      status: "System status",
+      modules: "Module summary",
+      notices: "Recent notices"
     },
     settings: {
-      eyebrow: "Settings hub",
-      title: "Central settings",
-      body: "Group the key administrative areas so the shell reads like a product dashboard, not a landing page."
+      title: "Core settings",
+      note: "This page is structural only. No deep configuration or write flows are wired yet."
+    },
+    modules: {
+      title: "Main modules",
+      note: "Rows stay compact so the page reads like a utility panel, not a feature gallery."
     },
     branding: {
-      eyebrow: "Branding preview",
-      title: "Preview identity surfaces before any live asset sync exists.",
-      body: "The layout favors preview and hierarchy first, with supporting slots for logo, banner, accents, and text fields."
+      assets: "Assets",
+      identity: "Identity",
+      note: "Branding stays preview-only in this pass."
     },
     licenses: {
-      eyebrow: "License summary",
-      title: "Compare plan level and entitlement coverage.",
-      body: "Keep the upgrade framing premium and clear, but stop short of real commerce or seat management logic.",
-      freeLabel: "Free",
-      fullLabel: "Full"
+      current: "Current plan",
+      available: "Available level",
+      summary: "Entitlement summary"
     },
     status: {
-      eyebrow: "Status view",
-      title: "Grouped health surfaces for core, dashboard, modules, and integrations.",
-      body: "A calm operational view is enough for this shell pass: no noisy charts, just structured status cards.",
-      core: "Bot and core",
-      dashboard: "Dashboard shell",
-      modules: "Module status",
-      integrations: "API and integrations"
-    },
-    shared: {
-      mockBadge: "Mock data",
-      previewLabel: "Preview",
-      upgradeCta: "Upgrade placeholder",
-      seatLabel: "Entitlements",
-      noteLabel: "Current note"
+      note: "All system values are local placeholders."
     }
   },
   ru: {
+    brand: "CROWN Dashboard",
+    subtitle: "Server control surface",
+    nav: {
+      servers: "Servers",
+      overview: "Overview",
+      settings: "Settings",
+      modules: "Modules",
+      branding: "Branding",
+      licenses: "Licenses",
+      status: "Status"
+    },
+    descriptions: {
+      servers: "Сначала выберите сервер, затем войдите в его dashboard.",
+      overview: "Идентичность, короткий статус, модули и недавние заметки.",
+      settings: "Базовые server settings без глубокой формы.",
+      modules: "Минимальный список основных модулей.",
+      branding: "Сдержанные identity-поля и preview-активы.",
+      licenses: "Структура плана и entitlements без billing-логики.",
+      status: "Групповые health-placeholder'ы в спокойной системе."
+    },
+    sidebar: {
+      allServers: "Все серверы",
+      publicSite: "Публичный сайт",
+      shellState: "Состояние shell",
+      mockMode: "Только mock data",
+      menu: "Меню"
+    },
     servers: {
-      eyebrow: "Выбор сервера",
-      title: "Сначала выберите сервер, потом открывайте dashboard shell.",
-      body: "Список серверов идет первым: поиск, понятные состояния карточек и вход в app-workspace без live-интеграций.",
-      searchPlaceholder: "Искать серверы, планы или регионы",
-      emptyTitle: "Ничего не найдено",
-      emptyBody: "Измените запрос или очистите фильтр, чтобы снова увидеть весь mock-список.",
-      resultsLabel: "Видимые серверы",
-      openCta: "Открыть dashboard",
-      inviteCta: "Invite bot",
-      inactiveCta: "Открыть архив",
-      testCta: "Открыть sandbox",
+      searchPlaceholder: "Поиск серверов",
+      emptyTitle: "Серверы не найдены",
+      emptyBody: "Попробуйте другое имя, регион или план.",
       members: "Участники",
       region: "Регион",
-      modules: "Модули",
-      status: {
-        connected: "Connected",
-        invite: "Invite bot",
-        inactive: "Inactive",
-        test: "Test server"
-      }
-    },
-    workspace: {
-      eyebrow: "Точка входа",
-      title: "Начните с серверного entry-point, затем переходите в отдельные app-разделы.",
-      body: "Эта страница работает как первый шаг после выбора сервера: краткое summary и дисциплинированные переходы по разделам вместо одного перегруженного экрана.",
-      routesTitle: "Разделы dashboard",
-      routesBody: "Каждый раздел живет на отдельном маршруте, но использует общий shell, sidebar и title bar.",
-      profileTitle: "Профиль сервера",
-      summaryTitle: "Selection summary"
+      environment: "Среда"
     },
     overview: {
-      eyebrow: "Overview",
-      modulesTitle: "Обзор модулей",
-      activityTitle: "Recent activity",
-      actionsTitle: "Быстрые действия"
-    },
-    modules: {
-      eyebrow: "Модули",
-      title: "Feature-модули",
-      body: "Покажите каждый модуль с понятным состоянием, коротким контекстом и прямым placeholder-действием.",
-      stateEnabled: "Enabled",
-      stateDisabled: "Disabled"
+      identity: "Идентичность сервера",
+      status: "Системный статус",
+      modules: "Сводка модулей",
+      notices: "Недавние заметки"
     },
     settings: {
-      eyebrow: "Settings hub",
-      title: "Центральные настройки",
-      body: "Сгруппируйте ключевые административные блоки так, чтобы shell ощущался как продуктовый dashboard, а не как landing page."
+      title: "Базовые настройки",
+      note: "Страница пока структурная. Глубокой конфигурации и записи данных здесь нет."
+    },
+    modules: {
+      title: "Основные модули",
+      note: "Список намеренно компактный и утилитарный."
     },
     branding: {
-      eyebrow: "Branding preview",
-      title: "Сначала preview identity-поверхностей, потом live-sync ассетов.",
-      body: "Композиция смещена в сторону preview и иерархии, а рядом остаются слоты для logo, banner, accents и text-fields."
+      assets: "Активы",
+      identity: "Identity",
+      note: "Branding в этом проходе остается только preview."
     },
     licenses: {
-      eyebrow: "Сводка лицензии",
-      title: "Сравните уровень плана и покрытие entitlements.",
-      body: "Upgrade-путь должен быть премиальным и ясным, но без реальной коммерции и seat-логики.",
-      freeLabel: "Free",
-      fullLabel: "Full"
+      current: "Текущий план",
+      available: "Доступный уровень",
+      summary: "Сводка entitlements"
     },
     status: {
-      eyebrow: "Статус",
-      title: "Групповые health-поверхности для core, dashboard, модулей и интеграций.",
-      body: "Для shell-этапа достаточно спокойного operational-view: без шумных графиков, только структурированные карточки статусов.",
-      core: "Bot и core",
-      dashboard: "Dashboard shell",
-      modules: "Статус модулей",
-      integrations: "API и интеграции"
-    },
-    shared: {
-      mockBadge: "Mock data",
-      previewLabel: "Preview",
-      upgradeCta: "Upgrade placeholder",
-      seatLabel: "Entitlements",
-      noteLabel: "Текущая заметка"
+      note: "Все системные значения здесь локальные placeholder'ы."
     }
   }
 } as const;
 
 export function getDashboardCopy(locale: Locale) {
   return dashboardCopy[locale];
+}
+
+export function getDashboardStateLabel(
+  locale: Locale,
+  state: DashboardServerState
+): string {
+  const labels = {
+    en: {
+      connected: "Connected",
+      invite: "Invite bot",
+      inactive: "Inactive",
+      test: "Test"
+    },
+    ru: {
+      connected: "Connected",
+      invite: "Invite bot",
+      inactive: "Inactive",
+      test: "Test"
+    }
+  } as const;
+
+  return labels[locale][state];
+}
+
+export function getDashboardStateAction(
+  locale: Locale,
+  state: DashboardServerState
+): string {
+  const labels = {
+    en: {
+      connected: "Open dashboard",
+      invite: "Open setup",
+      inactive: "Review shell",
+      test: "Open test shell"
+    },
+    ru: {
+      connected: "Open dashboard",
+      invite: "Open setup",
+      inactive: "Review shell",
+      test: "Open test shell"
+    }
+  } as const;
+
+  return labels[locale][state];
+}
+
+export function getDashboardPageTitle(
+  locale: Locale,
+  key: DashboardPageKey
+): string {
+  return getDashboardCopy(locale).nav[key];
+}
+
+export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): string {
+  const labels = {
+    en: {
+      positive: "Healthy",
+      warning: "Attention",
+      info: "Ready",
+      muted: "Placeholder"
+    },
+    ru: {
+      positive: "Healthy",
+      warning: "Attention",
+      info: "Ready",
+      muted: "Placeholder"
+    }
+  } as const;
+
+  return labels[locale][tone];
 }

@@ -71,7 +71,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
                 </div>
                 <div className="quiet-surface flex min-h-[6.25rem] justify-between px-4 py-4">
                   <span className="workspace-label">{labels.nextRoute}</span>
-                  <span className="text-sm font-medium text-ink">/app/servers</span>
+                  <span className="text-sm font-medium text-ink">/dashboard/servers</span>
                 </div>
               </div>
 
@@ -101,3 +101,4 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
     </main>
   );
 }
+

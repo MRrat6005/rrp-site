@@ -3,8 +3,7 @@ import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
   DashboardPanel,
-  DashboardSectionIntro,
-  DashboardStatusPill
+  DashboardSectionHeading
 } from "@/ui/dashboard/dashboard-primitives";
 
 interface DashboardSettingsPageProps {
@@ -19,39 +18,38 @@ export function DashboardSettingsPage({
   const copy = getDashboardCopy(locale);
 
   return (
-    <div className="space-y-5">
-      <DashboardPanel className="p-5 sm:p-6 lg:p-7">
-        <DashboardSectionIntro
-          eyebrow={copy.settings.eyebrow}
-          title={copy.settings.title}
-          body={copy.settings.body}
-          aside={<DashboardStatusPill tone="muted">{server.settingsGroups.length} areas</DashboardStatusPill>}
-        />
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <DashboardPanel className="p-5 sm:p-6">
+        <div className="space-y-4">
+          <DashboardSectionHeading title={copy.settings.title} />
+          <div className="space-y-2">
+            {server.settings.map((group) => (
+              <div
+                key={group.label}
+                className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4"
+              >
+                <div className="space-y-2">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
+                    {group.label}
+                  </p>
+                  <p className="text-sm font-medium text-white/82">{group.value}</p>
+                  <p className="text-sm leading-6 text-white/50">{group.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </DashboardPanel>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {server.settingsGroups.map((group) => (
-          <DashboardPanel key={group.label} className="p-5 sm:p-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/40">
-                  {group.label}
-                </p>
-                <h2 className="[font-family:var(--font-display)] text-2xl font-semibold text-white">
-                  {group.value}
-                </h2>
-              </div>
-              <p className="text-sm leading-7 text-white/60">{group.note}</p>
-            </div>
-          </DashboardPanel>
-        ))}
-      </div>
-
       <DashboardPanel className="p-5 sm:p-6">
-        <DashboardSectionIntro
-          title="Readability first"
-          body="The settings hub stays centralized and scannable so new server owners can move between localization, admin access, enabled modules, branding, and license context without hunting for controls."
-        />
+        <div className="space-y-4">
+          <DashboardSectionHeading title="Read-only note" body={copy.settings.note} />
+          <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-4 py-4 text-sm leading-6 text-white/54">
+            The groups on this page are deliberately shallow. They establish where
+            localization, admin role, enabled modules, and access controls will
+            live later, without pretending real writes or permission checks exist now.
+          </div>
+        </div>
       </DashboardPanel>
     </div>
   );

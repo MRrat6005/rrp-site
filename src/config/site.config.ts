@@ -236,7 +236,7 @@ export const siteConfig: SiteConfig = {
   },
   ctaRoutes: {
     dashboard: "login",
-    workspace: "app/servers",
+    workspace: "dashboard/servers",
     docs: "docs",
     contacts: "contacts",
     projects: {
@@ -338,4 +338,5 @@ export function getProjectThemeStyle(projectId: ProjectId): ThemeStyle {
     "--tile-glow": theme.tileGlow
   };
 }
+
 

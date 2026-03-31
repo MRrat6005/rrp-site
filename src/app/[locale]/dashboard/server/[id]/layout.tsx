@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { resolveLocale } from "@/lib/i18n";
 import { getDashboardServer, getDashboardServerIds } from "@/lib/dashboard-mock";
+import { resolveLocale } from "@/lib/i18n";
 import { DashboardServerShell } from "@/ui/dashboard/dashboard-server-shell";
 
-interface ServerLayoutProps {
+interface DashboardServerLayoutProps {
   children: ReactNode;
   params: {
     locale: string;
@@ -19,7 +19,10 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default function ServerLayout({ children, params }: ServerLayoutProps) {
+export default function DashboardServerLayout({
+  children,
+  params
+}: DashboardServerLayoutProps) {
   const locale = resolveLocale(params.locale);
   const server = getDashboardServer(params.id);
 

@@ -1,17 +1,19 @@
 import { notFound } from "next/navigation";
 
-import { resolveLocale } from "@/lib/i18n";
 import { getDashboardServer } from "@/lib/dashboard-mock";
+import { resolveLocale } from "@/lib/i18n";
 import { DashboardModulesPage } from "@/ui/dashboard/dashboard-modules-page";
 
-interface DashboardModulesRouteProps {
+interface DashboardModulesRoutePageProps {
   params: {
     locale: string;
     id: string;
   };
 }
 
-export default function DashboardModulesRoute({ params }: DashboardModulesRouteProps) {
+export default function DashboardModulesRoutePage({
+  params
+}: DashboardModulesRoutePageProps) {
   const locale = resolveLocale(params.locale);
   const server = getDashboardServer(params.id);
 
