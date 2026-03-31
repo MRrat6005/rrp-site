@@ -48,6 +48,14 @@ export interface AboutDirectionCopy extends EyebrowSectionCopy {
   ctaLabel: string;
 }
 
+export interface AboutTeamMemberCopy {
+  nickname: string;
+  role: string;
+  description: string;
+  imagePath: string;
+  isPrimary?: boolean;
+}
+
 export interface AboutPageCopy {
   hero: {
     eyebrow: string;
@@ -78,6 +86,10 @@ export interface AboutPageCopy {
     title: string;
     intro: string;
     principles: readonly SectionCopy[];
+  };
+  team: {
+    title: string;
+    members: readonly AboutTeamMemberCopy[];
   };
   finalCta: {
     eyebrow: string;
@@ -156,6 +168,7 @@ export interface ChrpPageCopy {
     discordCardBody: string;
     discordCardButtonLabel: string;
   };
+
   finalCta: {
     eyebrow: string;
     title: string;
@@ -259,6 +272,7 @@ export interface CrownPageCopy {
     priceFullNote: string;
     rows: readonly CrownComparisonRowCopy[];
   };
+
   finalCta: {
     eyebrow: string;
     title: string;

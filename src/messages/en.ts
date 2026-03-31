@@ -148,6 +148,47 @@ export const enMessages = {
         }
       ]
     },
+    team: {
+      title: "Meet the team",
+      members: [
+        {
+          nickname: "@like_snowfall",
+          role: "Founder of LSRP",
+          description:
+            "The muse behind every project we built, including the success of Liberty State RolePlay.",
+          imagePath: "/assets/team/like-snowfall.png"
+        },
+        {
+          nickname: "@sugohanakal",
+          role: "Lead CHRP moderator",
+          description:
+            "The finest fire department chief across the RRP projects.",
+          imagePath: "/assets/team/sugohanakal.png"
+        },
+        {
+          nickname: "@MRrat6005",
+          role: "Owner of RRP, lead CROWN developer",
+          description:
+            "The face and mind of the team, and its founder as well. CROWN and CHRP keep moving forward with his support.",
+          imagePath: "/assets/team/mrrat6005.png",
+          isPrimary: true
+        },
+        {
+          nickname: "@_milshu_",
+          role: "Owner of CHRP",
+          description:
+            "The leading figure behind Chapel Hills RolePlay. A RolePlay veteran everyone already knows as Milshu.",
+          imagePath: "/assets/team/milshu.png"
+        },
+        {
+          nickname: "@tokitze.",
+          role: "Assistant to the CHRP owner",
+          description:
+            "A master of law and roleplay. He helps shape the rules and also holds the highest RolePlay positions he earned and defended.",
+          imagePath: "/assets/team/tokitze.png"
+        }
+      ]
+    },
     finalCta: {
       eyebrow: "Where to go next",
       title: "Open the direction you need.",
@@ -679,6 +720,7 @@ export const enMessages = {
         }
       ]
     },
+
     finalCta: {
       eyebrow: "Next step",
       title: "Open CROWN.",
@@ -867,6 +909,7 @@ export const enMessages = {
       discordCardBody: "Rules, announcements, and the next verification steps stay inside Discord, so that remains the primary route into the community.",
       discordCardButtonLabel: "Open Discord"
     },
+
     finalCta: {
       eyebrow: "Community entry",
       title: "Join CHRP.",

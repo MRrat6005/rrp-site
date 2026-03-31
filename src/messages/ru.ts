@@ -148,6 +148,47 @@ export const ruMessages = {
         }
       ]
     },
+    team: {
+      title: "Команда",
+      members: [
+        {
+          nickname: "@like_snowfall",
+          role: "Основатель LSRP",
+          description:
+            "Муза, благодаря которой появились все наши проекты, включая успешный Liberty State RolePlay.",
+          imagePath: "/assets/team/like-snowfall.png"
+        },
+        {
+          nickname: "@sugohanakal",
+          role: "Гл. модератор CHRP",
+          description:
+            "Лучший шеф пожарных департаментов на проектах RRP.",
+          imagePath: "/assets/team/sugohanakal.png"
+        },
+        {
+          nickname: "@MRrat6005",
+          role: "Владелец RRP, гл. разработчик CROWN",
+          description:
+            "Лицо и мозг команды. И по совместительству — её основатель. CROWN и CHRP развиваются при его поддержке.",
+          imagePath: "/assets/team/mrrat6005.png",
+          isPrimary: true
+        },
+        {
+          nickname: "@_milshu_",
+          role: "Владелец CHRP",
+          description:
+            "Главный на Chapel Hills RolePlay. Гуру RolePlay и всем давно известный Милшу.",
+          imagePath: "/assets/team/milshu.png"
+        },
+        {
+          nickname: "@tokitze.",
+          role: "Помощник владельца CHRP",
+          description:
+            "Мастер закона и RolePlay игры. Не только помогает нам с правилами, но и занимает высшие RolePlay должности, которые заслужил и отстоял.",
+          imagePath: "/assets/team/tokitze.png"
+        }
+      ]
+    },
     finalCta: {
       eyebrow: "Куда дальше",
       title: "Откройте нужное направление.",
@@ -679,6 +720,7 @@ export const ruMessages = {
         }
       ]
     },
+
     finalCta: {
       eyebrow: "Следующий шаг",
       title: "Открыть CROWN.",
@@ -867,6 +909,7 @@ export const ruMessages = {
       discordCardBody: "Правила, объявления и дальнейшая координация остаются в Discord, поэтому вход в сообщество начинается именно там.",
       discordCardButtonLabel: "Перейти в Discord"
     },
+
     finalCta: {
       eyebrow: "Вход в сообщество",
       title: "Присоединиться к CHRP.",

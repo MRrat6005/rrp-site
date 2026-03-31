@@ -15,6 +15,7 @@ export function AboutMarketingPage({ locale, messages }: AboutMarketingPageProps
   const brandMarkPath = siteConfig.visuals.brand.markPath;
   const chrpHref = getLocalizedPath(locale, siteConfig.ctaRoutes.projects.chrp);
   const crownHref = getLocalizedPath(locale, siteConfig.ctaRoutes.projects.crown);
+  const teamRevealDelays = ["", "reveal-delay-1", "reveal-delay-2", "reveal-delay-1", "reveal-delay-2"];
 
   return (
     <main className="about-page mx-auto flex w-full max-w-[84rem] flex-col gap-14 px-6 pb-20 pt-10 sm:px-8 lg:gap-20 lg:px-10 lg:pb-28 lg:pt-14">
@@ -201,6 +202,40 @@ export function AboutMarketingPage({ locale, messages }: AboutMarketingPageProps
             >
               <h3 className="about-card__title">{item.title}</h3>
               <p className="about-card__body">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="about-section about-team-section">
+        <div className="about-team__lead reveal-up" data-reveal>
+          <h2 className="about-section__title about-team__title">{copy.team.title}</h2>
+        </div>
+
+        <div className="about-team-grid">
+          {copy.team.members.map((member, index) => (
+            <article
+              key={member.nickname}
+              className={`about-team-card ${member.isPrimary ? "about-team-card--featured" : "about-team-card--accent"} reveal-up ${teamRevealDelays[index]}`.trim()}
+              data-reveal
+              tabIndex={0}
+            >
+              <div
+                className="about-team-card__media"
+                aria-hidden="true"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.04)), url('${member.imagePath}')`
+                }}
+              />
+
+              <div className="about-team-card__copy">
+                <h3 className="about-team-card__nickname">{member.nickname}</h3>
+                <p className="about-team-card__role">{member.role}</p>
+              </div>
+
+              <div className="about-team-card__description-shell">
+                <p className="about-team-card__description">{member.description}</p>
+              </div>
             </article>
           ))}
         </div>
