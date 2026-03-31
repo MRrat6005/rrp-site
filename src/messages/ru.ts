@@ -184,7 +184,7 @@ export const ruMessages = {
           nickname: "@tokitze.",
           role: "Помощник владельца CHRP",
           description:
-            "Мастер закона и RolePlay игры. Не только помогает нам с правилами, но и занимает высшие RolePlay должности, которые заслужил и отстоял.",
+            "Мастер закона и RolePlay игры. Помогает нам с правилами, законами, документацией",
           imagePath: "/assets/team/tokitze.png"
         }
       ]

@@ -184,7 +184,7 @@ export const enMessages = {
           nickname: "@tokitze.",
           role: "Assistant to the CHRP owner",
           description:
-            "A master of law and roleplay. He helps shape the rules and also holds the highest RolePlay positions he earned and defended.",
+            "A master of law and roleplay. He helps us with rules, legal structure, and documentation.",
           imagePath: "/assets/team/tokitze.png"
         }
       ]
