@@ -272,21 +272,23 @@ export const enMessages = {
   },
   login: {
     eyebrow: "CROWN access",
-    title: "Enter the CROWN workspace",
+    title: "Enter CROWN through Discord",
     intro:
-      "CROWN brings RRP’s internal spaces, modules, and operational surfaces into one working layer.",
+      "This page marks the shift from the public RRP site into the CROWN workspace.",
     summary:
-      "If your access is already in place, this is where the move into the closed side of the ecosystem begins. From here the environment becomes stricter, more structured, and focused on day-to-day project work.",
-    panelTitle: "Workspace access",
+      "Discord remains the access route for invited members before the interface opens into a quieter internal control surface.",
+    bridgeFrom: "Public site",
+    bridgeTo: "CROWN workspace",
+    transitionNote:
+      "Presentation gives way to a more restrained operating surface from here.",
+    panelTitle: "Authorized entry",
     panelBody:
-      "Use this entry point to open internal spaces, modules, and the next working sections inside CROWN.",
-    highlights: [
-      "Project spaces",
-      "Internal modules",
-      "Operational coordination"
-    ],
+      "Sign in with Discord to continue into CROWN and open the dashboard side of the environment.",
+    authNotice: "Discord-based authorization is required before entering the workspace.",
+    primaryCta: "Continue with Discord",
+    secondaryCta: "View dashboard shell",
     legalNote:
-      "Supporting service pages remain close by so the public-side terms stay clear and easy to access."
+      "Public terms and contact routes remain available from this entry screen."
   },
   privacy: {
     eyebrow: "Privacy",
@@ -1007,4 +1009,3 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
-

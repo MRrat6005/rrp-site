@@ -331,9 +331,14 @@ export interface SiteMessages {
     title: string;
     intro: string;
     summary: string;
+    bridgeFrom: string;
+    bridgeTo: string;
+    transitionNote: string;
     panelTitle: string;
     panelBody: string;
-    highlights: readonly string[];
+    authNotice: string;
+    primaryCta: string;
+    secondaryCta: string;
     legalNote: string;
   };
   privacy: StructuredPageCopy;
@@ -383,4 +388,3 @@ export interface SiteMessages {
     fallback: string;
   };
 }
-
