@@ -26,7 +26,7 @@ export function DashboardSettingsPage({
             {server.settings.map((group) => (
               <div
                 key={group.label}
-                className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4"
+                className="rounded-[1rem] bg-white/[0.015] px-4 py-4"
               >
                 <div className="space-y-2">
                   <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
@@ -44,7 +44,7 @@ export function DashboardSettingsPage({
       <DashboardPanel className="p-5 sm:p-6">
         <div className="space-y-4">
           <DashboardSectionHeading title="Read-only note" body={copy.settings.note} />
-          <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4 text-sm leading-6 text-white/54">
+          <div className="rounded-[1rem] bg-white/[0.015] px-4 py-4 text-sm leading-6 text-white/54">
             The groups on this page are deliberately shallow. They establish where
             localization, admin role, enabled modules, and access controls will
             live later, without pretending real writes or permission checks exist now.
@@ -54,4 +54,5 @@ export function DashboardSettingsPage({
     </div>
   );
 }
+
 

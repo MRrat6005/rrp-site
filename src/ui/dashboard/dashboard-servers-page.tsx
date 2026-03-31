@@ -65,7 +65,7 @@ export function DashboardServersPage({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={copy.servers.searchPlaceholder}
-            className="w-full rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3 text-sm text-white/84 outline-none transition placeholder:text-white/24 focus:border-white/[0.1] focus:bg-white/[0.02]"
+            className="w-full rounded-[1rem] bg-white/[0.015] px-4 py-3 text-sm text-white/84 outline-none transition placeholder:text-white/24 focus:border-white/[0.1] focus:bg-white/[0.02]"
           />
         </label>
       </DashboardPanel>
@@ -104,19 +104,19 @@ export function DashboardServersPage({
                   <p className="text-sm leading-6 text-white/58">{server.description}</p>
 
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
+                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.members}
                       </p>
                       <p className="mt-2 text-sm text-white/76">{server.members}</p>
                     </div>
-                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
+                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.region}
                       </p>
                       <p className="mt-2 text-sm text-white/76">{server.region}</p>
                     </div>
-                    <div className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-3 py-3">
+                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
                         {copy.servers.environment}
                       </p>
@@ -146,5 +146,7 @@ export function DashboardServersPage({
     </DashboardServerShell>
   );
 }
+
+
 
 

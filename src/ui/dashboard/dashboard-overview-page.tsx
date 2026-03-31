@@ -32,7 +32,7 @@ export function DashboardOverviewPage({
               {server.overview.identity.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3"
+                  className="rounded-[1rem] bg-white/[0.015] px-4 py-3"
                 >
                   <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
                     {item.label}
@@ -51,7 +51,7 @@ export function DashboardOverviewPage({
               {server.overview.systemStatus.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3"
+                  className="rounded-[1rem] bg-white/[0.015] px-4 py-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -75,7 +75,7 @@ export function DashboardOverviewPage({
               {server.overview.moduleSummary.map((module) => (
                 <div
                   key={module.key}
-                  className="flex items-start justify-between gap-3 rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3"
+                  className="flex items-start justify-between gap-3 rounded-[1rem] bg-white/[0.015] px-4 py-3"
                 >
                   <div>
                     <p className="text-sm font-medium text-white/88">{module.name}</p>
@@ -99,7 +99,7 @@ export function DashboardOverviewPage({
               {server.overview.notices.map((notice) => (
                 <div
                   key={`${notice.title}-${notice.time}`}
-                  className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-3"
+                  className="rounded-[1rem] bg-white/[0.015] px-4 py-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -121,5 +121,6 @@ export function DashboardOverviewPage({
     </div>
   );
 }
+
 
 

@@ -106,7 +106,7 @@ export function DashboardServerShell({
 
   const sidebar = (
     <div className="flex h-full flex-col gap-3.5">
-      <DashboardPanel className="p-3.5">
+      <div className="px-1 py-1.5">
         <div className="flex items-center gap-3">
           <LogoTile
             shortLabel="CR"
@@ -122,14 +122,14 @@ export function DashboardServerShell({
             </p>
           </div>
         </div>
-      </DashboardPanel>
+      </div>
 
       {server ? (
-        <DashboardPanel className="p-3.5">
+        <div className="rounded-[1.2rem] bg-white/[0.015] px-3.5 py-3.5">
           <div className="space-y-3.5">
             <div className="flex items-start gap-3">
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.06] text-sm font-medium text-white/82"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] bg-white/[0.025] text-sm font-medium text-white/82"
                 style={{ backgroundColor: `${server.accent}16` }}
               >
                 {server.iconLabel}
@@ -152,18 +152,18 @@ export function DashboardServerShell({
               </div>
             </div>
           </div>
-        </DashboardPanel>
+        </div>
       ) : (
-        <DashboardPanel className="p-3.5">
+        <div className="rounded-[1.2rem] bg-white/[0.015] px-3.5 py-3.5">
           <div className="space-y-2">
             <p className="text-sm font-medium text-white/86">{copy.nav.servers}</p>
             <p className="text-sm leading-6 text-white/46">{copy.descriptions.servers}</p>
             <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
           </div>
-        </DashboardPanel>
+        </div>
       )}
 
-      <DashboardPanel className="flex-1 p-2">
+      <div className="flex-1 px-1">
         <nav className="grid gap-1">
           {navItems.map((item) => {
             const isActive = item.key === activePage;
@@ -188,18 +188,12 @@ export function DashboardServerShell({
             );
           })}
         </nav>
-      </DashboardPanel>
+      </div>
 
-      <div className="grid gap-2">
-        <Link
-          href={getLocalizedPath(locale, "dashboard/servers")}
-          className="rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/62 transition hover:bg-white/[0.02] hover:text-white/76"
-        >
-          {copy.sidebar.allServers}
-        </Link>
+      <div>
         <Link
           href={getLocalizedPath(locale)}
-          className="rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/46 transition hover:bg-white/[0.02] hover:text-white/68"
+          className="block rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/46 transition hover:bg-white/[0.02] hover:text-white/68"
         >
           {copy.sidebar.publicSite}
         </Link>
@@ -213,7 +207,7 @@ export function DashboardServerShell({
         <aside className="hidden w-[280px] shrink-0 lg:block">{sidebar}</aside>
 
         <div className="min-w-0 flex-1 space-y-4">
-          <DashboardPanel className="p-4 sm:p-5">
+          <DashboardPanel className="border-white/[0.05] p-4 sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
                 <button

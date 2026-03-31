@@ -33,7 +33,7 @@ export function DashboardStatusPage({
                 {group.items.map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-[1rem] border border-white/[0.06] bg-white/[0.015] px-4 py-4"
+                    className="rounded-[1rem] bg-white/[0.015] px-4 py-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -54,4 +54,5 @@ export function DashboardStatusPage({
     </div>
   );
 }
+
 
