@@ -784,6 +784,13 @@ export const enMessages = {
             "The fifth project and one of the most active stages in the team’s history. Many players and storylines passed through it during that summer, which remains one of the most memorable periods for the community."
         },
         {
+          title: "Liberty County RolePlay",
+          years: "November 2024 - January 2025",
+          body:
+            "A test project that did not live for long, but it still drew in many players. A large share of that audience stayed with us afterward and became a lasting part of the community.",
+          tone: "cream"
+        },
+        {
           title: "Liberty State RolePlay",
           years: "November 2024 - January 2026",
           body:

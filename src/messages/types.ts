@@ -111,6 +111,7 @@ export interface ChrpTimelineStageCopy {
   title: string;
   years: string;
   body: string;
+  tone?: "cream";
   isCurrent?: boolean;
 }
 

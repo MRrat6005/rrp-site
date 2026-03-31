@@ -31,6 +31,7 @@ const timelineVisuals: Record<string, string> = {
   "Stuttgart RolePlay": "/projects/chrp/timeline/stuttgart-roleplay.png",
   "Honolulu RolePlay": "/projects/chrp/timeline/honolulu-roleplay.png",
   "Los Angeles RolePlay": "/projects/chrp/timeline/los-angeles-roleplay.png",
+  "Liberty County RolePlay": "/projects/chrp/timeline/liberty-county-roleplay.png",
   "Liberty State RolePlay": "/projects/chrp/timeline/liberty-state-roleplay.png",
   "Chapel Hills RolePlay": "/projects/chrp/timeline/chapel-hills-roleplay.png"
 };
@@ -190,7 +191,7 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
                 <button
                   key={stage.title}
                   type="button"
-                  className={`chrp-timeline__point ${isActive ? "is-active" : ""} ${stage.isCurrent ? "is-current" : ""}`}
+                  className={`chrp-timeline__point ${isActive ? "is-active" : ""} ${stage.isCurrent ? "is-current" : ""} ${stage.tone === "cream" ? "is-cream" : ""}`}
                   aria-pressed={isActive}
                   aria-controls="chrp-timeline-panel"
                   onClick={() => setActiveTimelineTitle(stage.title)}
@@ -212,7 +213,7 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
               <article
                 key={activeTimelineStage.title}
                 id="chrp-timeline-panel"
-                className={`chrp-timeline-card ${activeTimelineStage.isCurrent ? "is-current" : ""}`}
+                className={`chrp-timeline-card ${activeTimelineStage.isCurrent ? "is-current" : ""} ${activeTimelineStage.tone === "cream" ? "is-cream" : ""}`}
                 aria-live="polite"
               >
                 <div className="chrp-timeline-card__content">
