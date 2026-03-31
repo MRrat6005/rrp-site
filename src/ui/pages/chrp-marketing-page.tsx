@@ -181,7 +181,11 @@ export function ChrpMarketingPage({ messages }: ChrpMarketingPageProps) {
         </div>
 
         <div className="chrp-timeline-shell">
-          <div className="chrp-timeline" aria-label={copy.timeline.title}>
+          <div
+            className="chrp-timeline"
+            aria-label={copy.timeline.title}
+            style={{ "--chrp-timeline-count": copy.timeline.stages.length } as CSSProperties}
+          >
             <span className="chrp-timeline__rail" aria-hidden="true" />
 
             {copy.timeline.stages.map((stage) => {
