@@ -22,15 +22,15 @@ export function DashboardModulesPage({
     <DashboardPanel className="p-5 sm:p-6">
       <div className="space-y-4">
         <DashboardSectionHeading title={copy.modules.title} body={copy.modules.note} />
-        <div className="space-y-2">
+        <div className="divide-y divide-white/[0.05]">
           {server.modules.map((module) => (
             <div
               key={module.key}
-              className="flex flex-col gap-4 rounded-[1rem] bg-white/[0.015] px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-sm font-medium text-white">{module.name}</p>
+                  <p className="text-sm font-medium text-white/88">{module.name}</p>
                   <DashboardStatusPill tone={module.tone}>{module.stateLabel}</DashboardStatusPill>
                 </div>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
@@ -45,5 +45,3 @@ export function DashboardModulesPage({
     </DashboardPanel>
   );
 }
-
-

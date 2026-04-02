@@ -15,7 +15,6 @@ import {
   getDashboardStateLabel
 } from "@/ui/dashboard/dashboard-copy";
 import {
-  DashboardPanel,
   DashboardStatusPill,
   cx
 } from "@/ui/dashboard/dashboard-primitives";
@@ -105,8 +104,8 @@ export function DashboardServerShell({
     : [{ key: "servers", href: getLocalizedPath(locale, "dashboard/servers") }];
 
   const sidebar = (
-    <div className="flex h-full flex-col gap-3.5">
-      <div className="px-1 py-1.5">
+    <div className="flex h-full flex-col">
+      <div className="border-b border-white/[0.05] px-1 pb-5 pt-1">
         <div className="flex items-center gap-3">
           <LogoTile
             shortLabel="CR"
@@ -116,7 +115,7 @@ export function DashboardServerShell({
             className="bg-white/[0.02]"
           />
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-white/86">{copy.brand}</p>
+            <p className="truncate text-sm font-medium text-white/88">{copy.brand}</p>
             <p className="text-[11px] uppercase tracking-[0.24em] text-white/30">
               {copy.subtitle}
             </p>
@@ -125,12 +124,12 @@ export function DashboardServerShell({
       </div>
 
       {server ? (
-        <div className="rounded-[1.2rem] bg-white/[0.015] px-3.5 py-3.5">
-          <div className="space-y-3.5">
+        <div className="border-b border-white/[0.05] px-1 py-5">
+          <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] bg-white/[0.025] text-sm font-medium text-white/82"
-                style={{ backgroundColor: `${server.accent}16` }}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/82"
+                style={{ backgroundColor: `${server.accent}18` }}
               >
                 {server.iconLabel}
               </div>
@@ -140,7 +139,7 @@ export function DashboardServerShell({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <p className="text-[11px] uppercase tracking-[0.22em] text-white/30">
                 {copy.sidebar.shellState}
               </p>
@@ -148,14 +147,15 @@ export function DashboardServerShell({
                 <DashboardStatusPill tone={stateTone}>
                   {getDashboardStateLabel(locale, server.state)}
                 </DashboardStatusPill>
+                <DashboardStatusPill tone="muted">{server.environment}</DashboardStatusPill>
                 <DashboardStatusPill tone="muted">{server.plan}</DashboardStatusPill>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="rounded-[1.2rem] bg-white/[0.015] px-3.5 py-3.5">
-          <div className="space-y-2">
+        <div className="border-b border-white/[0.05] px-1 py-5">
+          <div className="space-y-2.5">
             <p className="text-sm font-medium text-white/86">{copy.nav.servers}</p>
             <p className="text-sm leading-6 text-white/46">{copy.descriptions.servers}</p>
             <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
@@ -163,7 +163,7 @@ export function DashboardServerShell({
         </div>
       )}
 
-      <div className="flex-1 px-1">
+      <div className="flex-1 px-1 py-5">
         <nav className="grid gap-1">
           {navItems.map((item) => {
             const isActive = item.key === activePage;
@@ -176,12 +176,12 @@ export function DashboardServerShell({
                 className={cx(
                   "group relative rounded-[0.95rem] px-3 py-2.5 text-sm transition",
                   isActive
-                    ? "bg-white/[0.035] text-white/82"
-                    : "text-white/50 hover:bg-white/[0.02] hover:text-white/68"
+                    ? "bg-white/[0.04] text-white/82"
+                    : "text-white/48 hover:bg-white/[0.02] hover:text-white/68"
                 )}
               >
                 {isActive ? (
-                  <span className="absolute inset-y-2 left-0 w-px rounded-full bg-white/28" />
+                  <span className="absolute inset-y-2 left-0 w-px rounded-full bg-white/24" />
                 ) : null}
                 <span className="block pl-2">{getDashboardPageTitle(locale, item.key)}</span>
               </Link>
@@ -190,10 +190,10 @@ export function DashboardServerShell({
         </nav>
       </div>
 
-      <div>
+      <div className="border-t border-white/[0.05] pt-4">
         <Link
           href={getLocalizedPath(locale)}
-          className="block rounded-[1rem] border border-white/[0.06] px-4 py-3 text-sm text-white/46 transition hover:bg-white/[0.02] hover:text-white/68"
+          className="block rounded-[0.95rem] px-4 py-3 text-sm text-white/46 transition hover:bg-white/[0.02] hover:text-white/68"
         >
           {copy.sidebar.publicSite}
         </Link>
@@ -202,33 +202,34 @@ export function DashboardServerShell({
   );
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.035),transparent_22%),linear-gradient(180deg,#0e0f11_0%,#0b0c0d_100%)] text-white">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.03),transparent_24%),linear-gradient(180deg,#0d0e10_0%,#090a0b_100%)] text-white">
       <div className="mx-auto flex min-h-screen w-full max-w-[1500px] gap-4 px-4 py-4 sm:px-6 lg:gap-6 lg:px-8 lg:py-6">
         <aside className="hidden w-[280px] shrink-0 lg:block">{sidebar}</aside>
 
-        <div className="min-w-0 flex-1 space-y-4">
-          <DashboardPanel className="border-white/[0.05] p-4 sm:p-5">
+        <div className="min-w-0 flex-1 space-y-5">
+          <div className="border-b border-white/[0.05] px-1 pb-5 pt-1">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(true)}
-                  className="rounded-full border border-white/[0.06] px-4 py-2 text-sm text-white/62 transition hover:bg-white/[0.02] hover:text-white/76 lg:hidden"
+                  className="rounded-full border border-white/[0.05] px-4 py-2 text-sm text-white/62 transition hover:bg-white/[0.02] hover:text-white/76 lg:hidden"
                 >
                   {copy.sidebar.menu}
                 </button>
                 <div className="space-y-2">
-                  <p className="text-[11px] uppercase tracking-[0.26em] text-white/30">
-                    {server ? server.name : copy.brand}
-                  </p>
-                  <div className="space-y-1">
-                    <h1 className="text-2xl font-medium text-white/92 sm:text-[2rem]">
-                      {getDashboardPageTitle(locale, activePage)}
-                    </h1>
-                    <p className="max-w-2xl text-sm leading-6 text-white/52">
-                      {copy.descriptions[activePage]}
-                    </p>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-white/30">
+                    <span>{copy.nav.servers}</span>
+                    {server ? (
+                      <>
+                        <span className="text-white/18">/</span>
+                        <span>{server.name}</span>
+                      </>
+                    ) : null}
                   </div>
+                  <h1 className="text-2xl font-medium text-white/92 sm:text-[2rem]">
+                    {getDashboardPageTitle(locale, activePage)}
+                  </h1>
                 </div>
               </div>
 
@@ -245,9 +246,13 @@ export function DashboardServerShell({
                 )}
               </div>
             </div>
-          </DashboardPanel>
 
-          <main className="space-y-4">{children}</main>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
+              {copy.descriptions[activePage]}
+            </p>
+          </div>
+
+          <main className="space-y-5">{children}</main>
         </div>
 
         {drawerOpen ? (

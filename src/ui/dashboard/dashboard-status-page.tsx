@@ -29,15 +29,12 @@ export function DashboardStatusPage({
           <DashboardPanel key={group.key} className="p-5 sm:p-6">
             <div className="space-y-4">
               <DashboardSectionHeading title={group.title} />
-              <div className="space-y-2">
+              <div className="divide-y divide-white/[0.05]">
                 {group.items.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-[1rem] bg-white/[0.015] px-4 py-4"
-                  >
+                  <div key={item.label} className="py-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-medium text-white">{item.label}</p>
+                        <p className="text-sm font-medium text-white/88">{item.label}</p>
                         <p className="mt-1 text-sm leading-6 text-white/50">
                           {item.note}
                         </p>
@@ -54,5 +51,3 @@ export function DashboardStatusPage({
     </div>
   );
 }
-
-

@@ -38,9 +38,17 @@ const dashboardCopy = {
       searchPlaceholder: "Search servers",
       emptyTitle: "No servers found",
       emptyBody: "Try a different name, region, or plan.",
+      resultsLabel: "Servers in this shell",
       members: "Members",
       region: "Region",
-      environment: "Environment"
+      environment: "Environment",
+      plan: "Plan",
+      groups: {
+        connected: "Connected",
+        invite: "Invite bot",
+        inactive: "Inactive",
+        test: "Test"
+      }
     },
     overview: {
       identity: "Server identity",
@@ -102,9 +110,17 @@ const dashboardCopy = {
       searchPlaceholder: "Поиск серверов",
       emptyTitle: "Серверы не найдены",
       emptyBody: "Попробуйте другое имя, регион или план.",
+      resultsLabel: "Серверы в shell",
       members: "Участники",
       region: "Регион",
-      environment: "Среда"
+      environment: "Среда",
+      plan: "План",
+      groups: {
+        connected: "Connected",
+        invite: "Invite bot",
+        inactive: "Inactive",
+        test: "Test"
+      }
     },
     overview: {
       identity: "Идентичность сервера",

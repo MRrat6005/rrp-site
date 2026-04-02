@@ -23,13 +23,10 @@ export function DashboardBrandingPage({
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
             <DashboardSectionHeading title={copy.branding.assets} />
-            <div className="space-y-2">
+            <div className="divide-y divide-white/[0.05]">
               {server.branding.assets.map((asset) => (
-                <div
-                  key={asset.label}
-                  className="rounded-[1rem] bg-white/[0.015] px-4 py-4"
-                >
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
+                <div key={asset.label} className="py-4">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
                     {asset.label}
                   </p>
                   <p className="mt-2 text-sm font-medium text-white/82">{asset.value}</p>
@@ -43,13 +40,10 @@ export function DashboardBrandingPage({
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
             <DashboardSectionHeading title={copy.branding.identity} />
-            <div className="space-y-2">
+            <div className="divide-y divide-white/[0.05]">
               {server.branding.fields.map((field) => (
-                <div
-                  key={field.label}
-                  className="rounded-[1rem] bg-white/[0.015] px-4 py-4"
-                >
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/34">
+                <div key={field.label} className="py-4">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
                     {field.label}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/76">{field.value}</p>
@@ -61,12 +55,10 @@ export function DashboardBrandingPage({
       </div>
 
       <DashboardPanel className="p-5 sm:p-6">
-        <p className="text-sm leading-6 text-white/54">
+        <p className="border-t border-white/[0.05] pt-4 text-sm leading-6 text-white/54">
           {server.branding.note} {copy.branding.note}
         </p>
       </DashboardPanel>
     </div>
   );
 }
-
-

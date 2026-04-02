@@ -18,7 +18,7 @@ export function DashboardPanel({
   return (
     <section
       className={cx(
-        "rounded-[1.4rem] border border-white/[0.06] bg-[linear-gradient(180deg,rgba(17,18,20,0.94),rgba(12,13,15,0.94))] shadow-[0_8px_24px_rgba(0,0,0,0.12)]",
+        "rounded-[1.25rem] border border-white/[0.05] bg-[rgba(13,14,16,0.84)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-sm",
         className
       )}
       {...props}
@@ -34,10 +34,10 @@ interface DashboardStatusPillProps {
 }
 
 const toneClasses: Record<DashboardTone, string> = {
-  positive: "border-white/[0.08] bg-white/[0.035] text-white/76",
-  warning: "border-white/[0.07] bg-white/[0.025] text-white/66",
-  info: "border-white/[0.06] bg-white/[0.02] text-white/62",
-  muted: "border-white/[0.06] bg-transparent text-white/44"
+  positive: "border-white/[0.06] bg-white/[0.04] text-white/72",
+  warning: "border-white/[0.05] bg-white/[0.028] text-white/64",
+  info: "border-white/[0.05] bg-white/[0.024] text-white/60",
+  muted: "border-white/[0.05] bg-white/[0.015] text-white/44"
 };
 
 export function DashboardStatusPill({
@@ -66,8 +66,8 @@ export function DashboardSectionHeading({
   body
 }: DashboardSectionHeadingProps) {
   return (
-    <div className="space-y-1.5">
-      <h2 className="text-base font-medium text-white/92">{title}</h2>
+    <div className="space-y-1">
+      <h2 className="text-sm font-medium text-white/88">{title}</h2>
       {body ? <p className="text-sm leading-6 text-white/52">{body}</p> : null}
     </div>
   );

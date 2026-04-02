@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import type { Locale } from "@/config/site.config";
-import type { DashboardServer } from "@/lib/dashboard-mock";
+import type { DashboardServer, DashboardServerState } from "@/lib/dashboard-mock";
 import { getLocalizedPath } from "@/lib/i18n";
 import {
   getDashboardCopy,
@@ -42,6 +42,12 @@ export function DashboardServersPage({
   const copy = getDashboardCopy(locale);
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
+  const orderedStates: DashboardServerState[] = [
+    "connected",
+    "invite",
+    "inactive",
+    "test"
+  ];
 
   const filteredServers = servers.filter((server) => {
     if (!normalizedQuery) {
@@ -55,86 +61,123 @@ export function DashboardServersPage({
     return haystack.includes(normalizedQuery);
   });
 
+  const groupedServers = orderedStates.map((state) => ({
+    state,
+    servers: filteredServers.filter((server) => server.state === state)
+  }));
+
   return (
     <DashboardServerShell locale={locale}>
       <DashboardPanel className="p-4 sm:p-5">
-        <label className="block">
-          <span className="sr-only">{copy.servers.searchPlaceholder}</span>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={copy.servers.searchPlaceholder}
-            className="w-full rounded-[1rem] bg-white/[0.015] px-4 py-3 text-sm text-white/84 outline-none transition placeholder:text-white/24 focus:border-white/[0.1] focus:bg-white/[0.02]"
-          />
-        </label>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-1">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-white/30">
+              {copy.servers.resultsLabel}
+            </p>
+            <p className="text-sm text-white/60">{filteredServers.length}</p>
+          </div>
+
+          <label className="block w-full max-w-md">
+            <span className="sr-only">{copy.servers.searchPlaceholder}</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={copy.servers.searchPlaceholder}
+              className="w-full rounded-[0.95rem] border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-sm text-white/84 outline-none transition placeholder:text-white/24 focus:border-white/[0.08] focus:bg-white/[0.02]"
+            />
+          </label>
+        </div>
       </DashboardPanel>
 
       {filteredServers.length ? (
-        <section className="grid gap-4 xl:grid-cols-2">
-          {filteredServers.map((server) => (
-            <Link
-              key={server.id}
-              href={getLocalizedPath(locale, `dashboard/server/${server.id}/overview`)}
-              className="group"
-            >
-              <DashboardPanel className="h-full p-5 transition hover:border-white/[0.09] hover:bg-[linear-gradient(180deg,rgba(19,20,23,0.95),rgba(13,14,16,0.95))] sm:p-6">
-                <div className="flex h-full flex-col gap-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.06] text-sm font-medium text-white/84"
-                        style={{ backgroundColor: `${server.accent}20` }}
-                      >
-                        {server.iconLabel}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-base font-semibold text-white">
-                          {server.name}
-                        </p>
-                        <p className="text-sm text-white/48">{server.syncNote}</p>
-                      </div>
-                    </div>
-
-                    <DashboardStatusPill tone={getStateTone(server)}>
-                      {getDashboardStateLabel(locale, server.state)}
-                    </DashboardStatusPill>
-                  </div>
-
-                  <p className="text-sm leading-6 text-white/58">{server.description}</p>
-
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
-                        {copy.servers.members}
-                      </p>
-                      <p className="mt-2 text-sm text-white/76">{server.members}</p>
-                    </div>
-                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
-                        {copy.servers.region}
-                      </p>
-                      <p className="mt-2 text-sm text-white/76">{server.region}</p>
-                    </div>
-                    <div className="rounded-[1rem] bg-white/[0.015] px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/36">
-                        {copy.servers.environment}
-                      </p>
-                      <p className="mt-2 text-sm text-white/76">{server.environment}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
-                    <span className="text-sm text-white/44">{server.plan}</span>
-                    <span className="text-sm text-white/60 transition group-hover:text-white/78">
-                      {getDashboardStateAction(locale, server.state)}
-                    </span>
-                  </div>
+        <div className="space-y-6">
+          {groupedServers.map((group) =>
+            group.servers.length ? (
+              <section key={group.state} className="space-y-3">
+                <div className="flex items-center justify-between gap-3 border-b border-white/[0.05] pb-3">
+                  <h2 className="text-sm font-medium text-white/80">
+                    {copy.servers.groups[group.state]}
+                  </h2>
+                  <span className="text-[11px] uppercase tracking-[0.18em] text-white/32">
+                    {group.servers.length}
+                  </span>
                 </div>
-              </DashboardPanel>
-            </Link>
-          ))}
-        </section>
+
+                <div className="grid gap-3 xl:grid-cols-2">
+                  {group.servers.map((server) => (
+                    <Link
+                      key={server.id}
+                      href={getLocalizedPath(locale, `dashboard/server/${server.id}/overview`)}
+                      className="group"
+                    >
+                      <DashboardPanel className="h-full p-5 transition hover:border-white/[0.08] hover:bg-[rgba(15,16,18,0.92)] sm:p-6">
+                        <div className="flex h-full flex-col gap-5">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex min-w-0 items-start gap-3">
+                              <div
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/84"
+                                style={{ backgroundColor: `${server.accent}18` }}
+                              >
+                                {server.iconLabel}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-base font-medium text-white/92">
+                                  {server.name}
+                                </p>
+                                <p className="text-sm text-white/44">{server.syncNote}</p>
+                              </div>
+                            </div>
+
+                            <DashboardStatusPill tone={getStateTone(server)}>
+                              {getDashboardStateLabel(locale, server.state)}
+                            </DashboardStatusPill>
+                          </div>
+
+                          <p className="text-sm leading-6 text-white/56">{server.description}</p>
+
+                          <div className="grid gap-y-3 border-y border-white/[0.05] py-4 text-sm sm:grid-cols-4 sm:gap-x-4">
+                            <div>
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
+                                {copy.servers.environment}
+                              </p>
+                              <p className="mt-2 text-white/72">{server.environment}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
+                                {copy.servers.region}
+                              </p>
+                              <p className="mt-2 text-white/72">{server.region}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
+                                {copy.servers.members}
+                              </p>
+                              <p className="mt-2 text-white/72">{server.members}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
+                                {copy.servers.plan}
+                              </p>
+                              <p className="mt-2 text-white/72">{server.plan}</p>
+                            </div>
+                          </div>
+
+                          <div className="mt-auto flex items-center justify-between gap-3">
+                            <span className="text-sm text-white/40">{server.id}</span>
+                            <span className="text-sm text-white/60 transition group-hover:text-white/76">
+                              {getDashboardStateAction(locale, server.state)}
+                            </span>
+                          </div>
+                        </div>
+                      </DashboardPanel>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            ) : null
+          )}
+        </div>
       ) : (
         <DashboardPanel className="p-6 sm:p-8">
           <div className="space-y-2">
@@ -146,7 +189,3 @@ export function DashboardServersPage({
     </DashboardServerShell>
   );
 }
-
-
-
-
