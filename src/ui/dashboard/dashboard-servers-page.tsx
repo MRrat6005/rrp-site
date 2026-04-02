@@ -6,12 +6,12 @@ import { useState } from "react";
 
 import type { Locale } from "@/config/site.config";
 import type { DashboardServer, DashboardServerState } from "@/lib/dashboard-mock";
-import { getLocalizedPath } from "@/lib/i18n";
 import {
   getDashboardCopy,
   getDashboardStateAction,
   getDashboardStateLabel
 } from "@/ui/dashboard/dashboard-copy";
+import { getDashboardAppPath } from "@/ui/dashboard/dashboard-routing";
 import {
   DashboardMessagePanel,
   DashboardPanel,
@@ -88,7 +88,7 @@ export function DashboardServersPage({
         });
 
   return (
-    <DashboardServerShell locale={locale}>
+    <DashboardServerShell activePage="servers" locale={locale}>
       {notice}
       <DashboardPanel className="p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -130,7 +130,7 @@ export function DashboardServersPage({
                   {group.servers.map((server) => (
                     <Link
                       key={server.id}
-                      href={getLocalizedPath(locale, `dashboard/server/${server.id}/overview`)}
+                      href={getDashboardAppPath(locale, server.id, "overview")}
                       className="group"
                     >
                       <DashboardPanel className="h-full p-5 transition hover:border-white/[0.08] hover:bg-[rgba(15,16,18,0.92)] sm:p-6">
@@ -209,3 +209,4 @@ export function DashboardServersPage({
     </DashboardServerShell>
   );
 }
+

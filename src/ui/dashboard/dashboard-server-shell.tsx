@@ -14,14 +14,17 @@ import {
   getDashboardPageTitle,
   getDashboardStateLabel
 } from "@/ui/dashboard/dashboard-copy";
+import { getDashboardAppPath } from "@/ui/dashboard/dashboard-routing";
 import {
   DashboardStatusPill,
   cx
 } from "@/ui/dashboard/dashboard-primitives";
 
 interface DashboardServerShellProps {
+  activePage: DashboardPageKey;
   locale: Locale;
   server?: DashboardServer;
+  serverId?: string;
   children: ReactNode;
 }
 
@@ -42,64 +45,28 @@ function getServerStateTone(server?: DashboardServer) {
   }
 }
 
-function getActivePage(pathname: string | null, hasServer: boolean): DashboardPageKey {
-  const normalized = pathname?.replace(/\/+$/, "") ?? "";
-
-  if (normalized.endsWith("/dashboard/servers")) {
-    return "servers";
-  }
-
-  if (normalized.endsWith("/overview")) {
-    return "overview";
-  }
-
-  if (normalized.endsWith("/settings")) {
-    return "settings";
-  }
-
-  if (normalized.endsWith("/modules")) {
-    return "modules";
-  }
-
-  if (normalized.endsWith("/branding")) {
-    return "branding";
-  }
-
-  if (normalized.endsWith("/licenses")) {
-    return "licenses";
-  }
-
-  if (normalized.endsWith("/status")) {
-    return "status";
-  }
-
-  return hasServer ? "overview" : "servers";
-}
-
 export function DashboardServerShell({
+  activePage,
   locale,
   server,
+  serverId,
   children
 }: DashboardServerShellProps) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const copy = getDashboardCopy(locale);
-  const activePage = getActivePage(pathname, Boolean(server));
+  const resolvedServerId = server?.id ?? serverId?.trim() ?? null;
   const stateTone = getServerStateTone(server);
 
-  const baseServerPath = server
-    ? getLocalizedPath(locale, `dashboard/server/${server.id}`)
-    : null;
-
-  const navItems: Array<{ key: DashboardPageKey; href: string }> = server
+  const navItems: Array<{ key: DashboardPageKey; href: string }> = resolvedServerId
     ? [
         { key: "servers", href: getLocalizedPath(locale, "dashboard/servers") },
-        { key: "overview", href: `${baseServerPath}/overview` },
-        { key: "settings", href: `${baseServerPath}/settings` },
-        { key: "modules", href: `${baseServerPath}/modules` },
-        { key: "branding", href: `${baseServerPath}/branding` },
-        { key: "licenses", href: `${baseServerPath}/licenses` },
-        { key: "status", href: `${baseServerPath}/status` }
+        { key: "overview", href: getDashboardAppPath(locale, resolvedServerId, "overview") },
+        { key: "settings", href: getDashboardAppPath(locale, resolvedServerId, "settings") },
+        { key: "modules", href: getDashboardAppPath(locale, resolvedServerId, "modules") },
+        { key: "branding", href: getDashboardAppPath(locale, resolvedServerId, "branding") },
+        { key: "licenses", href: getDashboardAppPath(locale, resolvedServerId, "licenses") },
+        { key: "status", href: getDashboardAppPath(locale, resolvedServerId, "status") }
       ]
     : [{ key: "servers", href: getLocalizedPath(locale, "dashboard/servers") }];
 
@@ -206,6 +173,16 @@ export function DashboardServerShell({
             </div>
           </div>
         </div>
+      ) : resolvedServerId ? (
+        <div className="border-b border-white/[0.05] px-1 py-5">
+          <div className="space-y-2.5">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-white/30">
+              {copy.sidebar.shellState}
+            </p>
+            <p className="text-sm font-medium text-white/86">{resolvedServerId}</p>
+            <p className="text-sm leading-6 text-white/46">{copy.runtime.loading}</p>
+          </div>
+        </div>
       ) : (
         <div className="border-b border-white/[0.05] px-1 py-5">
           <div className="space-y-2.5">
@@ -279,10 +256,10 @@ export function DashboardServerShell({
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-white/30">
                       <span>{copy.nav.servers}</span>
-                      {server ? (
+                      {resolvedServerId ? (
                         <>
                           <span className="text-white/18">/</span>
-                          <span className="truncate">{server.name}</span>
+                          <span className="truncate">{server?.name ?? resolvedServerId}</span>
                         </>
                       ) : null}
                     </div>
@@ -377,6 +354,3 @@ export function DashboardServerShell({
     </div>
   );
 }
-
-
-

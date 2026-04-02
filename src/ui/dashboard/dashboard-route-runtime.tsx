@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -10,7 +11,10 @@ import {
   type DashboardApiError,
   type DashboardServerRoutePage
 } from "@/lib/dashboard-api";
-import type { DashboardServer } from "@/lib/dashboard-mock";
+import {
+  getDashboardServer,
+  type DashboardServer
+} from "@/lib/dashboard-mock";
 import { DashboardBrandingPage } from "@/ui/dashboard/dashboard-branding-page";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import { DashboardLicensesPage } from "@/ui/dashboard/dashboard-licenses-page";
@@ -20,6 +24,7 @@ import {
   DashboardMessagePanel,
   DashboardPanel
 } from "@/ui/dashboard/dashboard-primitives";
+import { resolveDashboardServerRoutePage } from "@/ui/dashboard/dashboard-routing";
 import { DashboardServerShell } from "@/ui/dashboard/dashboard-server-shell";
 import { DashboardServersPage } from "@/ui/dashboard/dashboard-servers-page";
 import { DashboardSettingsPage } from "@/ui/dashboard/dashboard-settings-page";
@@ -182,39 +187,93 @@ export function DashboardServersRoute({
   );
 }
 
-interface DashboardServerRouteProps {
-  fallbackServer: DashboardServer | null;
+interface DashboardAppRouteProps {
   locale: Locale;
-  page: DashboardServerRoutePage;
-  serverId: string;
 }
 
-export function DashboardServerRoute({
-  fallbackServer,
-  locale,
-  page,
-  serverId
-}: DashboardServerRouteProps) {
+export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
   const copy = getDashboardCopy(locale);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawSearch = searchParams.toString();
+  const rawServerId = searchParams.get("server");
+  const serverId = rawServerId?.trim() ?? "";
+  const page = resolveDashboardServerRoutePage(searchParams.get("section"));
+  const fallbackServer = serverId ? getDashboardServer(serverId, locale) : null;
+
+  useEffect(() => {
+    const nextSearchParams = new URLSearchParams(rawSearch);
+    let changed = false;
+
+    if (serverId) {
+      if (nextSearchParams.get("server") !== serverId) {
+        nextSearchParams.set("server", serverId);
+        changed = true;
+      }
+
+      if (nextSearchParams.get("section") !== page) {
+        nextSearchParams.set("section", page);
+        changed = true;
+      }
+    } else {
+      if (nextSearchParams.has("server")) {
+        nextSearchParams.delete("server");
+        changed = true;
+      }
+
+      if (nextSearchParams.has("section")) {
+        nextSearchParams.delete("section");
+        changed = true;
+      }
+    }
+
+    if (!changed) {
+      return;
+    }
+
+    const nextSearch = nextSearchParams.toString();
+    router.replace(nextSearch ? `${pathname}?${nextSearch}` : pathname, {
+      scroll: false
+    });
+  }, [page, pathname, rawSearch, router, serverId]);
+
   const load = useCallback(
     (signal?: AbortSignal) =>
-      fetchDashboardServerPage(serverId, page, locale, signal),
+      serverId
+        ? fetchDashboardServerPage(serverId, page, locale, signal)
+        : Promise.resolve<DashboardServer | null>(null),
     [locale, page, serverId]
   );
-  const state = useDashboardResource(fallbackServer, load);
+  const state = useDashboardResource<DashboardServer | null>(fallbackServer, load);
 
   const server = state.data ?? fallbackServer;
 
   return (
-    <DashboardServerShell locale={locale} server={server ?? undefined}>
+    <DashboardServerShell
+      activePage={serverId ? page : "servers"}
+      locale={locale}
+      server={server ?? undefined}
+      serverId={serverId || undefined}
+    >
       <DashboardRouteNotice
         locale={locale}
         error={state.error}
         isFallback={state.isFallback}
         isLoading={state.isLoading}
       />
-      {server ? (
+      {!serverId ? (
+        <DashboardMessagePanel
+          title={copy.runtime.selectServerTitle}
+          body={copy.runtime.selectServerBody}
+        />
+      ) : server ? (
         renderDashboardServerPage(page, locale, server)
+      ) : state.isLoading ? (
+        <DashboardMessagePanel
+          title={copy.runtime.loadingTitle}
+          body={copy.runtime.loading}
+        />
       ) : (
         <DashboardMessagePanel
           title={copy.runtime.unavailableTitle}
@@ -224,3 +283,5 @@ export function DashboardServerRoute({
     </DashboardServerShell>
   );
 }
+
+

@@ -37,8 +37,11 @@ const dashboardCopy = {
       closeMenu: "Close menu"
     },
     runtime: {
+      loadingTitle: "Loading workspace",
       loading: "Loading live data.",
       fallback: "Live data is unavailable right now. Showing preview data.",
+      selectServerTitle: "Select a server",
+      selectServerBody: "Open a server from the servers list to load its workspace.",
       unavailableTitle: "Live data unavailable",
       unavailableBody: "This dashboard view could not be loaded right now."
     },
@@ -134,8 +137,11 @@ const dashboardCopy = {
       closeMenu: "Закрыть меню"
     },
     runtime: {
+      loadingTitle: "Загрузка рабочего пространства",
       loading: "Загрузка живых данных.",
       fallback: "Живые данные сейчас недоступны. Показан режим предпросмотра.",
+      selectServerTitle: "Выберите сервер",
+      selectServerBody: "Откройте сервер из списка, чтобы загрузить его рабочее пространство.",
       unavailableTitle: "Живые данные недоступны",
       unavailableBody: "Сейчас не удалось загрузить это представление панели."
     },
