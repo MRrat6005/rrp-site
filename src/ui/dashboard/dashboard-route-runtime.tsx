@@ -38,24 +38,35 @@ interface DashboardResourceState<T> {
 }
 
 function useDashboardResource<T>(
+  enabled: boolean,
   fallbackData: T | null,
   load: (signal?: AbortSignal) => Promise<T>
 ) {
   const [state, setState] = useState<DashboardResourceState<T>>({
-    data: fallbackData,
+    data: null,
     error: null,
-    isLoading: true,
-    isFallback: fallbackData !== null
+    isLoading: enabled,
+    isFallback: false
   });
 
   useEffect(() => {
+    if (!enabled) {
+      setState({
+        data: null,
+        error: null,
+        isLoading: false,
+        isFallback: false
+      });
+      return;
+    }
+
     const controller = new AbortController();
 
     setState({
-      data: fallbackData,
+      data: null,
       error: null,
       isLoading: true,
-      isFallback: fallbackData !== null
+      isFallback: false
     });
 
     load(controller.signal)
@@ -81,7 +92,7 @@ function useDashboardResource<T>(
       });
 
     return () => controller.abort();
-  }, [fallbackData, load]);
+  }, [enabled, fallbackData, load]);
 
   return state;
 }
@@ -159,7 +170,7 @@ export function DashboardServersRoute({
     (signal?: AbortSignal) => fetchDashboardServers(locale, signal),
     [locale]
   );
-  const state = useDashboardResource(fallbackServers, load);
+  const state = useDashboardResource(true, fallbackServers, load);
 
   const servers = state.data ?? [];
   const emptyState =
@@ -174,6 +185,7 @@ export function DashboardServersRoute({
     <DashboardServersPage
       locale={locale}
       servers={servers}
+      isFallback={state.isFallback}
       notice={
         <DashboardRouteNotice
           locale={locale}
@@ -245,23 +257,30 @@ export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
         : Promise.resolve<DashboardServer | null>(null),
     [locale, page, serverId]
   );
-  const state = useDashboardResource<DashboardServer | null>(fallbackServer, load);
+  const state = useDashboardResource<DashboardServer | null>(
+    Boolean(serverId),
+    fallbackServer,
+    load
+  );
 
   const server = state.data ?? fallbackServer;
 
   return (
     <DashboardServerShell
       activePage={serverId ? page : "servers"}
+      isFallback={state.isFallback}
       locale={locale}
       server={server ?? undefined}
       serverId={serverId || undefined}
     >
-      <DashboardRouteNotice
-        locale={locale}
-        error={state.error}
-        isFallback={state.isFallback}
-        isLoading={state.isLoading}
-      />
+      {serverId ? (
+        <DashboardRouteNotice
+          locale={locale}
+          error={state.error}
+          isFallback={state.isFallback}
+          isLoading={state.isLoading}
+        />
+      ) : null}
       {!serverId ? (
         <DashboardMessagePanel
           title={copy.runtime.selectServerTitle}
@@ -283,5 +302,3 @@ export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
     </DashboardServerShell>
   );
 }
-
-

@@ -22,6 +22,7 @@ import {
 
 interface DashboardServerShellProps {
   activePage: DashboardPageKey;
+  isFallback?: boolean;
   locale: Locale;
   server?: DashboardServer;
   serverId?: string;
@@ -47,6 +48,7 @@ function getServerStateTone(server?: DashboardServer) {
 
 export function DashboardServerShell({
   activePage,
+  isFallback = false,
   locale,
   server,
   serverId,
@@ -167,6 +169,9 @@ export function DashboardServerShell({
                 <DashboardStatusPill tone={stateTone}>
                   {getDashboardStateLabel(locale, server.state)}
                 </DashboardStatusPill>
+                {isFallback ? (
+                  <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
+                ) : null}
                 <DashboardStatusPill tone="muted">{server.environment}</DashboardStatusPill>
                 <DashboardStatusPill tone="muted">{server.plan}</DashboardStatusPill>
               </div>
@@ -188,7 +193,9 @@ export function DashboardServerShell({
           <div className="space-y-2.5">
             <p className="text-sm font-medium text-white/86">{copy.nav.servers}</p>
             <p className="text-sm leading-6 text-white/46">{copy.descriptions.servers}</p>
-            <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
+            {isFallback ? (
+              <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
+            ) : null}
           </div>
         </div>
       )}
@@ -283,6 +290,11 @@ export function DashboardServerShell({
                         <DashboardStatusPill tone={stateTone}>
                           {getDashboardStateLabel(locale, server.state)}
                         </DashboardStatusPill>
+                        {isFallback ? (
+                          <DashboardStatusPill tone="muted">
+                            {copy.sidebar.mockMode}
+                          </DashboardStatusPill>
+                        ) : null}
                         <DashboardStatusPill tone="muted">{server.environment}</DashboardStatusPill>
                         <DashboardStatusPill tone="muted">{server.plan}</DashboardStatusPill>
                       </div>
@@ -306,12 +318,17 @@ export function DashboardServerShell({
                     <DashboardStatusPill tone={stateTone}>
                       {getDashboardStateLabel(locale, server.state)}
                     </DashboardStatusPill>
+                    {isFallback ? (
+                      <DashboardStatusPill tone="muted">
+                        {copy.sidebar.mockMode}
+                      </DashboardStatusPill>
+                    ) : null}
                     <DashboardStatusPill tone="muted">{server.environment}</DashboardStatusPill>
                     <DashboardStatusPill tone="muted">{server.plan}</DashboardStatusPill>
                   </>
-                ) : (
+                ) : isFallback ? (
                   <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
-                )}
+                ) : null}
               </div>
             </div>
           </div>

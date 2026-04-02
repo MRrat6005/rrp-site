@@ -20,6 +20,7 @@ import {
 import { DashboardServerShell } from "@/ui/dashboard/dashboard-server-shell";
 
 interface DashboardServersPageProps {
+  isFallback?: boolean;
   locale: Locale;
   servers: DashboardServer[];
   notice?: ReactNode;
@@ -43,6 +44,7 @@ function getStateTone(server: DashboardServer) {
 }
 
 export function DashboardServersPage({
+  isFallback = false,
   locale,
   servers,
   notice,
@@ -88,7 +90,7 @@ export function DashboardServersPage({
         });
 
   return (
-    <DashboardServerShell activePage="servers" locale={locale}>
+    <DashboardServerShell activePage="servers" isFallback={isFallback} locale={locale}>
       {notice}
       <DashboardPanel className="p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -209,4 +211,3 @@ export function DashboardServersPage({
     </DashboardServerShell>
   );
 }
-

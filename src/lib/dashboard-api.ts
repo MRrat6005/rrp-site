@@ -55,16 +55,23 @@ export function getDashboardApiBaseUrl(): string | null {
   return normalizeBaseUrl(process.env.NEXT_PUBLIC_DASHBOARD_API_BASE_URL ?? null);
 }
 
-function buildDashboardApiUrl(path: string, locale: Locale): string {
+function getDashboardApiBaseUrlCandidates(): string[] {
   const baseUrl = getDashboardApiBaseUrl();
 
   if (!baseUrl) {
-    throw new DashboardApiError(
-      "config",
-      "Dashboard API base URL is not configured."
-    );
+    return [];
   }
 
+  const candidates = [baseUrl];
+
+  if (!/\/api$/i.test(baseUrl)) {
+    candidates.push(`${baseUrl}/api`);
+  }
+
+  return candidates;
+}
+
+function buildDashboardApiUrl(baseUrl: string, path: string, locale: Locale): string {
   const url = new URL(path.replace(/^\/+/, ""), `${baseUrl}/`);
   url.searchParams.set("locale", locale);
 
@@ -76,39 +83,64 @@ async function fetchDashboardJson<T>(
   locale: Locale,
   signal?: AbortSignal
 ): Promise<T> {
-  const url = buildDashboardApiUrl(path, locale);
-  let response: Response;
+  const baseUrls = getDashboardApiBaseUrlCandidates();
 
-  try {
-    response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json"
-      },
-      cache: "no-store",
-      signal
-    });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      throw error;
-    }
-
-    throw new DashboardApiError("network", "Dashboard API is unreachable.");
-  }
-
-  if (!response.ok) {
+  if (baseUrls.length === 0) {
     throw new DashboardApiError(
-      "http",
-      "Dashboard API request failed.",
-      response.status
+      "config",
+      "Dashboard API base URL is not configured."
     );
   }
 
-  try {
-    return (await response.json()) as T;
-  } catch {
-    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.");
+  let lastError: DashboardApiError | null = null;
+
+  for (const baseUrl of baseUrls) {
+    const url = buildDashboardApiUrl(baseUrl, path, locale);
+    let response: Response;
+
+    try {
+      response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        },
+        cache: "no-store",
+        signal
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw error;
+      }
+
+      lastError = new DashboardApiError("network", "Dashboard API is unreachable.");
+      continue;
+    }
+
+    if (!response.ok) {
+      lastError = new DashboardApiError(
+        "http",
+        "Dashboard API request failed.",
+        response.status
+      );
+
+      if (response.status === 404) {
+        continue;
+      }
+
+      throw lastError;
+    }
+
+    try {
+      return (await response.json()) as T;
+    } catch {
+      lastError = new DashboardApiError(
+        "parse",
+        "Dashboard API returned invalid JSON."
+      );
+    }
   }
+
+  throw lastError ?? new DashboardApiError("network", "Dashboard API is unreachable.");
 }
 
 function getDashboardServerPagePath(
