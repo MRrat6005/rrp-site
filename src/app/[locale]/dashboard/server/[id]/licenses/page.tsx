@@ -1,8 +1,6 @@
-import { notFound } from "next/navigation";
-
 import { getDashboardServer } from "@/lib/dashboard-mock";
 import { resolveLocale } from "@/lib/i18n";
-import { DashboardLicensesPage } from "@/ui/dashboard/dashboard-licenses-page";
+import { DashboardServerRoute } from "@/ui/dashboard/dashboard-route-runtime";
 
 interface DashboardLicensesRoutePageProps {
   params: {
@@ -15,12 +13,13 @@ export default function DashboardLicensesRoutePage({
   params
 }: DashboardLicensesRoutePageProps) {
   const locale = resolveLocale(params.locale);
-  const server = getDashboardServer(params.id, locale);
 
-  if (!server) {
-    notFound();
-  }
-
-  return <DashboardLicensesPage locale={locale} server={server} />;
+  return (
+    <DashboardServerRoute
+      locale={locale}
+      page="licenses"
+      serverId={params.id}
+      fallbackServer={getDashboardServer(params.id, locale)}
+    />
+  );
 }
-

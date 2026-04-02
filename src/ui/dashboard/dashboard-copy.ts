@@ -36,10 +36,18 @@ const dashboardCopy = {
       close: "Close",
       closeMenu: "Close menu"
     },
+    runtime: {
+      loading: "Loading live data.",
+      fallback: "Live data is unavailable right now. Showing preview data.",
+      unavailableTitle: "Live data unavailable",
+      unavailableBody: "This dashboard view could not be loaded right now."
+    },
     servers: {
       searchPlaceholder: "Search servers",
-      emptyTitle: "No matching servers",
-      emptyBody: "Try another name, region, or plan.",
+      emptyTitle: "No servers yet",
+      emptyBody: "Servers will appear here once the dashboard API returns them.",
+      searchEmptyTitle: "No matching servers",
+      searchEmptyBody: "Try another name, region, or plan.",
       resultsLabel: "Servers",
       members: "Members",
       region: "Region",
@@ -56,31 +64,43 @@ const dashboardCopy = {
       identity: "Server details",
       status: "Current state",
       modules: "Modules",
-      notices: "Recent updates"
+      notices: "Recent updates",
+      emptyTitle: "Overview is empty",
+      emptyBody: "No overview data is available for this server yet."
     },
     settings: {
       title: "Server settings",
       noteTitle: "Read-only",
       note: "Settings are shown for reference in this pass.",
       detail:
-        "Localization, roles, enabled modules, and access remain visible here without edit flows."
+        "Localization, roles, enabled modules, and access remain visible here without edit flows.",
+      emptyTitle: "No settings yet",
+      emptyBody: "Settings will appear here when the backend returns them."
     },
     modules: {
       title: "Modules",
-      note: "Module states and actions stay concise by design."
+      note: "Module states and actions stay concise by design.",
+      emptyTitle: "No modules yet",
+      emptyBody: "Module data will appear here when the backend returns it."
     },
     branding: {
       assets: "Assets",
       identity: "Identity",
-      note: "Live sync is not part of this pass."
+      note: "Live sync is not part of this pass.",
+      emptyTitle: "No branding data yet",
+      emptyBody: "Branding assets and identity fields will appear here when available."
     },
     licenses: {
       current: "Current plan",
       available: "Available access",
-      summary: "Access summary"
+      summary: "Access summary",
+      emptyTitle: "No license data yet",
+      emptyBody: "License and entitlement details will appear here when available."
     },
     status: {
-      note: "Status values are shown as local preview data."
+      note: "Current service signals for this server.",
+      emptyTitle: "No status signals yet",
+      emptyBody: "Status groups will appear here when the backend returns them."
     }
   },
   ru: {
@@ -113,10 +133,18 @@ const dashboardCopy = {
       close: "Закрыть",
       closeMenu: "Закрыть меню"
     },
+    runtime: {
+      loading: "Загрузка живых данных.",
+      fallback: "Живые данные сейчас недоступны. Показан режим предпросмотра.",
+      unavailableTitle: "Живые данные недоступны",
+      unavailableBody: "Сейчас не удалось загрузить это представление панели."
+    },
     servers: {
       searchPlaceholder: "Поиск серверов",
-      emptyTitle: "Подходящие серверы не найдены",
-      emptyBody: "Попробуйте другое имя, регион или план.",
+      emptyTitle: "Серверов пока нет",
+      emptyBody: "Серверы появятся здесь, когда dashboard API вернет данные.",
+      searchEmptyTitle: "Подходящие серверы не найдены",
+      searchEmptyBody: "Попробуйте другое имя, регион или план.",
       resultsLabel: "Серверы",
       members: "Участники",
       region: "Регион",
@@ -133,31 +161,43 @@ const dashboardCopy = {
       identity: "Данные сервера",
       status: "Текущее состояние",
       modules: "Модули",
-      notices: "Последние обновления"
+      notices: "Последние обновления",
+      emptyTitle: "Обзор пока пуст",
+      emptyBody: "Для этого сервера пока нет данных обзора."
     },
     settings: {
       title: "Настройки сервера",
       noteTitle: "Только просмотр",
       note: "В этом проходе настройки показаны без редактирования.",
       detail:
-        "Здесь остаются видимыми локализация, роли, состав модулей и доступ, без форм записи и проверок."
+        "Здесь остаются видимыми локализация, роли, состав модулей и доступ, без форм записи и проверок.",
+      emptyTitle: "Настроек пока нет",
+      emptyBody: "Настройки появятся здесь, когда backend вернет данные."
     },
     modules: {
       title: "Модули",
-      note: "Состояния модулей и действия показаны в коротком рабочем формате."
+      note: "Состояния модулей и действия показаны в коротком рабочем формате.",
+      emptyTitle: "Модулей пока нет",
+      emptyBody: "Данные модулей появятся здесь, когда backend их вернет."
     },
     branding: {
       assets: "Материалы",
       identity: "Идентичность",
-      note: "Синхронизация в реальном времени в этот проход не входит."
+      note: "Синхронизация в реальном времени в этот проход не входит.",
+      emptyTitle: "Данных брендинга пока нет",
+      emptyBody: "Материалы и поля идентичности появятся здесь, когда будут доступны."
     },
     licenses: {
       current: "Текущий план",
       available: "Доступные возможности",
-      summary: "Сводка доступа"
+      summary: "Сводка доступа",
+      emptyTitle: "Данных лицензий пока нет",
+      emptyBody: "Лицензии и права доступа появятся здесь, когда будут доступны."
     },
     status: {
-      note: "Значения статуса показаны как локальные данные предпросмотра."
+      note: "Текущие сигналы системы для этого сервера.",
+      emptyTitle: "Сигналов статуса пока нет",
+      emptyBody: "Группы статуса появятся здесь, когда backend вернет данные."
     }
   }
 } as const;

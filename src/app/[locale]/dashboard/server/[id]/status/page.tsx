@@ -1,8 +1,6 @@
-import { notFound } from "next/navigation";
-
 import { getDashboardServer } from "@/lib/dashboard-mock";
 import { resolveLocale } from "@/lib/i18n";
-import { DashboardStatusPage } from "@/ui/dashboard/dashboard-status-page";
+import { DashboardServerRoute } from "@/ui/dashboard/dashboard-route-runtime";
 
 interface DashboardStatusRoutePageProps {
   params: {
@@ -15,12 +13,13 @@ export default function DashboardStatusRoutePage({
   params
 }: DashboardStatusRoutePageProps) {
   const locale = resolveLocale(params.locale);
-  const server = getDashboardServer(params.id, locale);
 
-  if (!server) {
-    notFound();
-  }
-
-  return <DashboardStatusPage locale={locale} server={server} />;
+  return (
+    <DashboardServerRoute
+      locale={locale}
+      page="status"
+      serverId={params.id}
+      fallbackServer={getDashboardServer(params.id, locale)}
+    />
+  );
 }
-

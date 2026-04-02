@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import type { ReactNode } from "react";
 
 import "@/app/globals.css";
@@ -14,7 +15,10 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang={siteConfig.defaultLocale} className="dark">
-      <body>{children}</body>
+      <body>
+        <Script src="/runtime-config.js" strategy="beforeInteractive" />
+        {children}
+      </body>
     </html>
   );
 }

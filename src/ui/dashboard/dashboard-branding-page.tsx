@@ -2,6 +2,7 @@ import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardSectionHeading
 } from "@/ui/dashboard/dashboard-primitives";
@@ -16,6 +17,19 @@ export function DashboardBrandingPage({
   server
 }: DashboardBrandingPageProps) {
   const copy = getDashboardCopy(locale);
+  const isEmpty =
+    server.branding.assets.length === 0 &&
+    server.branding.fields.length === 0 &&
+    server.branding.note.trim().length === 0;
+
+  if (isEmpty) {
+    return (
+      <DashboardMessagePanel
+        title={copy.branding.emptyTitle}
+        body={copy.branding.emptyBody}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useState } from "react";
 
 import type { Locale } from "@/config/site.config";
@@ -12,6 +13,7 @@ import {
   getDashboardStateLabel
 } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardStatusPill
 } from "@/ui/dashboard/dashboard-primitives";
@@ -20,6 +22,11 @@ import { DashboardServerShell } from "@/ui/dashboard/dashboard-server-shell";
 interface DashboardServersPageProps {
   locale: Locale;
   servers: DashboardServer[];
+  notice?: ReactNode;
+  emptyState?: {
+    title: string;
+    body: string;
+  };
 }
 
 function getStateTone(server: DashboardServer) {
@@ -37,7 +44,9 @@ function getStateTone(server: DashboardServer) {
 
 export function DashboardServersPage({
   locale,
-  servers
+  servers,
+  notice,
+  emptyState
 }: DashboardServersPageProps) {
   const copy = getDashboardCopy(locale);
   const [query, setQuery] = useState("");
@@ -66,8 +75,21 @@ export function DashboardServersPage({
     servers: filteredServers.filter((server) => server.state === state)
   }));
 
+  const resolvedEmptyState =
+    emptyState ??
+    (normalizedQuery
+      ? {
+          title: copy.servers.searchEmptyTitle,
+          body: copy.servers.searchEmptyBody
+        }
+      : {
+          title: copy.servers.emptyTitle,
+          body: copy.servers.emptyBody
+        });
+
   return (
     <DashboardServerShell locale={locale}>
+      {notice}
       <DashboardPanel className="p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-1">
@@ -179,12 +201,10 @@ export function DashboardServersPage({
           )}
         </div>
       ) : (
-        <DashboardPanel className="p-6 sm:p-8">
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-white">{copy.servers.emptyTitle}</h2>
-            <p className="text-sm leading-6 text-white/56">{copy.servers.emptyBody}</p>
-          </div>
-        </DashboardPanel>
+        <DashboardMessagePanel
+          title={resolvedEmptyState.title}
+          body={resolvedEmptyState.body}
+        />
       )}
     </DashboardServerShell>
   );

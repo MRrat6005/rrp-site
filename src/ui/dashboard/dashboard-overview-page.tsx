@@ -2,6 +2,7 @@ import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardSectionHeading,
   DashboardStatusPill
@@ -17,6 +18,20 @@ export function DashboardOverviewPage({
   server
 }: DashboardOverviewPageProps) {
   const copy = getDashboardCopy(locale);
+  const isEmpty =
+    server.overview.identity.length === 0 &&
+    server.overview.systemStatus.length === 0 &&
+    server.overview.moduleSummary.length === 0 &&
+    server.overview.notices.length === 0;
+
+  if (isEmpty) {
+    return (
+      <DashboardMessagePanel
+        title={copy.overview.emptyTitle}
+        body={copy.overview.emptyBody}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">

@@ -2,6 +2,7 @@ import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardSectionHeading
 } from "@/ui/dashboard/dashboard-primitives";
@@ -16,6 +17,15 @@ export function DashboardSettingsPage({
   server
 }: DashboardSettingsPageProps) {
   const copy = getDashboardCopy(locale);
+
+  if (server.settings.length === 0) {
+    return (
+      <DashboardMessagePanel
+        title={copy.settings.emptyTitle}
+        body={copy.settings.emptyBody}
+      />
+    );
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">

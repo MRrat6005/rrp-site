@@ -2,6 +2,7 @@ import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardSectionHeading,
   DashboardStatusPill
@@ -17,6 +18,20 @@ export function DashboardLicensesPage({
   server
 }: DashboardLicensesPageProps) {
   const copy = getDashboardCopy(locale);
+  const isEmpty =
+    server.licenses.currentPlan.trim().length === 0 &&
+    server.licenses.availableLevel.trim().length === 0 &&
+    server.licenses.entitlementSummary.trim().length === 0 &&
+    server.licenses.entitlements.length === 0;
+
+  if (isEmpty) {
+    return (
+      <DashboardMessagePanel
+        title={copy.licenses.emptyTitle}
+        body={copy.licenses.emptyBody}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">

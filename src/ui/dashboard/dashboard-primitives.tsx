@@ -72,3 +72,24 @@ export function DashboardSectionHeading({
     </div>
   );
 }
+
+interface DashboardMessagePanelProps {
+  body: string;
+  className?: string;
+  title: string;
+}
+
+export function DashboardMessagePanel({
+  body,
+  className,
+  title
+}: DashboardMessagePanelProps) {
+  return (
+    <DashboardPanel className={cx("p-6 sm:p-8", className)}>
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold text-white">{title}</h2>
+        <p className="text-sm leading-6 text-white/56">{body}</p>
+      </div>
+    </DashboardPanel>
+  );
+}

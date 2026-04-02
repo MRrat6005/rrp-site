@@ -2,6 +2,7 @@ import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
+  DashboardMessagePanel,
   DashboardPanel,
   DashboardSectionHeading,
   DashboardStatusPill
@@ -17,6 +18,15 @@ export function DashboardModulesPage({
   server
 }: DashboardModulesPageProps) {
   const copy = getDashboardCopy(locale);
+
+  if (server.modules.length === 0) {
+    return (
+      <DashboardMessagePanel
+        title={copy.modules.emptyTitle}
+        body={copy.modules.emptyBody}
+      />
+    );
+  }
 
   return (
     <DashboardPanel className="p-5 sm:p-6">
