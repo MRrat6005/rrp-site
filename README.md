@@ -18,6 +18,7 @@ npm run dev
 
 ## Dashboard API Config
 
+- Production default is `https://api.royalratsproductions.ru` via `public/runtime-config.js`.
 - Local development can use `.env.local` with `NEXT_PUBLIC_DASHBOARD_API_BASE_URL`.
 - Static deployments can override `public/runtime-config.js` or the deployed `runtime-config.js` file without changing dashboard components.
 - The dashboard client appends the dashboard paths itself, so the base URL can point at the backend API root.
@@ -28,3 +29,4 @@ npm run dev
 - For repository pages, `next.config.mjs` derives `basePath` from `GITHUB_REPOSITORY`.
 - For custom domains, add `public/CNAME` and the config stops assuming a repository base path.
 - `public/CNAME.example` is included as a placeholder.
+
