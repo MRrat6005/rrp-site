@@ -24,7 +24,7 @@ export function DashboardStatusPage({
         <p className="text-sm leading-6 text-white/54">{copy.status.note}</p>
       </DashboardPanel>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {server.status.map((group) => (
           <DashboardPanel key={group.key} className="p-5 sm:p-6">
             <div className="space-y-4">
@@ -32,7 +32,7 @@ export function DashboardStatusPage({
               <div className="divide-y divide-white/[0.05]">
                 {group.items.map((item) => (
                   <div key={item.label} className="py-4">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <p className="text-sm font-medium text-white/88">{item.label}</p>
                         <p className="mt-1 text-sm leading-6 text-white/50">

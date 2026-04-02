@@ -23,7 +23,7 @@ export function DashboardLicensesPage({
       <DashboardPanel className="p-5 sm:p-6">
         <div className="space-y-4">
           <DashboardSectionHeading title={copy.licenses.summary} />
-          <div className="grid gap-4 border-y border-white/[0.05] py-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 border-y border-white/[0.05] py-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
                 {copy.licenses.current}
@@ -50,7 +50,7 @@ export function DashboardLicensesPage({
             {server.licenses.entitlements.map((item) => (
               <div
                 key={item.label}
-                className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between"
               >
                 <p className="text-sm text-white/76">{item.label}</p>
                 <DashboardStatusPill tone={item.tone}>{item.value}</DashboardStatusPill>

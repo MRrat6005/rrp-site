@@ -95,7 +95,7 @@ export function DashboardServersPage({
           {groupedServers.map((group) =>
             group.servers.length ? (
               <section key={group.state} className="space-y-3">
-                <div className="flex items-center justify-between gap-3 border-b border-white/[0.05] pb-3">
+                <div className="flex flex-col gap-2 border-b border-white/[0.05] pb-3 sm:flex-row sm:items-center sm:justify-between">
                   <h2 className="text-sm font-medium text-white/80">
                     {copy.servers.groups[group.state]}
                   </h2>
@@ -104,7 +104,7 @@ export function DashboardServersPage({
                   </span>
                 </div>
 
-                <div className="grid gap-3 xl:grid-cols-2">
+                <div className="grid gap-3 lg:grid-cols-2">
                   {group.servers.map((server) => (
                     <Link
                       key={server.id}
@@ -113,7 +113,7 @@ export function DashboardServersPage({
                     >
                       <DashboardPanel className="h-full p-5 transition hover:border-white/[0.08] hover:bg-[rgba(15,16,18,0.92)] sm:p-6">
                         <div className="flex h-full flex-col gap-5">
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div className="flex min-w-0 items-start gap-3">
                               <div
                                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/84"
@@ -136,7 +136,7 @@ export function DashboardServersPage({
 
                           <p className="text-sm leading-6 text-white/56">{server.description}</p>
 
-                          <div className="grid gap-y-3 border-y border-white/[0.05] py-4 text-sm sm:grid-cols-4 sm:gap-x-4">
+                          <div className="grid gap-x-4 gap-y-3 border-y border-white/[0.05] py-4 text-sm sm:grid-cols-2 xl:grid-cols-4">
                             <div>
                               <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
                                 {copy.servers.environment}
@@ -163,7 +163,7 @@ export function DashboardServersPage({
                             </div>
                           </div>
 
-                          <div className="mt-auto flex items-center justify-between gap-3">
+                          <div className="mt-auto flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
                             <span className="text-sm text-white/40">{server.id}</span>
                             <span className="text-sm text-white/60 transition group-hover:text-white/76">
                               {getDashboardStateAction(locale, server.state)}

@@ -18,7 +18,7 @@ export function DashboardSettingsPage({
   const copy = getDashboardCopy(locale);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
       <DashboardPanel className="p-5 sm:p-6">
         <div className="space-y-4">
           <DashboardSectionHeading title={copy.settings.title} />

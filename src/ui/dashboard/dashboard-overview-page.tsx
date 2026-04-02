@@ -20,7 +20,7 @@ export function DashboardOverviewPage({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-5">
             <DashboardSectionHeading
@@ -30,11 +30,14 @@ export function DashboardOverviewPage({
 
             <div className="divide-y divide-white/[0.05]">
               {server.overview.identity.map((item) => (
-                <div key={item.label} className="flex items-center justify-between gap-4 py-3">
+                <div
+                  key={item.label}
+                  className="flex flex-col gap-1.5 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                >
                   <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
                     {item.label}
                   </p>
-                  <p className="text-sm text-right text-white/76">{item.value}</p>
+                  <p className="text-sm text-white/76 sm:text-right">{item.value}</p>
                 </div>
               ))}
             </div>
@@ -47,7 +50,7 @@ export function DashboardOverviewPage({
             <div className="divide-y divide-white/[0.05]">
               {server.overview.systemStatus.map((item) => (
                 <div key={item.label} className="py-3">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-sm font-medium text-white/88">{item.label}</p>
                       <p className="mt-1 text-sm leading-6 text-white/52">{item.note}</p>
@@ -61,20 +64,23 @@ export function DashboardOverviewPage({
         </DashboardPanel>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
             <DashboardSectionHeading title={copy.overview.modules} />
             <div className="divide-y divide-white/[0.05]">
               {server.overview.moduleSummary.map((module) => (
-                <div key={module.key} className="flex items-start justify-between gap-3 py-3">
+                <div
+                  key={module.key}
+                  className="flex flex-col gap-3 py-3 md:flex-row md:items-start md:justify-between"
+                >
                   <div>
                     <p className="text-sm font-medium text-white/88">{module.name}</p>
                     <p className="mt-1 text-sm leading-6 text-white/50">
                       {module.description}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-3">
+                  <div className="flex shrink-0 flex-wrap items-center gap-3">
                     <DashboardStatusPill tone={module.tone}>
                       {module.stateLabel}
                     </DashboardStatusPill>
@@ -92,7 +98,7 @@ export function DashboardOverviewPage({
             <div className="divide-y divide-white/[0.05]">
               {server.overview.notices.map((notice) => (
                 <div key={`${notice.title}-${notice.time}`} className="py-3">
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-sm font-medium text-white/88">{notice.title}</p>
                       <p className="mt-1 text-sm leading-6 text-white/50">

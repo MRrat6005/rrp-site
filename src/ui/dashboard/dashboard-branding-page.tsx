@@ -19,7 +19,7 @@ export function DashboardBrandingPage({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
             <DashboardSectionHeading title={copy.branding.assets} />
