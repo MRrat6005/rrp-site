@@ -24,7 +24,7 @@ export default function DashboardServerLayout({
   params
 }: DashboardServerLayoutProps) {
   const locale = resolveLocale(params.locale);
-  const server = getDashboardServer(params.id);
+  const server = getDashboardServer(params.id, locale);
 
   if (!server) {
     notFound();
@@ -36,3 +36,4 @@ export default function DashboardServerLayout({
     </DashboardServerShell>
   );
 }
+

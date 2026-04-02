@@ -1,3 +1,5 @@
+import type { Locale } from "@/config/site.config";
+
 export type DashboardServerState = "connected" | "invite" | "inactive" | "test";
 export type DashboardTone = "positive" | "warning" | "muted" | "info";
 export type DashboardModuleKey =
@@ -101,460 +103,1049 @@ export interface DashboardServer {
   status: DashboardStatusGroup[];
 }
 
-const moduleCatalog: Record<
-  DashboardModuleKey,
-  Pick<DashboardModule, "key" | "name" | "description">
-> = {
-  bank: { key: "bank", name: "Bank", description: "Balances, transfers, and salary rules." },
-  social: { key: "social", name: "Social", description: "Profiles, reactions, and progression." },
-  weather: { key: "weather", name: "Weather", description: "Forecast cards and location presets." },
-  sessions: { key: "sessions", name: "Sessions", description: "Session timing and event structure." },
-  radio: { key: "radio", name: "Radio", description: "Station presets and access placeholders." },
-  rentals: { key: "rentals", name: "Rentals", description: "Lease records and property states." }
+type LocalizedString = Record<Locale, string>;
+
+type LocalizedIdentityField = {
+  label: LocalizedString;
+  value: LocalizedString;
 };
 
-function createModules(
-  items: Array<{
-    key: DashboardModuleKey;
-    stateLabel: string;
-    tone: DashboardTone;
-    actionLabel: string;
-  }>
-): DashboardModule[] {
-  return items.map((item) => ({
+type LocalizedStatusItem = {
+  label: LocalizedString;
+  value: LocalizedString;
+  note: LocalizedString;
+  tone: DashboardTone;
+};
+
+type LocalizedModuleSeed = {
+  key: DashboardModuleKey;
+  stateLabel: LocalizedString;
+  tone: DashboardTone;
+  actionLabel: LocalizedString;
+};
+
+type LocalizedSettingGroup = {
+  label: LocalizedString;
+  value: LocalizedString;
+  note: LocalizedString;
+};
+
+type LocalizedBrandAsset = {
+  label: LocalizedString;
+  value: LocalizedString;
+  note: LocalizedString;
+};
+
+type LocalizedEntitlement = {
+  label: LocalizedString;
+  value: LocalizedString;
+  tone: DashboardTone;
+};
+
+type LocalizedStatusGroup = {
+  key: DashboardStatusGroup["key"];
+  title: LocalizedString;
+  items: LocalizedStatusItem[];
+};
+
+type LocalizedNotice = {
+  title: LocalizedString;
+  detail: LocalizedString;
+  time: LocalizedString;
+};
+
+type ModuleSetKey = "production" | "setup" | "archive" | "test";
+
+type DashboardServerSeed = {
+  id: string;
+  name: LocalizedString;
+  iconLabel: string;
+  accent: string;
+  state: DashboardServerState;
+  description: LocalizedString;
+  environment: LocalizedString;
+  region: LocalizedString;
+  members: string;
+  plan: LocalizedString;
+  syncNote: LocalizedString;
+  moduleSet: ModuleSetKey;
+  overview: {
+    identity: LocalizedIdentityField[];
+    systemStatus: LocalizedStatusItem[];
+    notices: LocalizedNotice[];
+  };
+  settings: LocalizedSettingGroup[];
+  branding: {
+    assets: LocalizedBrandAsset[];
+    fields: LocalizedIdentityField[];
+    note: LocalizedString;
+  };
+  licenses: {
+    currentPlan: LocalizedString;
+    availableLevel: LocalizedString;
+    entitlementSummary: LocalizedString;
+    entitlements: LocalizedEntitlement[];
+  };
+  status: LocalizedStatusGroup[];
+};
+
+function text(en: string, ru: string): LocalizedString {
+  return { en, ru };
+}
+
+function pick(locale: Locale, value: LocalizedString): string {
+  return value[locale];
+}
+
+const moduleCatalog: Record<
+  DashboardModuleKey,
+  { key: DashboardModuleKey; name: string; description: LocalizedString }
+> = {
+  bank: {
+    key: "bank",
+    name: "Bank",
+    description: text(
+      "Balances, transfers, and salary rules.",
+      "Балансы, переводы и правила выплат."
+    )
+  },
+  social: {
+    key: "social",
+    name: "Social",
+    description: text(
+      "Profiles, reactions, and player progression.",
+      "Профили, реакции и прогресс игроков."
+    )
+  },
+  weather: {
+    key: "weather",
+    name: "Weather",
+    description: text(
+      "Forecast controls and saved locations.",
+      "Погода, прогнозы и сохраненные локации."
+    )
+  },
+  sessions: {
+    key: "sessions",
+    name: "Sessions",
+    description: text(
+      "Session timing and event structure.",
+      "Расписание сессий и рабочая структура событий."
+    )
+  },
+  radio: {
+    key: "radio",
+    name: "Radio",
+    description: text(
+      "Channel presets and radio access.",
+      "Каналы связи и доступ к радиосетке."
+    )
+  },
+  rentals: {
+    key: "rentals",
+    name: "Rentals",
+    description: text(
+      "Lease records and property states.",
+      "Аренда, объекты и их текущее состояние."
+    )
+  }
+};
+
+const moduleSets: Record<ModuleSetKey, LocalizedModuleSeed[]> = {
+  production: [
+    { key: "bank", stateLabel: text("Enabled", "Включен"), tone: "positive", actionLabel: text("Open", "Открыть") },
+    { key: "social", stateLabel: text("Enabled", "Включен"), tone: "positive", actionLabel: text("Open", "Открыть") },
+    { key: "weather", stateLabel: text("Enabled", "Включен"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "sessions", stateLabel: text("Enabled", "Включен"), tone: "positive", actionLabel: text("Open", "Открыть") },
+    { key: "radio", stateLabel: text("Review", "Проверка"), tone: "warning", actionLabel: text("Review", "Проверить") },
+    { key: "rentals", stateLabel: text("Enabled", "Включен"), tone: "positive", actionLabel: text("Open", "Открыть") }
+  ],
+  setup: [
+    { key: "bank", stateLabel: text("Ready", "Готов"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "social", stateLabel: text("Ready", "Готов"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "weather", stateLabel: text("Ready", "Готов"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "sessions", stateLabel: text("Limited", "Ограничен"), tone: "warning", actionLabel: text("Review", "Проверить") },
+    { key: "radio", stateLabel: text("Limited", "Ограничен"), tone: "muted", actionLabel: text("Review", "Проверить") },
+    { key: "rentals", stateLabel: text("Limited", "Ограничен"), tone: "muted", actionLabel: text("Review", "Проверить") }
+  ],
+  archive: [
+    { key: "bank", stateLabel: text("Archived", "Архив"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "social", stateLabel: text("Archived", "Архив"), tone: "muted", actionLabel: text("Open", "Открыть") },
+    { key: "weather", stateLabel: text("Hidden", "Скрыт"), tone: "muted", actionLabel: text("Review", "Проверить") },
+    { key: "sessions", stateLabel: text("Hidden", "Скрыт"), tone: "muted", actionLabel: text("Review", "Проверить") },
+    { key: "radio", stateLabel: text("Hidden", "Скрыт"), tone: "muted", actionLabel: text("Review", "Проверить") },
+    { key: "rentals", stateLabel: text("Hidden", "Скрыт"), tone: "muted", actionLabel: text("Review", "Проверить") }
+  ],
+  test: [
+    { key: "bank", stateLabel: text("Test", "Тест"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "social", stateLabel: text("Test", "Тест"), tone: "positive", actionLabel: text("Open", "Открыть") },
+    { key: "weather", stateLabel: text("Test", "Тест"), tone: "info", actionLabel: text("Open", "Открыть") },
+    { key: "sessions", stateLabel: text("Test", "Тест"), tone: "positive", actionLabel: text("Open", "Открыть") },
+    { key: "radio", stateLabel: text("Review", "Проверка"), tone: "warning", actionLabel: text("Review", "Проверить") },
+    { key: "rentals", stateLabel: text("Test", "Тест"), tone: "info", actionLabel: text("Open", "Открыть") }
+  ]
+};
+
+function buildModules(locale: Locale, setKey: ModuleSetKey): DashboardModule[] {
+  return moduleSets[setKey].map((item) => ({
     ...moduleCatalog[item.key],
-    stateLabel: item.stateLabel,
+    description: pick(locale, moduleCatalog[item.key].description),
+    stateLabel: pick(locale, item.stateLabel),
     tone: item.tone,
-    actionLabel: item.actionLabel
+    actionLabel: pick(locale, item.actionLabel)
   }));
 }
 
-const serverModules = {
-  production: createModules([
-    { key: "bank", stateLabel: "Enabled", tone: "positive", actionLabel: "Manage" },
-    { key: "social", stateLabel: "Enabled", tone: "positive", actionLabel: "Manage" },
-    { key: "weather", stateLabel: "Enabled", tone: "info", actionLabel: "Manage" },
-    { key: "sessions", stateLabel: "Enabled", tone: "positive", actionLabel: "Manage" },
-    { key: "radio", stateLabel: "Review", tone: "warning", actionLabel: "Open" },
-    { key: "rentals", stateLabel: "Enabled", tone: "positive", actionLabel: "Manage" }
-  ]),
-  setup: createModules([
-    { key: "bank", stateLabel: "Starter", tone: "info", actionLabel: "Open" },
-    { key: "social", stateLabel: "Starter", tone: "info", actionLabel: "Open" },
-    { key: "weather", stateLabel: "Starter", tone: "info", actionLabel: "Open" },
-    { key: "sessions", stateLabel: "Locked", tone: "warning", actionLabel: "Review" },
-    { key: "radio", stateLabel: "Locked", tone: "muted", actionLabel: "Review" },
-    { key: "rentals", stateLabel: "Locked", tone: "muted", actionLabel: "Review" }
-  ]),
-  archive: createModules([
-    { key: "bank", stateLabel: "Archive", tone: "info", actionLabel: "Open" },
-    { key: "social", stateLabel: "Archive", tone: "muted", actionLabel: "Open" },
-    { key: "weather", stateLabel: "Hidden", tone: "muted", actionLabel: "Review" },
-    { key: "sessions", stateLabel: "Hidden", tone: "muted", actionLabel: "Review" },
-    { key: "radio", stateLabel: "Hidden", tone: "muted", actionLabel: "Review" },
-    { key: "rentals", stateLabel: "Hidden", tone: "muted", actionLabel: "Review" }
-  ]),
-  test: createModules([
-    { key: "bank", stateLabel: "Test", tone: "info", actionLabel: "Open" },
-    { key: "social", stateLabel: "Test", tone: "positive", actionLabel: "Open" },
-    { key: "weather", stateLabel: "Test", tone: "info", actionLabel: "Open" },
-    { key: "sessions", stateLabel: "Test", tone: "positive", actionLabel: "Open" },
-    { key: "radio", stateLabel: "Warning", tone: "warning", actionLabel: "Review" },
-    { key: "rentals", stateLabel: "Test", tone: "info", actionLabel: "Open" }
-  ])
-};
+function mapIdentityField(locale: Locale, item: LocalizedIdentityField): DashboardIdentityField {
+  return {
+    label: pick(locale, item.label),
+    value: pick(locale, item.value)
+  };
+}
 
-const servers: DashboardServer[] = [
+function mapStatusItem(locale: Locale, item: LocalizedStatusItem): DashboardStatusItem {
+  return {
+    label: pick(locale, item.label),
+    value: pick(locale, item.value),
+    note: pick(locale, item.note),
+    tone: item.tone
+  };
+}
+
+function mapNotice(locale: Locale, item: LocalizedNotice): DashboardNotice {
+  return {
+    title: pick(locale, item.title),
+    detail: pick(locale, item.detail),
+    time: pick(locale, item.time)
+  };
+}
+
+function mapSettingGroup(locale: Locale, item: LocalizedSettingGroup): DashboardSettingGroup {
+  return {
+    label: pick(locale, item.label),
+    value: pick(locale, item.value),
+    note: pick(locale, item.note)
+  };
+}
+
+function mapBrandAsset(locale: Locale, item: LocalizedBrandAsset): DashboardBrandAsset {
+  return {
+    label: pick(locale, item.label),
+    value: pick(locale, item.value),
+    note: pick(locale, item.note)
+  };
+}
+
+function mapEntitlement(locale: Locale, item: LocalizedEntitlement): DashboardEntitlement {
+  return {
+    label: pick(locale, item.label),
+    value: pick(locale, item.value),
+    tone: item.tone
+  };
+}
+
+function mapStatusGroup(locale: Locale, item: LocalizedStatusGroup): DashboardStatusGroup {
+  return {
+    key: item.key,
+    title: pick(locale, item.title),
+    items: item.items.map((status) => mapStatusItem(locale, status))
+  };
+}
+
+const serverSeeds: DashboardServerSeed[] = [
   {
     id: "crown-main",
-    name: "CROWN Main",
+    name: text("CROWN Main", "CROWN Main"),
     iconLabel: "CM",
     accent: "#d2c7b0",
     state: "connected",
-    description: "Primary production shell with restrained controls and a full module map.",
-    environment: "Production",
-    region: "EU Central",
+    description: text(
+      "Primary server with full module coverage and steady daily operations.",
+      "Основной сервер с полным набором модулей и стабильным рабочим контуром."
+    ),
+    environment: text("Production", "Рабочая"),
+    region: text("EU Central", "Центральная Европа"),
     members: "18,240",
-    plan: "Full",
-    syncNote: "Snapshot refreshed 2 minutes ago",
+    plan: text("Full", "Полный"),
+    syncNote: text("Updated 2 minutes ago", "Обновлено 2 минуты назад"),
+    moduleSet: "production",
     overview: {
       identity: [
-        { label: "Server", value: "CROWN Main" },
-        { label: "Plan", value: "Full" },
-        { label: "Environment", value: "Production" },
-        { label: "Region", value: "EU Central" }
+        { label: text("Server", "Сервер"), value: text("CROWN Main", "CROWN Main") },
+        { label: text("Plan", "План"), value: text("Full", "Полный") },
+        { label: text("Environment", "Среда"), value: text("Production", "Рабочая") },
+        { label: text("Region", "Регион"), value: text("EU Central", "Центральная Европа") }
       ],
       systemStatus: [
-        { label: "Bot core", value: "Connected", note: "Local mock state only.", tone: "positive" },
-        { label: "Dashboard", value: "Ready", note: "Static and export-safe.", tone: "info" },
-        { label: "Permissions", value: "Placeholder", note: "No real checks yet.", tone: "muted" }
+        {
+          label: text("Bot core", "Ядро бота"),
+          value: text("Connected", "Подключено"),
+          note: text("The current preview snapshot is available.", "Доступен актуальный снимок предпросмотра."),
+          tone: "positive"
+        },
+        {
+          label: text("Dashboard", "Панель"),
+          value: text("Ready", "Готов"),
+          note: text("The workspace is available on all pages.", "Рабочее пространство доступно на всех страницах."),
+          tone: "info"
+        },
+        {
+          label: text("Permissions", "Доступ"),
+          value: text("Limited", "Ограничено"),
+          note: text("Write actions are not enabled in this pass.", "Действия с записью в этот проход не входят."),
+          tone: "muted"
+        }
       ],
-      moduleSummary: serverModules.production,
       notices: [
-        { title: "Branding preset updated", detail: "Identity preview aligned with the reset.", time: "14m ago" },
-        { title: "Radio left in review", detail: "Visible, but intentionally restrained.", time: "Today" }
+        {
+          title: text("Branding profile updated", "Профиль брендинга обновлен"),
+          detail: text("Identity fields were aligned with the current preset.", "Поля идентичности выровнены под текущий профиль."),
+          time: text("14m ago", "14 мин назад")
+        },
+        {
+          title: text("Radio remains under review", "Radio остается на проверке"),
+          detail: text("The module stays visible with limited attention.", "Модуль остается доступным в сдержанном режиме."),
+          time: text("Today", "Сегодня")
+        }
       ]
     },
     settings: [
-      { label: "Localization", value: "English primary, Russian fallback", note: "Locale-aware routes stay intact." },
-      { label: "Admin role", value: "CROWN Council", note: "Placeholder role only." },
-      { label: "Enabled modules", value: "Bank, Social, Weather, Sessions, Rentals", note: "Radio remains in review." },
-      { label: "Permissions / access", value: "Three admin seats, mock permissions", note: "No OAuth or sync." }
+      {
+        label: text("Localization", "Локализация"),
+        value: text("English primary, Russian secondary", "Английский основной, русский дополнительный"),
+        note: text("Routes follow the selected locale.", "Маршруты следуют выбранной локали.")
+      },
+      {
+        label: text("Admin role", "Роль администрации"),
+        value: text("CROWN Council", "CROWN Council"),
+        note: text("Shown as the primary server role.", "Показана как основная роль сервера.")
+      },
+      {
+        label: text("Enabled modules", "Подключенные модули"),
+        value: text("Bank, Social, Weather, Sessions, Rentals", "Bank, Social, Weather, Sessions, Rentals"),
+        note: text("Radio remains available for review.", "Radio остается доступным для проверки.")
+      },
+      {
+        label: text("Access", "Доступ"),
+        value: text("Three admin seats", "Три административных места"),
+        note: text("Permissions remain visible in preview mode.", "Права доступа остаются в режиме предпросмотра.")
+      }
     ],
-    modules: serverModules.production,
     branding: {
       assets: [
-        { label: "Logo", value: "Uploaded", note: "Square preview slot only." },
-        { label: "Banner", value: "Uploaded", note: "Wide preview asset, no live sync." },
-        { label: "Accent color", value: "Graphite / warm silver", note: "Restrained accent set." }
+        {
+          label: text("Logo", "Логотип"),
+          value: text("Available", "Загружен"),
+          note: text("Shown in the current preview slot.", "Показан в текущем слоте предпросмотра.")
+        },
+        {
+          label: text("Banner", "Баннер"),
+          value: text("Available", "Загружен"),
+          note: text("Stored as the active wide asset.", "Сохранен как основной широкий материал.")
+        },
+        {
+          label: text("Accent color", "Акцентный цвет"),
+          value: text("Graphite / warm silver", "Графит / теплое серебро"),
+          note: text("Used across the current dashboard view.", "Используется в текущем виде панели.")
+        }
       ],
       fields: [
-        { label: "Display name", value: "CROWN Main District" },
-        { label: "Short tagline", value: "Structured city economy and roleplay utilities" },
-        { label: "Identity footer", value: "Managed through the CROWN dashboard shell" }
+        { label: text("Display name", "Отображаемое имя"), value: text("CROWN Main District", "CROWN Main District") },
+        { label: text("Tagline", "Короткое описание"), value: text("Structured city economy and roleplay utilities", "Структурированная городская экономика и ролевые инструменты") },
+        { label: text("Footer line", "Нижняя подпись"), value: text("Managed through the CROWN dashboard", "Управляется через панель CROWN") }
       ],
-      note: "Branding is preview-only and disconnected from Discord assets."
+      note: text("Assets and naming stay in preview mode.", "Материалы и названия остаются в режиме предпросмотра.")
     },
     licenses: {
-      currentPlan: "Full",
-      availableLevel: "Expanded branding and module access",
-      entitlementSummary: "The licenses view stays informational and avoids billing logic.",
+      currentPlan: text("Full", "Полный"),
+      availableLevel: text("Expanded branding and module access", "Расширенный брендинг и доступ к модулям"),
+      entitlementSummary: text("Includes full branding access and the main module set.", "Включает полный доступ к брендингу и основному набору модулей."),
       entitlements: [
-        { label: "Branding controls", value: "Included", tone: "positive" },
-        { label: "Module management", value: "Included", tone: "positive" },
-        { label: "Live sync", value: "Not in this pass", tone: "muted" }
+        { label: text("Branding", "Брендинг"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("Module management", "Управление модулями"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("Live sync", "Онлайн-синхронизация"), value: text("Not included", "Не входит"), tone: "muted" }
       ]
     },
     status: [
       {
         key: "core",
-        title: "Bot / core",
+        title: text("Core", "Ядро"),
         items: [
-          { label: "Bot core", value: "Healthy", note: "Local status placeholder.", tone: "positive" },
-          { label: "Command routing", value: "Stable", note: "No runtime telemetry.", tone: "info" }
+          {
+            label: text("Bot core", "Ядро бота"),
+            value: text("Healthy", "Норма"),
+            note: text("The preview environment is stable.", "Среда предпросмотра работает стабильно."),
+            tone: "positive"
+          },
+          {
+            label: text("Command routing", "Маршрутизация команд"),
+            value: text("Stable", "Стабильно"),
+            note: text("The current route map is loaded.", "Текущая карта маршрутов загружена."),
+            tone: "info"
+          }
         ]
       },
       {
         key: "dashboard",
-        title: "Dashboard",
+        title: text("Dashboard", "Панель"),
         items: [
-          { label: "App shell", value: "Ready", note: "Shared layout active.", tone: "positive" },
-          { label: "Auth", value: "Deferred", note: "Reserved for later.", tone: "warning" }
+          {
+            label: text("App shell", "Оболочка"),
+            value: text("Ready", "Готово"),
+            note: text("The shared layout is active.", "Общая оболочка активна."),
+            tone: "positive"
+          },
+          {
+            label: text("Authentication", "Авторизация"),
+            value: text("Deferred", "Позже"),
+            note: text("Reserved for a later pass.", "Оставлено на следующий проход."),
+            tone: "warning"
+          }
         ]
       },
       {
         key: "modules",
-        title: "Modules",
+        title: text("Modules", "Модули"),
         items: [
-          { label: "Primary modules", value: "Mapped", note: "All six routes exist.", tone: "positive" },
-          { label: "Radio", value: "Review", note: "Visible but restrained.", tone: "warning" }
+          {
+            label: text("Primary set", "Основной набор"),
+            value: text("Available", "Доступен"),
+            note: text("Core modules are shown in the workspace.", "Ключевые модули показаны в рабочем пространстве."),
+            tone: "positive"
+          },
+          {
+            label: text("Radio", "Radio"),
+            value: text("Review", "Проверка"),
+            note: text("The module remains visible with limited emphasis.", "Модуль остается видимым без лишнего акцента."),
+            tone: "warning"
+          }
         ]
       },
       {
         key: "integrations",
-        title: "API / integrations",
+        title: text("Integrations", "Интеграции"),
         items: [
-          { label: "API", value: "Placeholder", note: "No backend calls.", tone: "muted" },
-          { label: "Discord sync", value: "Not started", note: "Out of scope.", tone: "muted" }
+          {
+            label: text("External sync", "Внешняя синхронизация"),
+            value: text("Inactive", "Неактивна"),
+            note: text("No external connections are used in this pass.", "В этом проходе внешние подключения не используются."),
+            tone: "muted"
+          },
+          {
+            label: text("Exports", "Экспорт"),
+            value: text("Inactive", "Неактивен"),
+            note: text("Export flows are outside the current scope.", "Сценарии экспорта остаются вне текущего объема."),
+            tone: "muted"
+          }
         ]
       }
     ]
   },
   {
     id: "night-arcade",
-    name: "Night Arcade",
+    name: text("Night Arcade", "Night Arcade"),
     iconLabel: "NA",
     accent: "#d6d1c6",
     state: "invite",
-    description: "Launch-prep server waiting for invite and first configuration pass.",
-    environment: "Setup",
-    region: "US East",
+    description: text("Server waiting for first connection and initial setup.", "Сервер ожидает первое подключение и начальную настройку."),
+    environment: text("Setup", "Подготовка"),
+    region: text("US East", "Восток США"),
     members: "3,420",
-    plan: "Free",
-    syncNote: "Awaiting first connection",
+    plan: text("Free", "Базовый"),
+    syncNote: text("Waiting for first connection", "Ожидает первое подключение"),
+    moduleSet: "setup",
     overview: {
       identity: [
-        { label: "Server", value: "Night Arcade" },
-        { label: "Plan", value: "Free" },
-        { label: "Environment", value: "Setup" },
-        { label: "Region", value: "US East" }
+        { label: text("Server", "Сервер"), value: text("Night Arcade", "Night Arcade") },
+        { label: text("Plan", "План"), value: text("Free", "Базовый") },
+        { label: text("Environment", "Среда"), value: text("Setup", "Подготовка") },
+        { label: text("Region", "Регион"), value: text("US East", "Восток США") }
       ],
       systemStatus: [
-        { label: "Bot core", value: "Invite required", note: "Setup shell is still usable.", tone: "warning" },
-        { label: "Dashboard", value: "Prepared", note: "Configuration can start now.", tone: "info" },
-        { label: "Permissions", value: "Draft", note: "No backend enforcement.", tone: "muted" }
+        {
+          label: text("Bot core", "Ядро бота"),
+          value: text("Setup required", "Требуется подключение"),
+          note: text("The workspace is available before connection.", "Рабочее пространство доступно до подключения."),
+          tone: "warning"
+        },
+        {
+          label: text("Dashboard", "Панель"),
+          value: text("Ready", "Готов"),
+          note: text("Initial configuration can begin now.", "Начальную настройку можно начать уже сейчас."),
+          tone: "info"
+        },
+        {
+          label: text("Permissions", "Доступ"),
+          value: text("Pending", "Ожидается"),
+          note: text("Access rules are shown as part of setup.", "Правила доступа показаны как часть настройки."),
+          tone: "muted"
+        }
       ],
-      moduleSummary: serverModules.setup,
       notices: [
-        { title: "Invite flow pending", detail: "Entry page stays useful before connection.", time: "Now" },
-        { title: "Starter modules suggested", detail: "Bank, Social, and Weather are enabled.", time: "Today" }
+        {
+          title: text("Connection pending", "Подключение ожидается"),
+          detail: text("The server is ready for the first invite step.", "Сервер готов к первому шагу подключения."),
+          time: text("Now", "Сейчас")
+        },
+        {
+          title: text("Starter modules prepared", "Стартовые модули подготовлены"),
+          detail: text("Bank, Social, and Weather are already available.", "Bank, Social и Weather уже доступны."),
+          time: text("Today", "Сегодня")
+        }
       ]
     },
     settings: [
-      { label: "Localization", value: "English only for launch", note: "Secondary locale can come later." },
-      { label: "Admin role", value: "Night Leads", note: "Displayed as a shell placeholder." },
-      { label: "Enabled modules", value: "Bank, Social, Weather", note: "Starter configuration only." },
-      { label: "Permissions / access", value: "Invite pending, minimal access groups", note: "No real permission logic." }
+      {
+        label: text("Localization", "Локализация"),
+        value: text("English at launch", "Английский на запуске"),
+        note: text("A second locale can be added later.", "Вторую локаль можно добавить позже.")
+      },
+      {
+        label: text("Admin role", "Роль администрации"),
+        value: text("Night Leads", "Night Leads"),
+        note: text("Shown as the primary setup role.", "Показана как основная роль этапа настройки.")
+      },
+      {
+        label: text("Enabled modules", "Подключенные модули"),
+        value: text("Bank, Social, Weather", "Bank, Social, Weather"),
+        note: text("The starter set is ready for the first pass.", "Стартовый набор готов к первому проходу.")
+      },
+      {
+        label: text("Access", "Доступ"),
+        value: text("Initial access groups", "Начальные группы доступа"),
+        note: text("The server remains in setup mode.", "Сервер остается в режиме настройки.")
+      }
     ],
-    modules: serverModules.setup,
     branding: {
       assets: [
-        { label: "Logo", value: "Empty", note: "Initials fallback in use." },
-        { label: "Banner", value: "Empty", note: "No banner asset uploaded." },
-        { label: "Accent color", value: "Default graphite", note: "Neutral starter palette." }
+        {
+          label: text("Logo", "Логотип"),
+          value: text("Not added", "Не добавлен"),
+          note: text("The initials tile is used for now.", "Пока используется иконка с инициалами.")
+        },
+        {
+          label: text("Banner", "Баннер"),
+          value: text("Not added", "Не добавлен"),
+          note: text("A wide asset has not been uploaded yet.", "Широкий материал пока не загружен.")
+        },
+        {
+          label: text("Accent color", "Акцентный цвет"),
+          value: text("Default graphite", "Базовый графит"),
+          note: text("A neutral palette is used during setup.", "Во время настройки используется нейтральная палитра.")
+        }
       ],
       fields: [
-        { label: "Display name", value: "Night Arcade" },
-        { label: "Short tagline", value: "Late-night events with structured tools" },
-        { label: "Identity footer", value: "Invite CROWN to unlock the full dashboard" }
+        { label: text("Display name", "Отображаемое имя"), value: text("Night Arcade", "Night Arcade") },
+        { label: text("Tagline", "Короткое описание"), value: text("Late-night events with structured tools", "Ночные события и структурированные инструменты") },
+        { label: text("Footer line", "Нижняя подпись"), value: text("Invite CROWN to unlock the full workspace", "Подключите CROWN, чтобы открыть полное рабочее пространство") }
       ],
-      note: "Branding remains sparse until the bot is installed."
+      note: text("Brand assets stay minimal until the first connection.", "Брендинг остается минимальным до первого подключения.")
     },
     licenses: {
-      currentPlan: "Free",
-      availableLevel: "Expanded modules and branding",
-      entitlementSummary: "The page frames availability without becoming a landing page.",
+      currentPlan: text("Free", "Базовый"),
+      availableLevel: text("Expanded modules and branding", "Расширенные модули и брендинг"),
+      entitlementSummary: text("The current plan covers the starter shell and basic modules.", "Текущий план покрывает стартовую оболочку и базовые модули."),
       entitlements: [
-        { label: "Core shell", value: "Included", tone: "positive" },
-        { label: "Premium branding", value: "Available later", tone: "info" },
-        { label: "Live sync", value: "Not in this pass", tone: "muted" }
+        { label: text("Core workspace", "Базовая оболочка"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("Advanced branding", "Расширенный брендинг"), value: text("Available later", "Доступно позже"), tone: "info" },
+        { label: text("Live sync", "Онлайн-синхронизация"), value: text("Not included", "Не входит"), tone: "muted" }
       ]
     },
     status: [
       {
         key: "core",
-        title: "Bot / core",
+        title: text("Core", "Ядро"),
         items: [
-          { label: "Bot core", value: "Invite pending", note: "No live install yet.", tone: "warning" },
-          { label: "Command routing", value: "Placeholder", note: "UI-only surface.", tone: "muted" }
+          {
+            label: text("Bot core", "Ядро бота"),
+            value: text("Setup pending", "Ожидает настройки"),
+            note: text("The first install step has not been completed.", "Первый шаг подключения еще не выполнен."),
+            tone: "warning"
+          },
+          {
+            label: text("Command routing", "Маршрутизация команд"),
+            value: text("Waiting", "Ожидает"),
+            note: text("Routes will appear after connection.", "Маршруты появятся после подключения."),
+            tone: "muted"
+          }
         ]
       },
       {
         key: "dashboard",
-        title: "Dashboard",
+        title: text("Dashboard", "Панель"),
         items: [
-          { label: "App shell", value: "Ready", note: "Pages exist before connection.", tone: "positive" },
-          { label: "Auth", value: "Deferred", note: "No OAuth in this pass.", tone: "muted" }
+          {
+            label: text("App shell", "Оболочка"),
+            value: text("Ready", "Готово"),
+            note: text("Pages are available before launch.", "Страницы доступны еще до запуска."),
+            tone: "positive"
+          },
+          {
+            label: text("Authentication", "Авторизация"),
+            value: text("Deferred", "Позже"),
+            note: text("Reserved for a later pass.", "Оставлено на следующий проход."),
+            tone: "muted"
+          }
         ]
       },
       {
         key: "modules",
-        title: "Modules",
+        title: text("Modules", "Модули"),
         items: [
-          { label: "Starter set", value: "Prepared", note: "Three modules enabled.", tone: "info" },
-          { label: "Extended set", value: "Locked", note: "Shown as placeholders.", tone: "warning" }
+          {
+            label: text("Starter set", "Стартовый набор"),
+            value: text("Ready", "Готов"),
+            note: text("Core modules are prepared for setup.", "Основные модули подготовлены к настройке."),
+            tone: "info"
+          },
+          {
+            label: text("Extended set", "Расширенный набор"),
+            value: text("Limited", "Ограничен"),
+            note: text("Additional modules remain outside the starter plan.", "Дополнительные модули пока не входят в стартовый план."),
+            tone: "warning"
+          }
         ]
       },
       {
         key: "integrations",
-        title: "API / integrations",
+        title: text("Integrations", "Интеграции"),
         items: [
-          { label: "API", value: "Placeholder", note: "No requests are made.", tone: "muted" },
-          { label: "Discord sync", value: "Not connected", note: "Reserved for later.", tone: "muted" }
+          {
+            label: text("External sync", "Внешняя синхронизация"),
+            value: text("Inactive", "Неактивна"),
+            note: text("No external connections are active yet.", "Внешние подключения пока не активны."),
+            tone: "muted"
+          },
+          {
+            label: text("Exports", "Экспорт"),
+            value: text("Inactive", "Неактивен"),
+            note: text("Export flows are not part of setup.", "Сценарии экспорта не входят в этап настройки."),
+            tone: "muted"
+          }
         ]
       }
     ]
   },
   {
     id: "archive-station",
-    name: "Archive Station",
+    name: text("Archive Station", "Archive Station"),
     iconLabel: "AS",
     accent: "#c7c9ce",
     state: "inactive",
-    description: "Read-only archive shell kept for cleanup and migration planning.",
-    environment: "Archive",
-    region: "EU West",
+    description: text("Reference server kept for review and migration planning.", "Справочный сервер для просмотра и подготовки миграции."),
+    environment: text("Archive", "Архив"),
+    region: text("EU West", "Западная Европа"),
     members: "7,118",
-    plan: "Legacy",
-    syncNote: "Last archived January 12",
+    plan: text("Legacy", "Legacy"),
+    syncNote: text("Archived on January 12", "Архив от 12 января"),
+    moduleSet: "archive",
     overview: {
       identity: [
-        { label: "Server", value: "Archive Station" },
-        { label: "Plan", value: "Legacy" },
-        { label: "Environment", value: "Archive" },
-        { label: "Region", value: "EU West" }
+        { label: text("Server", "Сервер"), value: text("Archive Station", "Archive Station") },
+        { label: text("Plan", "План"), value: text("Legacy", "Legacy") },
+        { label: text("Environment", "Среда"), value: text("Archive", "Архив") },
+        { label: text("Region", "Регион"), value: text("EU West", "Западная Европа") }
       ],
       systemStatus: [
-        { label: "Bot core", value: "Offline", note: "Archive view only.", tone: "muted" },
-        { label: "Dashboard", value: "Read-only", note: "Used for quiet review.", tone: "info" },
-        { label: "Permissions", value: "Frozen", note: "No changes expected.", tone: "muted" }
+        {
+          label: text("Bot core", "Ядро бота"),
+          value: text("Offline", "Отключено"),
+          note: text("Shown as a reference state only.", "Показано только как справочное состояние."),
+          tone: "muted"
+        },
+        {
+          label: text("Dashboard", "Панель"),
+          value: text("Read-only", "Только просмотр"),
+          note: text("The server stays available for quiet review.", "Сервер остается доступным для спокойного просмотра."),
+          tone: "info"
+        },
+        {
+          label: text("Permissions", "Доступ"),
+          value: text("Frozen", "Заморожено"),
+          note: text("No active change path is expected.", "Активный сценарий изменений не предполагается."),
+          tone: "muted"
+        }
       ],
-      moduleSummary: serverModules.archive,
       notices: [
-        { title: "Archive state preserved", detail: "Pages stay intentionally quiet.", time: "This month" },
-        { title: "Editing suppressed", detail: "Actions remain presentational only.", time: "Static" }
+        {
+          title: text("Archive preserved", "Архив сохранен"),
+          detail: text("The server remains available as a reference snapshot.", "Сервер остается доступным как справочный снимок."),
+          time: text("This month", "В этом месяце")
+        },
+        {
+          title: text("Editing is disabled", "Редактирование отключено"),
+          detail: text("The page stays informational only.", "Страница остается только информационной."),
+          time: text("Static", "Статично")
+        }
       ]
     },
     settings: [
-      { label: "Localization", value: "Legacy RU with EN notes", note: "Retained for reference." },
-      { label: "Admin role", value: "Archive Custodian", note: "Read-only reviewer role." },
-      { label: "Enabled modules", value: "Bank, Social", note: "Visible for historical clarity." },
-      { label: "Permissions / access", value: "Frozen", note: "No edit path is planned here." }
+      {
+        label: text("Localization", "Локализация"),
+        value: text("Legacy RU, EN notes", "Legacy RU и EN-заметки"),
+        note: text("Kept as part of the original archive snapshot.", "Сохранено как часть исходного архивного снимка.")
+      },
+      {
+        label: text("Admin role", "Роль администрации"),
+        value: text("Archive Custodian", "Archive Custodian"),
+        note: text("Shown as the archive reviewer role.", "Показана как роль архивного просмотра.")
+      },
+      {
+        label: text("Enabled modules", "Подключенные модули"),
+        value: text("Bank, Social", "Bank, Social"),
+        note: text("Visible for reference only.", "Показаны только для справки.")
+      },
+      {
+        label: text("Access", "Доступ"),
+        value: text("Frozen", "Заморожен"),
+        note: text("No edit path is planned for this server.", "Для этого сервера не планируется сценарий редактирования.")
+      }
     ],
-    modules: serverModules.archive,
     branding: {
       assets: [
-        { label: "Logo", value: "Retained", note: "Legacy preview slot." },
-        { label: "Banner", value: "None", note: "No active banner in archive mode." },
-        { label: "Accent color", value: "Muted neutral", note: "Archive-only presentation." }
+        {
+          label: text("Logo", "Логотип"),
+          value: text("Retained", "Сохранен"),
+          note: text("Shown as part of the archive record.", "Показан как часть архивной записи.")
+        },
+        {
+          label: text("Banner", "Баннер"),
+          value: text("Not used", "Не используется"),
+          note: text("No active wide asset remains.", "Активный широкий материал не используется.")
+        },
+        {
+          label: text("Accent color", "Акцентный цвет"),
+          value: text("Muted neutral", "Спокойный нейтральный"),
+          note: text("Preserved for visual context.", "Сохранен для визуального контекста.")
+        }
       ],
       fields: [
-        { label: "Display name", value: "Archive Station" },
-        { label: "Short tagline", value: "Reference workspace for legacy state" },
-        { label: "Identity footer", value: "Archived configuration snapshot" }
+        { label: text("Display name", "Отображаемое имя"), value: text("Archive Station", "Archive Station") },
+        { label: text("Tagline", "Короткое описание"), value: text("Reference workspace for legacy state", "Справочное пространство для legacy-состояния") },
+        { label: text("Footer line", "Нижняя подпись"), value: text("Archived configuration snapshot", "Архивный снимок конфигурации") }
       ],
-      note: "Branding exists only to preserve context for later migration work."
+      note: text("Brand context is kept for reference.", "Контекст брендинга сохранен для справки.")
     },
     licenses: {
-      currentPlan: "Legacy",
-      availableLevel: "Not emphasized",
-      entitlementSummary: "This route is informational and avoids upgrade pressure.",
+      currentPlan: text("Legacy", "Legacy"),
+      availableLevel: text("Reference access only", "Только справочный доступ"),
+      entitlementSummary: text("The route stays informational and avoids upgrade prompts.", "Раздел остается информационным и не подталкивает к апгрейду."),
       entitlements: [
-        { label: "Archive visibility", value: "Included", tone: "positive" },
-        { label: "Upgrade messaging", value: "Suppressed", tone: "muted" },
-        { label: "Live sync", value: "Removed", tone: "muted" }
+        { label: text("Archive visibility", "Видимость архива"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("Upgrade prompts", "Подсказки по апгрейду"), value: text("Disabled", "Отключены"), tone: "muted" },
+        { label: text("Live sync", "Онлайн-синхронизация"), value: text("Removed", "Отключена"), tone: "muted" }
       ]
     },
     status: [
       {
         key: "core",
-        title: "Bot / core",
+        title: text("Core", "Ядро"),
         items: [
-          { label: "Bot core", value: "Offline", note: "Archive reference only.", tone: "muted" },
-          { label: "Command routing", value: "Retired", note: "No active routing remains.", tone: "muted" }
+          {
+            label: text("Bot core", "Ядро бота"),
+            value: text("Offline", "Отключено"),
+            note: text("Shown as archive reference data.", "Показано как архивные справочные данные."),
+            tone: "muted"
+          },
+          {
+            label: text("Command routing", "Маршрутизация команд"),
+            value: text("Retired", "Выведено"),
+            note: text("Active routing is no longer maintained.", "Активная маршрутизация больше не поддерживается."),
+            tone: "muted"
+          }
         ]
       },
       {
         key: "dashboard",
-        title: "Dashboard",
+        title: text("Dashboard", "Панель"),
         items: [
-          { label: "App shell", value: "Read-only", note: "Kept for historical review.", tone: "info" },
-          { label: "Editing", value: "Suppressed", note: "No live action path.", tone: "warning" }
+          {
+            label: text("App shell", "Оболочка"),
+            value: text("Read-only", "Только просмотр"),
+            note: text("Kept for historical review.", "Сохранена для исторического просмотра."),
+            tone: "info"
+          },
+          {
+            label: text("Editing", "Редактирование"),
+            value: text("Disabled", "Отключено"),
+            note: text("No live action path remains.", "Активный сценарий действий отсутствует."),
+            tone: "warning"
+          }
         ]
       },
       {
         key: "modules",
-        title: "Modules",
+        title: text("Modules", "Модули"),
         items: [
-          { label: "Archive modules", value: "Visible", note: "A few reference surfaces remain.", tone: "info" },
-          { label: "Inactive modules", value: "Hidden", note: "Shown as placeholders.", tone: "muted" }
+          {
+            label: text("Archive set", "Архивный набор"),
+            value: text("Visible", "Показан"),
+            note: text("The retained modules stay available for reference.", "Сохраненные модули остаются доступными для справки."),
+            tone: "info"
+          },
+          {
+            label: text("Inactive modules", "Неактивные модули"),
+            value: text("Hidden", "Скрыты"),
+            note: text("The rest of the set stays out of view.", "Остальная часть набора скрыта из основного вида."),
+            tone: "muted"
+          }
         ]
       },
       {
         key: "integrations",
-        title: "API / integrations",
+        title: text("Integrations", "Интеграции"),
         items: [
-          { label: "API", value: "Removed", note: "No live integration remains.", tone: "muted" },
-          { label: "Discord sync", value: "Removed", note: "No auth or sync path.", tone: "muted" }
+          {
+            label: text("External sync", "Внешняя синхронизация"),
+            value: text("Removed", "Отключена"),
+            note: text("External connections were retired with the archive.", "Внешние подключения были сняты вместе с архивированием."),
+            tone: "muted"
+          },
+          {
+            label: text("Exports", "Экспорт"),
+            value: text("Removed", "Отключен"),
+            note: text("Export flows are no longer used here.", "Сценарии экспорта здесь больше не используются."),
+            tone: "muted"
+          }
         ]
       }
     ]
   },
   {
     id: "sandbox-labs",
-    name: "Sandbox Labs",
+    name: text("Sandbox Labs", "Sandbox Labs"),
     iconLabel: "SL",
     accent: "#d0d4db",
     state: "test",
-    description: "Internal test shell used to validate layout, spacing, and edge states.",
-    environment: "Test",
-    region: "Internal",
+    description: text("Internal server for layout, copy, and state checks.", "Внутренний сервер для проверки верстки, текста и состояний."),
+    environment: text("Test", "Тестовая"),
+    region: text("Internal", "Внутренняя"),
     members: "186",
-    plan: "Internal",
-    syncNote: "Mock data refreshed at build time",
+    plan: text("Internal", "Внутренний"),
+    syncNote: text("Refreshed at build time", "Обновляется при сборке"),
+    moduleSet: "test",
     overview: {
       identity: [
-        { label: "Server", value: "Sandbox Labs" },
-        { label: "Plan", value: "Internal" },
-        { label: "Environment", value: "Test" },
-        { label: "Region", value: "Internal" }
+        { label: text("Server", "Сервер"), value: text("Sandbox Labs", "Sandbox Labs") },
+        { label: text("Plan", "План"), value: text("Internal", "Внутренний") },
+        { label: text("Environment", "Среда"), value: text("Test", "Тестовая") },
+        { label: text("Region", "Регион"), value: text("Internal", "Внутренняя") }
       ],
       systemStatus: [
-        { label: "Bot core", value: "Sandbox", note: "Used only for UI validation.", tone: "info" },
-        { label: "Dashboard", value: "Under review", note: "Spacing and drawer states are checked here.", tone: "positive" },
-        { label: "Permissions", value: "Mock", note: "No backend enforcement.", tone: "muted" }
+        {
+          label: text("Bot core", "Ядро бота"),
+          value: text("Sandbox", "Тестовая среда"),
+          note: text("Used to validate interface states.", "Используется для проверки состояний интерфейса."),
+          tone: "info"
+        },
+        {
+          label: text("Dashboard", "Панель"),
+          value: text("Review", "Проверка"),
+          note: text("Used for copy and spacing review.", "Используется для проверки текста и отступов."),
+          tone: "positive"
+        },
+        {
+          label: text("Permissions", "Доступ"),
+          value: text("Local", "Локально"),
+          note: text("No external checks are applied.", "Внешние проверки не применяются."),
+          tone: "muted"
+        }
       ],
-      moduleSummary: serverModules.test,
       notices: [
-        { title: "Drawer navigation checked", detail: "Mobile sidebar is validated here.", time: "Today" },
-        { title: "Status surfaces simplified", detail: "Monitoring noise was removed.", time: "Today" }
+        {
+          title: text("Drawer states checked", "Состояния меню проверены"),
+          detail: text("Mobile and tablet navigation are reviewed here.", "Здесь проверяются мобильная и планшетная навигация."),
+          time: text("Today", "Сегодня")
+        },
+        {
+          title: text("Status copy simplified", "Тексты статуса упрощены"),
+          detail: text("System notes were tightened for easier scanning.", "Системные заметки сокращены для более быстрого чтения."),
+          time: text("Today", "Сегодня")
+        }
       ]
     },
     settings: [
-      { label: "Localization", value: "EN and RU shell copy", note: "Used to verify locale-aware routing." },
-      { label: "Admin role", value: "QA Operators", note: "Displayed to validate permission copy." },
-      { label: "Enabled modules", value: "All modules visible", note: "Used for layout coverage." },
-      { label: "Permissions / access", value: "Internal review only", note: "No real role checks." }
+      {
+        label: text("Localization", "Локализация"),
+        value: text("English and Russian", "Русский и английский"),
+        note: text("Used to verify both dashboard locales.", "Используется для проверки обеих локалей панели.")
+      },
+      {
+        label: text("Admin role", "Роль администрации"),
+        value: text("QA Operators", "QA Operators"),
+        note: text("Shown as the review role.", "Показана как роль для проверки.")
+      },
+      {
+        label: text("Enabled modules", "Подключенные модули"),
+        value: text("All modules visible", "Все модули видимы"),
+        note: text("Used to cover the full page set.", "Используется для покрытия полного набора страниц.")
+      },
+      {
+        label: text("Access", "Доступ"),
+        value: text("Internal review", "Внутренняя проверка"),
+        note: text("The server is limited to workspace review.", "Сервер ограничен сценарием внутреннего просмотра.")
+      }
     ],
-    modules: serverModules.test,
     branding: {
       assets: [
-        { label: "Logo", value: "Test asset", note: "Used for layout review." },
-        { label: "Banner", value: "Test asset", note: "Temporary preview slot." },
-        { label: "Accent color", value: "Neutral graphite", note: "Used for contrast checks." }
+        {
+          label: text("Logo", "Логотип"),
+          value: text("Preview asset", "Тестовый материал"),
+          note: text("Used for layout checks.", "Используется для проверки верстки.")
+        },
+        {
+          label: text("Banner", "Баннер"),
+          value: text("Preview asset", "Тестовый материал"),
+          note: text("Shown only inside the preview surface.", "Показывается только внутри поверхности предпросмотра.")
+        },
+        {
+          label: text("Accent color", "Акцентный цвет"),
+          value: text("Neutral graphite", "Нейтральный графит"),
+          note: text("Used for contrast and spacing checks.", "Используется для проверки контраста и отступов.")
+        }
       ],
       fields: [
-        { label: "Display name", value: "Sandbox Labs" },
-        { label: "Short tagline", value: "Internal preview surface for the dashboard reset" },
-        { label: "Identity footer", value: "QA copy only" }
+        { label: text("Display name", "Отображаемое имя"), value: text("Sandbox Labs", "Sandbox Labs") },
+        { label: text("Tagline", "Короткое описание"), value: text("Internal preview surface for the dashboard", "Внутренняя поверхность предпросмотра для панели") },
+        { label: text("Footer line", "Нижняя подпись"), value: text("Internal review content", "Контент для внутренней проверки") }
       ],
-      note: "This route exists to keep the shell honest under test-state content."
+      note: text("This server keeps the dashboard honest under test content.", "Этот сервер нужен для проверки панели на тестовом контенте.")
     },
     licenses: {
-      currentPlan: "Internal",
-      availableLevel: "Full shell access",
-      entitlementSummary: "Internal mode exposes every page for layout review.",
+      currentPlan: text("Internal", "Внутренний"),
+      availableLevel: text("Full workspace access", "Полный доступ к панели"),
+      entitlementSummary: text("Internal mode exposes every page for review.", "Внутренний режим открывает все страницы для проверки."),
       entitlements: [
-        { label: "All dashboard pages", value: "Included", tone: "positive" },
-        { label: "Test-state modules", value: "Included", tone: "positive" },
-        { label: "External sync", value: "Not in this pass", tone: "muted" }
+        { label: text("All pages", "Все страницы"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("Test states", "Тестовые состояния"), value: text("Included", "Включено"), tone: "positive" },
+        { label: text("External sync", "Внешняя синхронизация"), value: text("Not included", "Не входит"), tone: "muted" }
       ]
     },
     status: [
       {
         key: "core",
-        title: "Bot / core",
+        title: text("Core", "Ядро"),
         items: [
-          { label: "Bot core", value: "Sandbox stable", note: "UI placeholder only.", tone: "positive" },
-          { label: "Command routing", value: "Test path", note: "Used for edge states.", tone: "info" }
+          {
+            label: text("Bot core", "Ядро бота"),
+            value: text("Stable", "Стабильно"),
+            note: text("Used as a controlled preview state.", "Используется как контролируемое состояние предпросмотра."),
+            tone: "positive"
+          },
+          {
+            label: text("Command routing", "Маршрутизация команд"),
+            value: text("Test path", "Тестовый маршрут"),
+            note: text("Keeps edge cases visible in review.", "Сохраняет пограничные сценарии видимыми при проверке."),
+            tone: "info"
+          }
         ]
       },
       {
         key: "dashboard",
-        title: "Dashboard",
+        title: text("Dashboard", "Панель"),
         items: [
-          { label: "App shell", value: "Under review", note: "Primary QA environment.", tone: "positive" },
-          { label: "Responsive drawer", value: "Checked", note: "Tablet and mobile covered.", tone: "info" }
+          {
+            label: text("App shell", "Оболочка"),
+            value: text("Review", "Проверка"),
+            note: text("Primary environment for interface review.", "Основная среда для проверки интерфейса."),
+            tone: "positive"
+          },
+          {
+            label: text("Responsive menu", "Адаптивное меню"),
+            value: text("Checked", "Проверено"),
+            note: text("Mobile and tablet states are covered.", "Мобильные и планшетные состояния покрыты."),
+            tone: "info"
+          }
         ]
       },
       {
         key: "modules",
-        title: "Modules",
+        title: text("Modules", "Модули"),
         items: [
-          { label: "Coverage", value: "Full", note: "All six modules are visible.", tone: "positive" },
-          { label: "Warning state", value: "Visible", note: "Radio carries the alert styling.", tone: "warning" }
+          {
+            label: text("Coverage", "Покрытие"),
+            value: text("Full", "Полное"),
+            note: text("All modules are visible in this server.", "На этом сервере показаны все модули."),
+            tone: "positive"
+          },
+          {
+            label: text("Warning state", "Предупреждение"),
+            value: text("Visible", "Показано"),
+            note: text("Radio keeps the review state visible.", "Radio сохраняет видимое состояние проверки."),
+            tone: "warning"
+          }
         ]
       },
       {
         key: "integrations",
-        title: "API / integrations",
+        title: text("Integrations", "Интеграции"),
         items: [
-          { label: "API", value: "Placeholder", note: "No requests are made.", tone: "muted" },
-          { label: "Discord sync", value: "Placeholder", note: "Reserved for future work.", tone: "muted" }
+          {
+            label: text("External sync", "Внешняя синхронизация"),
+            value: text("Inactive", "Неактивна"),
+            note: text("No external connections are used here.", "Внешние подключения здесь не используются."),
+            tone: "muted"
+          },
+          {
+            label: text("Exports", "Экспорт"),
+            value: text("Inactive", "Неактивен"),
+            note: text("Export flows remain outside the test pass.", "Сценарии экспорта остаются вне тестового прохода."),
+            tone: "muted"
+          }
         ]
       }
     ]
   }
 ];
 
+function materializeServer(locale: Locale, seed: DashboardServerSeed): DashboardServer {
+  const modules = buildModules(locale, seed.moduleSet);
+
+  return {
+    id: seed.id,
+    name: pick(locale, seed.name),
+    iconLabel: seed.iconLabel,
+    accent: seed.accent,
+    state: seed.state,
+    description: pick(locale, seed.description),
+    environment: pick(locale, seed.environment),
+    region: pick(locale, seed.region),
+    members: seed.members,
+    plan: pick(locale, seed.plan),
+    syncNote: pick(locale, seed.syncNote),
+    overview: {
+      identity: seed.overview.identity.map((item) => mapIdentityField(locale, item)),
+      systemStatus: seed.overview.systemStatus.map((item) => mapStatusItem(locale, item)),
+      moduleSummary: modules,
+      notices: seed.overview.notices.map((item) => mapNotice(locale, item))
+    },
+    settings: seed.settings.map((item) => mapSettingGroup(locale, item)),
+    modules,
+    branding: {
+      assets: seed.branding.assets.map((item) => mapBrandAsset(locale, item)),
+      fields: seed.branding.fields.map((item) => mapIdentityField(locale, item)),
+      note: pick(locale, seed.branding.note)
+    },
+    licenses: {
+      currentPlan: pick(locale, seed.licenses.currentPlan),
+      availableLevel: pick(locale, seed.licenses.availableLevel),
+      entitlementSummary: pick(locale, seed.licenses.entitlementSummary),
+      entitlements: seed.licenses.entitlements.map((item) => mapEntitlement(locale, item))
+    },
+    status: seed.status.map((item) => mapStatusGroup(locale, item))
+  };
+}
+
 export function getDashboardServerIds(): string[] {
-  return servers.map((server) => server.id);
+  return serverSeeds.map((server) => server.id);
 }
 
-export function getDashboardServers(): DashboardServer[] {
-  return servers;
+export function getDashboardServers(locale: Locale = "en"): DashboardServer[] {
+  return serverSeeds.map((server) => materializeServer(locale, server));
 }
 
-export function getDashboardServer(id: string): DashboardServer | null {
-  return servers.find((server) => server.id === id) ?? null;
+export function getDashboardServer(id: string, locale: Locale = "en"): DashboardServer | null {
+  const server = serverSeeds.find((item) => item.id === id);
+  return server ? materializeServer(locale, server) : null;
 }
+

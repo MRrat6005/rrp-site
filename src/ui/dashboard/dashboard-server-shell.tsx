@@ -170,7 +170,7 @@ export function DashboardServerShell({
               onClick={() => setDrawerOpen(false)}
               className="rounded-full border border-white/[0.05] px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-white/48 transition hover:bg-white/[0.02] hover:text-white/72"
             >
-              Close
+              {copy.sidebar.close}
             </button>
           ) : null}
         </div>
@@ -350,7 +350,7 @@ export function DashboardServerShell({
         >
           <button
             type="button"
-            aria-label="Close menu"
+            aria-label={copy.sidebar.closeMenu}
             onClick={() => setDrawerOpen(false)}
             className={cx(
               "absolute inset-0 bg-[rgba(0,0,0,0.58)] backdrop-blur-[1px] transition duration-200",
@@ -377,4 +377,6 @@ export function DashboardServerShell({
     </div>
   );
 }
+
+
 

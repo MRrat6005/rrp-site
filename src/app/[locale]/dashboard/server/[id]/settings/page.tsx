@@ -15,7 +15,7 @@ export default function DashboardSettingsRoutePage({
   params
 }: DashboardSettingsRoutePageProps) {
   const locale = resolveLocale(params.locale);
-  const server = getDashboardServer(params.id);
+  const server = getDashboardServer(params.id, locale);
 
   if (!server) {
     notFound();
@@ -23,3 +23,4 @@ export default function DashboardSettingsRoutePage({
 
   return <DashboardSettingsPage locale={locale} server={server} />;
 }
+

@@ -271,22 +271,22 @@ export const ruMessages = {
     }
   },
   login: {
-    eyebrow: "CROWN / вход в dashboard",
+    eyebrow: "CROWN / вход",
     title: "Вход в CROWN Dashboard",
     intro:
-      "Discord остается точкой входа с публичной стороны CROWN во внутренний слой dashboard.",
+      "Discord остается основной точкой входа в рабочее пространство CROWN.",
     summary:
-      "После авторизации CROWN переходит в более тихую и рабочую поверхность для серверов и системных настроек.",
+      "После входа откроется спокойная рабочая панель серверов и системных разделов.",
     bridgeFrom: "Публичный CROWN",
-    bridgeTo: "Dashboard / серверы",
+    bridgeTo: "Dashboard",
     transitionNote:
-      "От презентации к контролю",
-    panelTitle: "Точка входа",
+      "Переход в панель",
+    panelTitle: "Вход",
     panelBody:
-      "Авторизуйтесь через Discord, чтобы перейти с публичной стороны CROWN во внутренний dashboard.",
-    authNotice: "Основной доступ по-прежнему проходит через Discord.",
-    primaryCta: "Авторизоваться через Discord",
-    secondaryCta: "Открыть оболочку dashboard",
+      "Авторизуйтесь через Discord, чтобы открыть рабочее пространство CROWN.",
+    authNotice: "Основной доступ через Discord",
+    primaryCta: "Войти через Discord",
+    secondaryCta: "Открыть панель",
     legalNote:
       "Условия и контактные маршруты публичной стороны остаются доступны и отсюда."
   },
@@ -1009,4 +1009,5 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 

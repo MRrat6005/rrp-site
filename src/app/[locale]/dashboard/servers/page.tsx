@@ -13,5 +13,6 @@ export default function DashboardServersRoutePage({
 }: DashboardServersRoutePageProps) {
   const locale = resolveLocale(params.locale);
 
-  return <DashboardServersPage locale={locale} servers={getDashboardServers()} />;
+  return <DashboardServersPage locale={locale} servers={getDashboardServers(locale)} />;
 }
+

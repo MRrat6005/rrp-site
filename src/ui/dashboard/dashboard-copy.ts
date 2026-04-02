@@ -8,7 +8,7 @@ import type { Locale } from "@/config/site.config";
 const dashboardCopy = {
   en: {
     brand: "CROWN Dashboard",
-    subtitle: "Server control surface",
+    subtitle: "Server workspace",
     nav: {
       servers: "Servers",
       overview: "Overview",
@@ -19,135 +19,145 @@ const dashboardCopy = {
       status: "Status"
     },
     descriptions: {
-      servers: "Select a server first, then enter its dashboard.",
-      overview: "Identity, short status, modules, and recent notices.",
-      settings: "Core server settings kept intentionally shallow.",
-      modules: "Minimal module management rows for the main feature set.",
-      branding: "Sparse identity controls for visual assets and naming.",
-      licenses: "Plan and entitlement structure without billing logic.",
-      status: "Grouped health placeholders with a restrained system view."
+      servers: "Select a server to open its workspace.",
+      overview: "Identity, current state, modules, and recent updates.",
+      settings: "Core server settings and access context.",
+      modules: "Module states and primary actions.",
+      branding: "Identity fields and visual assets.",
+      licenses: "Plan details and enabled access.",
+      status: "Current service signals in one view."
     },
     sidebar: {
       allServers: "All servers",
       publicSite: "Public site",
-      shellState: "Shell state",
-      mockMode: "Mock data only",
-      menu: "Menu"
+      shellState: "Workspace state",
+      mockMode: "Preview mode",
+      menu: "Menu",
+      close: "Close",
+      closeMenu: "Close menu"
     },
     servers: {
       searchPlaceholder: "Search servers",
-      emptyTitle: "No servers found",
-      emptyBody: "Try a different name, region, or plan.",
-      resultsLabel: "Servers in this shell",
+      emptyTitle: "No matching servers",
+      emptyBody: "Try another name, region, or plan.",
+      resultsLabel: "Servers",
       members: "Members",
       region: "Region",
       environment: "Environment",
       plan: "Plan",
       groups: {
-        connected: "Connected",
-        invite: "Invite bot",
-        inactive: "Inactive",
+        connected: "Active",
+        invite: "Setup",
+        inactive: "Archive",
         test: "Test"
       }
     },
     overview: {
-      identity: "Server identity",
-      status: "System status",
-      modules: "Module summary",
-      notices: "Recent notices"
+      identity: "Server details",
+      status: "Current state",
+      modules: "Modules",
+      notices: "Recent updates"
     },
     settings: {
-      title: "Core settings",
-      note: "This page is structural only. No deep configuration or write flows are wired yet."
+      title: "Server settings",
+      noteTitle: "Read-only",
+      note: "Settings are shown for reference in this pass.",
+      detail:
+        "Localization, roles, enabled modules, and access remain visible here without edit flows."
     },
     modules: {
-      title: "Main modules",
-      note: "Rows stay compact so the page reads like a utility panel, not a feature gallery."
+      title: "Modules",
+      note: "Module states and actions stay concise by design."
     },
     branding: {
       assets: "Assets",
       identity: "Identity",
-      note: "Branding stays preview-only in this pass."
+      note: "Live sync is not part of this pass."
     },
     licenses: {
       current: "Current plan",
-      available: "Available level",
-      summary: "Entitlement summary"
+      available: "Available access",
+      summary: "Access summary"
     },
     status: {
-      note: "All system values are local placeholders."
+      note: "Status values are shown as local preview data."
     }
   },
   ru: {
     brand: "CROWN Dashboard",
-    subtitle: "Server control surface",
+    subtitle: "Панель серверов",
     nav: {
-      servers: "Servers",
-      overview: "Overview",
-      settings: "Settings",
-      modules: "Modules",
-      branding: "Branding",
-      licenses: "Licenses",
-      status: "Status"
+      servers: "Серверы",
+      overview: "Обзор",
+      settings: "Настройки",
+      modules: "Модули",
+      branding: "Брендинг",
+      licenses: "Лицензии",
+      status: "Статус"
     },
     descriptions: {
-      servers: "Сначала выберите сервер, затем войдите в его dashboard.",
-      overview: "Идентичность, короткий статус, модули и недавние заметки.",
-      settings: "Базовые server settings без глубокой формы.",
-      modules: "Минимальный список основных модулей.",
-      branding: "Сдержанные identity-поля и preview-активы.",
-      licenses: "Структура плана и entitlements без billing-логики.",
-      status: "Групповые health-placeholder'ы в спокойной системе."
+      servers: "Выберите сервер, чтобы открыть его рабочее пространство.",
+      overview: "Данные сервера, текущее состояние, модули и последние обновления.",
+      settings: "Базовые настройки сервера и контекст доступа.",
+      modules: "Состояния модулей и основные действия.",
+      branding: "Поля идентичности и визуальные материалы.",
+      licenses: "План и доступные возможности.",
+      status: "Текущие сигналы системы в одном представлении."
     },
     sidebar: {
       allServers: "Все серверы",
       publicSite: "Публичный сайт",
-      shellState: "Состояние shell",
-      mockMode: "Только mock data",
-      menu: "Меню"
+      shellState: "Состояние",
+      mockMode: "Режим предпросмотра",
+      menu: "Меню",
+      close: "Закрыть",
+      closeMenu: "Закрыть меню"
     },
     servers: {
       searchPlaceholder: "Поиск серверов",
-      emptyTitle: "Серверы не найдены",
+      emptyTitle: "Подходящие серверы не найдены",
       emptyBody: "Попробуйте другое имя, регион или план.",
-      resultsLabel: "Серверы в shell",
+      resultsLabel: "Серверы",
       members: "Участники",
       region: "Регион",
       environment: "Среда",
       plan: "План",
       groups: {
-        connected: "Connected",
-        invite: "Invite bot",
-        inactive: "Inactive",
-        test: "Test"
+        connected: "Активные",
+        invite: "Подключение",
+        inactive: "Архив",
+        test: "Тест"
       }
     },
     overview: {
-      identity: "Идентичность сервера",
-      status: "Системный статус",
-      modules: "Сводка модулей",
-      notices: "Недавние заметки"
+      identity: "Данные сервера",
+      status: "Текущее состояние",
+      modules: "Модули",
+      notices: "Последние обновления"
     },
     settings: {
-      title: "Базовые настройки",
-      note: "Страница пока структурная. Глубокой конфигурации и записи данных здесь нет."
+      title: "Настройки сервера",
+      noteTitle: "Только просмотр",
+      note: "В этом проходе настройки показаны без редактирования.",
+      detail:
+        "Здесь остаются видимыми локализация, роли, состав модулей и доступ, без форм записи и проверок."
     },
     modules: {
-      title: "Основные модули",
-      note: "Список намеренно компактный и утилитарный."
+      title: "Модули",
+      note: "Состояния модулей и действия показаны в коротком рабочем формате."
     },
     branding: {
-      assets: "Активы",
-      identity: "Identity",
-      note: "Branding в этом проходе остается только preview."
+      assets: "Материалы",
+      identity: "Идентичность",
+      note: "Синхронизация в реальном времени в этот проход не входит."
     },
     licenses: {
       current: "Текущий план",
-      available: "Доступный уровень",
-      summary: "Сводка entitlements"
+      available: "Доступные возможности",
+      summary: "Сводка доступа"
     },
     status: {
-      note: "Все системные значения здесь локальные placeholder'ы."
+      note: "Значения статуса показаны как локальные данные предпросмотра."
     }
   }
 } as const;
@@ -163,15 +173,15 @@ export function getDashboardStateLabel(
   const labels = {
     en: {
       connected: "Connected",
-      invite: "Invite bot",
-      inactive: "Inactive",
+      invite: "Setup",
+      inactive: "Archive",
       test: "Test"
     },
     ru: {
-      connected: "Connected",
-      invite: "Invite bot",
-      inactive: "Inactive",
-      test: "Test"
+      connected: "Подключен",
+      invite: "Подключение",
+      inactive: "Архив",
+      test: "Тест"
     }
   } as const;
 
@@ -184,16 +194,16 @@ export function getDashboardStateAction(
 ): string {
   const labels = {
     en: {
-      connected: "Open dashboard",
-      invite: "Open setup",
-      inactive: "Review shell",
-      test: "Open test shell"
+      connected: "Open workspace",
+      invite: "Continue setup",
+      inactive: "Open archive",
+      test: "Open test view"
     },
     ru: {
-      connected: "Open dashboard",
-      invite: "Open setup",
-      inactive: "Review shell",
-      test: "Open test shell"
+      connected: "Открыть рабочее пространство",
+      invite: "Продолжить настройку",
+      inactive: "Открыть архив",
+      test: "Открыть тестовый режим"
     }
   } as const;
 
@@ -213,13 +223,13 @@ export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): stri
       positive: "Healthy",
       warning: "Attention",
       info: "Ready",
-      muted: "Placeholder"
+      muted: "Limited"
     },
     ru: {
-      positive: "Healthy",
-      warning: "Attention",
-      info: "Ready",
-      muted: "Placeholder"
+      positive: "Норма",
+      warning: "Внимание",
+      info: "Готово",
+      muted: "Ограничено"
     }
   } as const;
 
