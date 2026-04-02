@@ -271,21 +271,21 @@ export const enMessages = {
     }
   },
   login: {
-    eyebrow: "CROWN access",
-    title: "Enter CROWN through Discord",
+    eyebrow: "CROWN / dashboard entry",
+    title: "Enter CROWN Dashboard",
     intro:
-      "This page marks the shift from the public RRP site into the CROWN workspace.",
+      "Discord is the access point from the public CROWN site into the dashboard server layer.",
     summary:
-      "Discord remains the access route for invited members before the interface opens into a quieter internal control surface.",
-    bridgeFrom: "Public site",
-    bridgeTo: "CROWN workspace",
+      "After authorization, CROWN opens into a quieter control surface for servers and system settings.",
+    bridgeFrom: "Public CROWN",
+    bridgeTo: "Dashboard servers",
     transitionNote:
-      "Presentation gives way to a more restrained operating surface from here.",
-    panelTitle: "Authorized entry",
+      "Presentation to control",
+    panelTitle: "Dashboard entry",
     panelBody:
-      "Sign in with Discord to continue into CROWN and open the dashboard side of the environment.",
-    authNotice: "Discord-based authorization is required before entering the workspace.",
-    primaryCta: "Continue with Discord",
+      "Authorize with Discord to continue from the public side of CROWN into the internal dashboard.",
+    authNotice: "Discord remains the primary access route.",
+    primaryCta: "Authorize with Discord",
     secondaryCta: "View dashboard shell",
     legalNote:
       "Public terms and contact routes remain available from this entry screen."
@@ -1009,3 +1009,4 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+

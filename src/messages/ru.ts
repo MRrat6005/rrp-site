@@ -271,22 +271,22 @@ export const ruMessages = {
     }
   },
   login: {
-    eyebrow: "Доступ в CROWN",
-    title: "Войти в CROWN через Discord",
+    eyebrow: "CROWN / вход в dashboard",
+    title: "Вход в CROWN Dashboard",
     intro:
-      "Эта страница отмечает переход с публичной стороны RRP во внутреннюю рабочую среду CROWN.",
+      "Discord остается точкой входа с публичной стороны CROWN во внутренний слой dashboard.",
     summary:
-      "Доступ в CROWN по-прежнему проходит через Discord, после чего открывается более строгая и рабочая поверхность управления.",
-    bridgeFrom: "Публичный сайт",
-    bridgeTo: "Рабочая среда CROWN",
+      "После авторизации CROWN переходит в более тихую и рабочую поверхность для серверов и системных настроек.",
+    bridgeFrom: "Публичный CROWN",
+    bridgeTo: "Dashboard / серверы",
     transitionNote:
-      "Здесь подача сменяется более спокойной и служебной поверхностью.",
-    panelTitle: "Авторизованный вход",
+      "От презентации к контролю",
+    panelTitle: "Точка входа",
     panelBody:
-      "Войдите через Discord, чтобы продолжить в CROWN и открыть внутреннюю сторону среды.",
-    authNotice: "Для входа в рабочую среду требуется авторизация через Discord.",
-    primaryCta: "Продолжить через Discord",
-    secondaryCta: "Открыть оболочку CROWN",
+      "Авторизуйтесь через Discord, чтобы перейти с публичной стороны CROWN во внутренний dashboard.",
+    authNotice: "Основной доступ по-прежнему проходит через Discord.",
+    primaryCta: "Авторизоваться через Discord",
+    secondaryCta: "Открыть оболочку dashboard",
     legalNote:
       "Условия и контактные маршруты публичной стороны остаются доступны и отсюда."
   },
@@ -1009,3 +1009,4 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
