@@ -6,9 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import type { Locale } from "@/config/site.config";
 import {
+  DashboardApiError,
   fetchDashboardServerPage,
   fetchDashboardServers,
-  type DashboardApiError,
+  shouldUseDashboardFallback,
   type DashboardServerRoutePage
 } from "@/lib/dashboard-api";
 import {
@@ -83,11 +84,21 @@ function useDashboardResource<T>(
           return;
         }
 
+        const apiError =
+          error instanceof DashboardApiError
+            ? error
+            : new DashboardApiError(
+                "contract",
+                "Dashboard API returned an invalid resource payload."
+              );
+        const isFallback =
+          fallbackData !== null && shouldUseDashboardFallback(apiError);
+
         setState({
-          data: fallbackData,
-          error: error as DashboardApiError,
+          data: isFallback ? fallbackData : null,
+          error: apiError,
           isLoading: false,
-          isFallback: fallbackData !== null
+          isFallback
         });
       });
 
@@ -167,8 +178,8 @@ export function DashboardServersRoute({
 }: DashboardServersRouteProps) {
   const copy = getDashboardCopy(locale);
   const load = useCallback(
-    (signal?: AbortSignal) => fetchDashboardServers(locale, signal),
-    [locale]
+    (signal?: AbortSignal) => fetchDashboardServers(signal),
+    []
   );
   const state = useDashboardResource(true, fallbackServers, load);
 
@@ -253,9 +264,9 @@ export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
   const load = useCallback(
     (signal?: AbortSignal) =>
       serverId
-        ? fetchDashboardServerPage(serverId, page, locale, signal)
+        ? fetchDashboardServerPage(serverId, page, signal)
         : Promise.resolve<DashboardServer | null>(null),
-    [locale, page, serverId]
+    [page, serverId]
   );
   const state = useDashboardResource<DashboardServer | null>(
     Boolean(serverId),
