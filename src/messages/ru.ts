@@ -277,16 +277,37 @@ export const ruMessages = {
       "Discord остается основной точкой входа в рабочее пространство CROWN.",
     summary:
       "После входа откроется спокойная рабочая панель серверов и системных разделов.",
+    authenticatedSummary:
+      "Сессия Discord уже активна. Можно сразу перейти в dashboard или завершить ее прямо здесь.",
+    loadingSummary:
+      "Проверяем текущую Discord-сессию перед следующим шагом.",
+    unavailableSummary:
+      "Статус сессии временно недоступен, но вход через Discord и прямой переход в dashboard все еще доступны.",
     bridgeFrom: "Публичный CROWN",
     bridgeTo: "Dashboard",
     transitionNote:
       "Переход в панель",
     panelTitle: "Вход",
+    panelTitleAuthenticated: "Продолжить",
     panelBody:
       "Авторизуйтесь через Discord, чтобы открыть рабочее пространство CROWN.",
+    panelBodyAuthenticated:
+      "Ваша Discord-сессия уже распознана. Можно продолжить вход в CROWN или завершить сессию отсюда.",
+    panelBodyUnavailable:
+      "Проверка сессии заняла чуть больше времени. Вход через Discord все равно доступен для открытия CROWN.",
     authNotice: "Основной доступ через Discord",
+    authenticatedNotice: "Discord-сессия активна",
+    loadingNotice: "Проверяем текущий доступ",
+    unavailableNotice: "Проверка сессии временно недоступна",
+    identityLabel: "Вы вошли как",
+    identityFallback: "Участник Discord",
     primaryCta: "Войти через Discord",
+    continueCta: "Продолжить в dashboard",
     secondaryCta: "Открыть панель",
+    logoutCta: "Выйти",
+    logoutPending: "Выходим",
+    logoutError:
+      "Сейчас не удалось завершить сессию. Попробуйте еще раз или продолжите вход в dashboard.",
     legalNote:
       "Условия и контактные маршруты публичной стороны остаются доступны и отсюда."
   },
@@ -1009,5 +1030,6 @@ export const ruMessages = {
     fallback: "Открыть вручную"
   }
 } satisfies SiteMessages;
+
 
 

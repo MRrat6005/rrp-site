@@ -277,16 +277,37 @@ export const enMessages = {
       "Discord remains the primary access point to the CROWN workspace.",
     summary:
       "After sign-in, CROWN opens into a quieter server and systems workspace.",
+    authenticatedSummary:
+      "Your Discord session is active. Continue straight into the dashboard or close it from here.",
+    loadingSummary:
+      "Checking the current Discord session before the next step.",
+    unavailableSummary:
+      "Session status is temporarily unavailable, but Discord sign-in and direct dashboard entry still remain open.",
     bridgeFrom: "Public CROWN",
     bridgeTo: "Dashboard",
     transitionNote:
       "Workspace access",
     panelTitle: "Sign in",
+    panelTitleAuthenticated: "Continue",
     panelBody:
       "Authorize with Discord to open the CROWN workspace.",
+    panelBodyAuthenticated:
+      "Your Discord session is already recognized. Continue into CROWN or end the session here.",
+    panelBodyUnavailable:
+      "The session check is taking a moment. Discord sign-in is still available for entry into CROWN.",
     authNotice: "Primary access runs through Discord",
+    authenticatedNotice: "Discord session active",
+    loadingNotice: "Checking current access",
+    unavailableNotice: "Session check temporarily unavailable",
+    identityLabel: "Signed in as",
+    identityFallback: "Discord member",
     primaryCta: "Continue with Discord",
+    continueCta: "Continue to dashboard",
     secondaryCta: "Open workspace",
+    logoutCta: "Log out",
+    logoutPending: "Signing out",
+    logoutError:
+      "We could not complete sign-out just now. You can try again or continue into the dashboard.",
     legalNote:
       "Public terms and contact routes remain available from this entry screen."
   },
@@ -1009,5 +1030,6 @@ export const enMessages = {
     fallback: "Open manually"
   }
 } satisfies SiteMessages;
+
 
 

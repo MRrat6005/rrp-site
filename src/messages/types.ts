@@ -331,14 +331,29 @@ export interface SiteMessages {
     title: string;
     intro: string;
     summary: string;
+    authenticatedSummary: string;
+    loadingSummary: string;
+    unavailableSummary: string;
     bridgeFrom: string;
     bridgeTo: string;
     transitionNote: string;
     panelTitle: string;
+    panelTitleAuthenticated: string;
     panelBody: string;
+    panelBodyAuthenticated: string;
+    panelBodyUnavailable: string;
     authNotice: string;
+    authenticatedNotice: string;
+    loadingNotice: string;
+    unavailableNotice: string;
+    identityLabel: string;
+    identityFallback: string;
     primaryCta: string;
+    continueCta: string;
     secondaryCta: string;
+    logoutCta: string;
+    logoutPending: string;
+    logoutError: string;
     legalNote: string;
   };
   privacy: StructuredPageCopy;
@@ -388,3 +403,4 @@ export interface SiteMessages {
     fallback: string;
   };
 }
+

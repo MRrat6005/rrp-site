@@ -1,6 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { siteConfig, type Locale } from "@/config/site.config";
+import {
+  fetchDashboardAuthState,
+  getDashboardDiscordLoginUrl,
+  logoutDashboardAuth,
+  type DashboardAuthIdentity,
+  type DashboardAuthState
+} from "@/lib/dashboard-auth";
 import { getLocalizedPath } from "@/lib/i18n";
 import type { SiteMessages } from "@/messages/types";
 import { LogoTile } from "@/ui/common/logo-tile";
@@ -11,11 +21,108 @@ interface LoginPageProps {
   messages: SiteMessages;
 }
 
+function getIdentityName(
+  identity: DashboardAuthIdentity | null,
+  fallback: string
+): string {
+  return identity?.displayName ?? identity?.username ?? fallback;
+}
+
+function getIdentityMeta(identity: DashboardAuthIdentity | null): string | null {
+  if (!identity?.username) {
+    return null;
+  }
+
+  if (identity.displayName && identity.displayName !== identity.username) {
+    return `@${identity.username}`;
+  }
+
+  return null;
+}
+
 export function LoginPage({ locale, messages }: LoginPageProps) {
   const workspaceHref = getLocalizedPath(locale, siteConfig.ctaRoutes.workspace);
   const publicCrownHref = getLocalizedPath(locale, siteConfig.ctaRoutes.projects.crown);
   const crownAsset = siteConfig.assetPlaceholders.projects.crown;
   const crownMarkPath = siteConfig.visuals.projects.crown.markPath;
+  const [authState, setAuthState] = useState<DashboardAuthState | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutFailed, setLogoutFailed] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void (async () => {
+      try {
+        const nextState = await fetchDashboardAuthState(controller.signal);
+        setAuthState(nextState);
+        setLogoutFailed(false);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        setAuthState({ status: "unavailable" });
+      }
+    })();
+
+    return () => controller.abort();
+  }, []);
+
+  const authStatus = authState?.status ?? "loading";
+  const isAuthenticated = authStatus === "authenticated";
+  const identity = authState?.status === "authenticated" ? authState.identity : null;
+  const authNotice = isAuthenticated
+    ? messages.login.authenticatedNotice
+    : authStatus === "loading"
+      ? messages.login.loadingNotice
+      : authStatus === "unavailable"
+        ? messages.login.unavailableNotice
+        : messages.login.authNotice;
+  const panelTitle = isAuthenticated
+    ? messages.login.panelTitleAuthenticated
+    : messages.login.panelTitle;
+  const panelBody = isAuthenticated
+    ? messages.login.panelBodyAuthenticated
+    : authStatus === "unavailable"
+      ? messages.login.panelBodyUnavailable
+      : messages.login.panelBody;
+  const summary = logoutFailed
+    ? messages.login.logoutError
+    : isAuthenticated
+      ? messages.login.authenticatedSummary
+      : authStatus === "loading"
+        ? messages.login.loadingSummary
+        : authStatus === "unavailable"
+          ? messages.login.unavailableSummary
+          : messages.login.summary;
+
+  function handleDiscordLogin() {
+    setLogoutFailed(false);
+
+    const loginUrl = getDashboardDiscordLoginUrl();
+
+    if (!loginUrl) {
+      setAuthState({ status: "unavailable" });
+      return;
+    }
+
+    window.location.assign(loginUrl);
+  }
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+    setLogoutFailed(false);
+
+    try {
+      await logoutDashboardAuth();
+      setAuthState({ status: "unauthenticated" });
+    } catch {
+      setLogoutFailed(true);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10 sm:px-8 lg:px-10 lg:py-14">
@@ -137,7 +244,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
                       />
                       <div className="min-w-0">
                         <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-white/36">
-                          {messages.login.panelTitle}
+                          {panelTitle}
                         </p>
                         <p className="[font-family:var(--font-display)] text-2xl font-semibold tracking-[-0.04em] text-ink sm:text-[2.15rem]">
                           {siteConfig.brand.dashboardBrand}
@@ -150,7 +257,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
                   </div>
 
                   <p className="max-w-sm text-sm leading-7 text-white/66 sm:text-base">
-                    {messages.login.panelBody}
+                    {panelBody}
                   </p>
 
                   <div className="grid gap-3 border-y border-white/[0.06] py-4 sm:grid-cols-2">
@@ -167,36 +274,78 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
                       <p className="mt-2 text-sm text-white/70">{siteConfig.brand.dashboardBrand}</p>
                     </div>
                   </div>
+
+                  {isAuthenticated ? (
+                    <div className="rounded-[1.15rem] border border-white/[0.05] bg-white/[0.03] p-4">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/28">
+                        {messages.login.identityLabel}
+                      </p>
+                      <p className="mt-2 text-sm font-medium text-white/82">
+                        {getIdentityName(identity, messages.login.identityFallback)}
+                      </p>
+                      {getIdentityMeta(identity) ? (
+                        <p className="mt-1 text-xs text-white/44">{getIdentityMeta(identity)}</p>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="space-y-3">
                   <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-white/34">
-                    {messages.login.authNotice}
+                    {authNotice}
                   </p>
-                  <button
-                    type="button"
-                    aria-label={messages.login.primaryCta}
-                    aria-disabled="true"
-                    className="button-primary flex w-full cursor-default items-center justify-between px-5 py-4"
-                  >
-                    <span>{messages.login.primaryCta}</span>
-                    <span className="text-[10px] uppercase tracking-[0.24em] text-slate-600">
-                      Discord
-                    </span>
-                  </button>
-                  <p className="text-sm leading-6 text-white/48">{messages.login.summary}</p>
+                  {isAuthenticated ? (
+                    <Link
+                      href={workspaceHref}
+                      className="button-primary flex w-full items-center justify-between px-5 py-4"
+                    >
+                      <span>{messages.login.continueCta}</span>
+                      <span className="text-[10px] uppercase tracking-[0.24em] text-slate-600">
+                        {siteConfig.brand.dashboardBrand}
+                      </span>
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleDiscordLogin}
+                      aria-label={messages.login.primaryCta}
+                      className="button-primary flex w-full items-center justify-between px-5 py-4"
+                    >
+                      <span>{messages.login.primaryCta}</span>
+                      <span className="text-[10px] uppercase tracking-[0.24em] text-slate-600">
+                        Discord
+                      </span>
+                    </button>
+                  )}
+                  <p className="text-sm leading-6 text-white/48">{summary}</p>
                 </div>
 
                 <div className="space-y-3 border-t border-white/[0.06] pt-4">
-                  <Link
-                    href={workspaceHref}
-                    className="button-secondary flex w-full justify-between px-5 py-3.5"
-                  >
-                    <span>{messages.login.secondaryCta}</span>
-                    <span className="text-[10px] uppercase tracking-[0.24em] text-white/38">
-                      {siteConfig.brand.dashboardBrand}
-                    </span>
-                  </Link>
+                  {isAuthenticated ? (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="button-secondary flex w-full justify-between px-5 py-3.5 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      <span>
+                        {isLoggingOut ? messages.login.logoutPending : messages.login.logoutCta}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-[0.24em] text-white/38">
+                        Discord
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      href={workspaceHref}
+                      className="button-secondary flex w-full justify-between px-5 py-3.5"
+                    >
+                      <span>{messages.login.secondaryCta}</span>
+                      <span className="text-[10px] uppercase tracking-[0.24em] text-white/38">
+                        {siteConfig.brand.dashboardBrand}
+                      </span>
+                    </Link>
+                  )}
                   <Link
                     href={publicCrownHref}
                     className="inline-flex items-center justify-between gap-3 rounded-full px-1 text-sm text-white/48 transition duration-300 hover:text-white/72"
@@ -215,3 +364,4 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
     </main>
   );
 }
+
