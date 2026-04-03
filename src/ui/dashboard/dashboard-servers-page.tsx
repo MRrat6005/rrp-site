@@ -140,10 +140,18 @@ export function DashboardServersPage({
                           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div className="flex min-w-0 items-start gap-3">
                               <div
-                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/84"
+                                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/84"
                                 style={{ backgroundColor: `${server.accent}18` }}
                               >
-                                {server.iconLabel}
+                                {server.iconUrl ? (
+                                  <img
+                                    src={server.iconUrl}
+                                    alt=""
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  server.iconLabel
+                                )}
                               </div>
                               <div className="min-w-0">
                                 <p className="truncate text-base font-medium text-white/92">
@@ -187,8 +195,7 @@ export function DashboardServersPage({
                             </div>
                           </div>
 
-                          <div className="mt-auto flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
-                            <span className="text-sm text-white/40">{server.id}</span>
+                          <div className="mt-auto flex items-center justify-end text-sm">
                             <span className="text-sm text-white/60 transition group-hover:text-white/76">
                               {getDashboardStateAction(locale, server.state)}
                             </span>

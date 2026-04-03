@@ -8,7 +8,10 @@ export type DashboardModuleKey =
   | "weather"
   | "sessions"
   | "radio"
-  | "rentals";
+  | "rentals"
+  | "branding"
+  | "dashboard"
+  | "licenses";
 export type DashboardPageKey =
   | "servers"
   | "overview"
@@ -73,6 +76,7 @@ export interface DashboardServer {
   id: string;
   name: string;
   iconLabel: string;
+  iconUrl?: string;
   accent: string;
   state: DashboardServerState;
   description: string;
@@ -160,6 +164,7 @@ type DashboardServerSeed = {
   id: string;
   name: LocalizedString;
   iconLabel: string;
+  iconUrl?: string;
   accent: string;
   state: DashboardServerState;
   description: LocalizedString;
@@ -247,6 +252,30 @@ const moduleCatalog: Record<
     description: text(
       "Lease records and property states.",
       "Аренда, объекты и их текущее состояние."
+    )
+  },
+  branding: {
+    key: "branding",
+    name: "Branding",
+    description: text(
+      "Brand assets, display name, and visual identity.",
+      "Материалы бренда, отображаемое имя и визуальная идентичность."
+    )
+  },
+  dashboard: {
+    key: "dashboard",
+    name: "Dashboard",
+    description: text(
+      "Workspace access, overview, and dashboard routing.",
+      "Доступ к рабочему пространству, обзор и маршруты dashboard."
+    )
+  },
+  licenses: {
+    key: "licenses",
+    name: "Licenses",
+    description: text(
+      "License status, seats, and access entitlements.",
+      "Статус лицензии, места и доступные права."
     )
   }
 };
@@ -1105,6 +1134,7 @@ function materializeServer(locale: Locale, seed: DashboardServerSeed): Dashboard
     id: seed.id,
     name: pick(locale, seed.name),
     iconLabel: seed.iconLabel,
+    iconUrl: "",
     accent: seed.accent,
     state: seed.state,
     description: pick(locale, seed.description),

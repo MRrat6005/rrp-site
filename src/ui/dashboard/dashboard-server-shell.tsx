@@ -150,10 +150,14 @@ export function DashboardServerShell({
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/82"
+                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] border border-white/[0.05] text-sm font-medium text-white/82"
                 style={{ backgroundColor: `${server.accent}18` }}
               >
-                {server.iconLabel}
+                {server.iconUrl ? (
+                  <img src={server.iconUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  server.iconLabel
+                )}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="truncate text-sm font-medium text-white/88">{server.name}</p>

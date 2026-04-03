@@ -52,9 +52,9 @@ const dashboardCopy = {
       searchEmptyTitle: "No matching servers",
       searchEmptyBody: "Try another name, region, or plan.",
       resultsLabel: "Servers",
-      members: "Members",
+      members: "Summary",
       region: "Region",
-      environment: "Environment",
+      environment: "Locale",
       plan: "Plan",
       groups: {
         connected: "Active",
@@ -152,9 +152,9 @@ const dashboardCopy = {
       searchEmptyTitle: "Подходящие серверы не найдены",
       searchEmptyBody: "Попробуйте другое имя, регион или план.",
       resultsLabel: "Серверы",
-      members: "Участники",
+      members: "Сводка",
       region: "Регион",
-      environment: "Среда",
+      environment: "Локаль",
       plan: "План",
       groups: {
         connected: "Активные",
