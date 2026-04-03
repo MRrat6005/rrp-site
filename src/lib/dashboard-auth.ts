@@ -194,8 +194,27 @@ function resolveDashboardAuthUrl(path: string): string | null {
   return buildDashboardAuthUrl(baseUrl, path);
 }
 
-export function getDashboardDiscordLoginUrl(): string | null {
-  return resolveDashboardAuthUrl("auth/discord/login");
+function normalizeDashboardLoginNextPath(nextPath?: string | null): string {
+  const normalized = nextPath?.trim();
+
+  if (!normalized || !normalized.startsWith("/")) {
+    return "/dashboard";
+  }
+
+  return normalized;
+}
+
+export function getDashboardDiscordLoginUrl(nextPath = "/dashboard"): string | null {
+  const resolvedUrl = resolveDashboardAuthUrl("auth/discord/login");
+
+  if (!resolvedUrl) {
+    return null;
+  }
+
+  const url = new URL(resolvedUrl);
+  url.searchParams.set("next", normalizeDashboardLoginNextPath(nextPath));
+
+  return url.toString();
 }
 
 export async function fetchDashboardAuthState(
@@ -305,3 +324,4 @@ export async function logoutDashboardAuth(signal?: AbortSignal): Promise<void> {
     throw new Error("Dashboard logout request failed.");
   }
 }
+

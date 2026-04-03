@@ -71,8 +71,25 @@ function normalizeBaseUrl(value?: string | null): string | null {
   return normalized.replace(/\/+$/, "");
 }
 
+function isLocalDashboardHostname(hostname?: string | null): boolean {
+  const normalized = hostname?.trim().toLowerCase();
+
+  return Boolean(
+    normalized &&
+      ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(normalized)
+  );
+}
+
 export function getDashboardApiBaseUrl(): string | null {
+  const envBaseUrl = normalizeBaseUrl(
+    process.env.NEXT_PUBLIC_DASHBOARD_API_BASE_URL ?? null
+  );
+
   if (typeof window !== "undefined") {
+    if (envBaseUrl && isLocalDashboardHostname(window.location.hostname)) {
+      return envBaseUrl;
+    }
+
     const runtimeBaseUrl = normalizeBaseUrl(
       window.__RRP_RUNTIME_CONFIG__?.dashboardApiBaseUrl
     );
@@ -82,7 +99,7 @@ export function getDashboardApiBaseUrl(): string | null {
     }
   }
 
-  return normalizeBaseUrl(process.env.NEXT_PUBLIC_DASHBOARD_API_BASE_URL ?? null);
+  return envBaseUrl;
 }
 
 function buildDashboardApiUrl(baseUrl: string, path: string): string {
@@ -127,6 +144,7 @@ async function fetchDashboardJson<T>(
       headers: {
         Accept: "application/json"
       },
+      credentials: "include",
       cache: "no-store",
       signal
     });
@@ -979,7 +997,7 @@ function mapNotices(value: unknown): DashboardNotice[] {
 }
 
 function mapSettings(value: unknown): DashboardSettingGroup[] {
-  return pickRecordArray(value, [["items"], ["settings"], ["groups"]])
+  const mappedItems = pickRecordArray(value, [["items"], ["settings"], ["groups"]])
     .map((item) => {
       const label = pickString(item, [["label"], ["name"], ["title"], ["key"]]) ?? "";
       const settingValue =
@@ -998,6 +1016,104 @@ function mapSettings(value: unknown): DashboardSettingGroup[] {
       };
     })
     .filter((item): item is DashboardSettingGroup => item !== null);
+
+  if (mappedItems.length > 0) {
+    return mappedItems;
+  }
+
+  const payload = asRecord(value);
+
+  if (!payload) {
+    return [];
+  }
+
+  const settings: DashboardSettingGroup[] = [];
+  const pushSetting = (label: string, settingValue: string | null, note = "") => {
+    if (!settingValue) {
+      return;
+    }
+
+    settings.push({
+      label,
+      value: settingValue,
+      note
+    });
+  };
+
+  const primaryLocale = formatLocaleLabel(
+    pickPathValue(payload, [
+      ["profile", "preferred_locale"],
+      ["localization", "default_locale"],
+      ["localization", "fallback_locale"]
+    ])
+  );
+  const supportedLocales = (asArray(
+    pickPathValue(payload, [["localization", "supported_locales"]])
+  ) ?? [])
+    .map((item) => formatLocaleLabel(item))
+    .filter((item): item is string => Boolean(item))
+    .join(", ");
+  const translationsVersion = pickString(payload, [["localization", "translations_version"]]);
+  const timezone = pickString(payload, [["profile", "timezone"], ["timezone"]]);
+  const contact = pickString(payload, [
+    ["profile", "contact_email"],
+    ["contact_email"],
+    ["profile", "support_url"],
+    ["support_url"]
+  ]);
+  const supportLink = pickString(payload, [
+    ["profile", "support_url"],
+    ["support_url"],
+    ["branding", "support_invite_url"]
+  ]);
+  const dashboardWrite = asBoolean(
+    pickPathValue(payload, [["permissions", "allow_dashboard_write"], ["allow_dashboard_write"]])
+  );
+  const botWrite = asBoolean(
+    pickPathValue(payload, [["permissions", "allow_bot_write"], ["allow_bot_write"]])
+  );
+  const policyVersion = pickNumber(payload, [["permissions", "policy_version"], ["policy_version"]]);
+
+  pushSetting(
+    "Locale",
+    primaryLocale,
+    supportedLocales
+      ? `Supported: ${supportedLocales}`
+      : translationsVersion
+        ? `Translations ${translationsVersion}`
+        : ""
+  );
+  pushSetting(
+    "Timezone",
+    timezone,
+    translationsVersion ? `Translations ${translationsVersion}` : ""
+  );
+  pushSetting(
+    "Contact",
+    contact,
+    supportLink && supportLink !== contact ? supportLink : ""
+  );
+
+  const accessValue =
+    dashboardWrite === null
+      ? botWrite === null
+        ? null
+        : botWrite
+          ? "Bot write enabled"
+          : "Bot write limited"
+      : dashboardWrite
+        ? "Dashboard write enabled"
+        : "Dashboard write limited";
+  const accessNote = [
+    botWrite === null ? null : botWrite ? "Bot write enabled." : "Bot write limited.",
+    policyVersion !== null ? `Policy v${policyVersion}` : null
+  ]
+    .filter((item): item is string => Boolean(item))
+    .join(" ");
+
+  pushSetting("Access", accessValue, accessNote);
+
+  return settings;
 }
 
 function mapBrandAssets(value: unknown): DashboardBrandAsset[] {
@@ -1070,13 +1186,14 @@ function mapStatusGroups(value: unknown): DashboardStatusGroup[] {
   }
 
   const items = mapStatusItems(value);
+  const derivedItems = items.length > 0 ? items : buildOverviewStatus(value);
 
-  return items.length > 0
+  return derivedItems.length > 0
     ? [
         {
           key: "dashboard",
           title: "Status",
-          items
+          items: derivedItems
         }
       ]
     : [];
@@ -1303,11 +1420,63 @@ function mapOverview(
 
 function mapBranding(value: unknown): DashboardServer["branding"] {
   const payload = getSectionPayload(value, "branding");
+  const assets = mapBrandAssets(pickPathValue(payload, [["assets"], ["items"]]));
+  const fields = mapIdentityFields(pickPathValue(payload, [["fields"], ["identity"]]));
+  const note = pickString(payload, [["note"], ["summary"], ["description"]]) ?? "";
+
+  const derivedAssets: DashboardBrandAsset[] = [];
+  const pushAsset = (label: string, assetValue: string | null, assetNote = "") => {
+    if (!assetValue) {
+      return;
+    }
+
+    derivedAssets.push({
+      label,
+      value: assetValue,
+      note: assetNote
+    });
+  };
+
+  pushAsset(
+    "Logo",
+    pickString(payload, [["logo_state"]]) ??
+      (pickString(payload, [["logo_url"]]) ? "Configured" : null),
+    pickString(payload, [["logo_url"]]) ?? ""
+  );
+  pushAsset(
+    "Wordmark",
+    pickString(payload, [["wordmark_state"]]) ??
+      (pickString(payload, [["wordmark_url"]]) ? "Configured" : null),
+    pickString(payload, [["wordmark_url"]]) ?? ""
+  );
+  pushAsset(
+    "Accent color",
+    pickString(payload, [["accent_color"], ["accentColor"]]),
+    ""
+  );
+
+  const derivedFields: DashboardIdentityField[] = [];
+  const pushField = (label: string, fieldValue: string | null) => {
+    if (!fieldValue) {
+      return;
+    }
+
+    derivedFields.push({
+      label,
+      value: fieldValue
+    });
+  };
+
+  pushField("Display name", pickString(payload, [["display_name"], ["displayName"], ["name"]]));
+  pushField(
+    "Support",
+    pickString(payload, [["support_invite_url"], ["support_url"], ["contact_email"]])
+  );
 
   return {
-    assets: mapBrandAssets(pickPathValue(payload, [["assets"], ["items"]])),
-    fields: mapIdentityFields(pickPathValue(payload, [["fields"], ["identity"]])),
-    note: pickString(payload, [["note"], ["summary"], ["description"]]) ?? ""
+    assets: assets.length > 0 ? assets : derivedAssets,
+    fields: fields.length > 0 ? fields : derivedFields,
+    note
   };
 }
 
@@ -1316,6 +1485,39 @@ function mapLicenses(value: unknown): DashboardServer["licenses"] {
     pickRecord(value, [["licenses"], ["license"], ["data", "licenses"], ["data"]]) ?? value;
   const plan = buildPlanLabel(payload);
   const seats = pickNumber(payload, [["active_license", "seats"], ["activeLicense", "seats"]]);
+  const entitlements = mapEntitlements(
+    pickPathValue(payload, [["entitlements"], ["items"]])
+  );
+  const activeStatus = pickString(payload, [["active_license", "status"], ["activeLicense", "status"]]);
+  const activeTier = pickString(payload, [["active_license", "tier"], ["activeLicense", "tier"]]);
+  const derivedEntitlements: DashboardEntitlement[] = [];
+  const pushEntitlement = (
+    label: string,
+    entitlementValue: string | null,
+    tone: DashboardTone = "info"
+  ) => {
+    if (!entitlementValue) {
+      return;
+    }
+
+    derivedEntitlements.push({
+      label,
+      value: entitlementValue,
+      tone
+    });
+  };
+
+  pushEntitlement(
+    "Tier",
+    activeTier ? toTitleCase(activeTier) : null,
+    activeStatus ? normalizeTone(activeStatus, "info") : "info"
+  );
+  pushEntitlement(
+    "Status",
+    activeStatus ? toTitleCase(activeStatus) : null,
+    activeStatus ? normalizeTone(activeStatus, "info") : "info"
+  );
+  pushEntitlement("Seats", seats !== null ? `${seats} seats` : null, "info");
 
   return {
     currentPlan:
@@ -1328,9 +1530,7 @@ function mapLicenses(value: unknown): DashboardServer["licenses"] {
       [plan || null, seats !== null ? `${seats} seats` : null]
         .filter((item): item is string => Boolean(item))
         .join(" · "),
-    entitlements: mapEntitlements(
-      pickPathValue(payload, [["entitlements"], ["items"]])
-    )
+    entitlements: entitlements.length > 0 ? entitlements : derivedEntitlements
   };
 }
 
@@ -1357,9 +1557,7 @@ function mapServerPagePayload(
     case "settings":
       return {
         ...mergedServer,
-        settings: mapSettings(
-          pickPathValue(getSectionPayload(value, "settings"), [["items"], ["settings"], ["groups"]])
-        )
+        settings: mapSettings(getSectionPayload(value, "settings"))
       };
     case "modules": {
       const modules = mapModules(getSectionPayload(value, "modules"));
@@ -1426,6 +1624,12 @@ export function shouldUseDashboardFallback(error: DashboardApiError | null): boo
   return false;
 }
 
+export function isDashboardUnauthorizedError(
+  error: DashboardApiError | null | undefined
+): boolean {
+  return error?.kind === "http" && error.status === 401;
+}
+
 export async function fetchDashboardServers(signal?: AbortSignal) {
   const response = await fetchDashboardJson<unknown>("servers", signal);
   return mapDashboardServerList(response.data, response.path);
@@ -1451,3 +1655,5 @@ export async function fetchDashboardServerPage(
 
   return mapServerPagePayload(page, baseServer, pageResponse.data);
 }
+
+

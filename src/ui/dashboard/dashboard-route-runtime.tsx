@@ -4,11 +4,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 
-import type { Locale } from "@/config/site.config";
+import { siteConfig, type Locale } from "@/config/site.config";
 import {
   DashboardApiError,
   fetchDashboardServerPage,
   fetchDashboardServers,
+  isDashboardUnauthorizedError,
   shouldUseDashboardFallback,
   type DashboardServerRoutePage
 } from "@/lib/dashboard-api";
@@ -16,6 +17,7 @@ import {
   getDashboardServer,
   type DashboardServer
 } from "@/lib/dashboard-mock";
+import { getLocalizedPath } from "@/lib/i18n";
 import { DashboardBrandingPage } from "@/ui/dashboard/dashboard-branding-page";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import { DashboardLicensesPage } from "@/ui/dashboard/dashboard-licenses-page";
@@ -172,16 +174,27 @@ interface DashboardServersRouteProps {
   locale: Locale;
 }
 
+function getDashboardLoginPath(locale: Locale): string {
+  return getLocalizedPath(locale, siteConfig.ctaRoutes.dashboard);
+}
+
 export function DashboardServersRoute({
   fallbackServers,
   locale
 }: DashboardServersRouteProps) {
   const copy = getDashboardCopy(locale);
+  const router = useRouter();
   const load = useCallback(
     (signal?: AbortSignal) => fetchDashboardServers(signal),
     []
   );
   const state = useDashboardResource(true, fallbackServers, load);
+
+  useEffect(() => {
+    if (!state.isLoading && isDashboardUnauthorizedError(state.error)) {
+      router.replace(getDashboardLoginPath(locale));
+    }
+  }, [locale, router, state.error, state.isLoading]);
 
   const servers = state.data ?? [];
   const emptyState =
@@ -274,6 +287,12 @@ export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
     load
   );
 
+  useEffect(() => {
+    if (!state.isLoading && isDashboardUnauthorizedError(state.error)) {
+      router.replace(getDashboardLoginPath(locale));
+    }
+  }, [locale, router, state.error, state.isLoading]);
+
   const server = state.data ?? fallbackServer;
 
   return (
@@ -313,3 +332,5 @@ export function DashboardAppRoute({ locale }: DashboardAppRouteProps) {
     </DashboardServerShell>
   );
 }
+
+

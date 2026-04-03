@@ -100,7 +100,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
   function handleDiscordLogin() {
     setLogoutFailed(false);
 
-    const loginUrl = getDashboardDiscordLoginUrl();
+    const loginUrl = getDashboardDiscordLoginUrl("/dashboard");
 
     if (!loginUrl) {
       setAuthState({ status: "unavailable" });
@@ -364,4 +364,5 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
     </main>
   );
 }
+
 
