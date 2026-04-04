@@ -1,5 +1,8 @@
+"use client";
+
 import type { Locale } from "@/config/site.config";
 import type { DashboardServer } from "@/lib/dashboard-mock";
+import { DashboardAuthProfileCard } from "@/ui/dashboard/dashboard-auth-profile-card";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import {
   DashboardMessagePanel,
@@ -26,15 +29,20 @@ export function DashboardOverviewPage({
 
   if (isEmpty) {
     return (
-      <DashboardMessagePanel
-        title={copy.overview.emptyTitle}
-        body={copy.overview.emptyBody}
-      />
+      <div className="space-y-4">
+        <DashboardAuthProfileCard locale={locale} />
+        <DashboardMessagePanel
+          title={copy.overview.emptyTitle}
+          body={copy.overview.emptyBody}
+        />
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
+      <DashboardAuthProfileCard locale={locale} />
+
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-5">
@@ -133,3 +141,4 @@ export function DashboardOverviewPage({
     </div>
   );
 }
+

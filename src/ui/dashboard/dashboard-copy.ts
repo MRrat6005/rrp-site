@@ -74,6 +74,8 @@ const dashboardCopy = {
       }
     },
     overview: {
+      viewerLabel: "Signed in as",
+      viewerFallbackName: "Discord member",
       identity: "Server details",
       status: "Current state",
       modules: "Modules",
@@ -183,6 +185,8 @@ const dashboardCopy = {
       }
     },
     overview: {
+      viewerLabel: "Вы вошли как",
+      viewerFallbackName: "Участник Discord",
       identity: "Данные сервера",
       status: "Текущее состояние",
       modules: "Модули",
@@ -307,3 +311,4 @@ export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): stri
 
   return labels[locale][tone];
 }
+

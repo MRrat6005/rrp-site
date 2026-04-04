@@ -5,6 +5,8 @@ export interface DashboardAuthIdentity {
   displayName: string | null;
   username: string | null;
   avatarUrl: string | null;
+  bannerUrl: string | null;
+  accentColor: string | null;
 }
 
 export type DashboardAuthState =
@@ -158,6 +160,20 @@ function mapDashboardAuthIdentity(value: unknown): DashboardAuthIdentity | null 
     ["imageUrl"],
     ["picture"]
   ]);
+  const bannerUrl = pickString(payload, [
+    ["banner_url"],
+    ["bannerUrl"],
+    ["banner"],
+    ["profile_banner_url"],
+    ["profileBannerUrl"],
+    ["banner_image_url"],
+    ["bannerImageUrl"]
+  ]);
+  const accentColor = pickString(payload, [
+    ["accent_color"],
+    ["accentColor"],
+    ["color"]
+  ]);
   const displayName =
     pickString(payload, [
       ["display_name"],
@@ -172,7 +188,7 @@ function mapDashboardAuthIdentity(value: unknown): DashboardAuthIdentity | null 
       ? `${username}#${discriminator}`
       : username);
 
-  if (!id && !displayName && !username && !avatarUrl) {
+  if (!id && !displayName && !username && !avatarUrl && !bannerUrl && !accentColor) {
     return null;
   }
 
@@ -180,7 +196,9 @@ function mapDashboardAuthIdentity(value: unknown): DashboardAuthIdentity | null 
     id,
     displayName,
     username,
-    avatarUrl
+    avatarUrl,
+    bannerUrl,
+    accentColor
   };
 }
 
