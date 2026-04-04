@@ -32,16 +32,6 @@ function getIdentityHandle(identity: DashboardAuthIdentity | null): string | nul
   return `@${identity.username}`;
 }
 
-function getIdentityInitial(identity: DashboardAuthIdentity | null, fallback: string) {
-  const source = getIdentityName(identity, fallback).replace(/^@+/, "").trim();
-
-  if (!source) {
-    return "D";
-  }
-
-  return source.charAt(0).toUpperCase();
-}
-
 function normalizeAccentColor(value: string | null): string | null {
   const normalized = value?.trim();
 
@@ -88,7 +78,7 @@ function hexToRgb(value: string) {
   };
 }
 
-function getAccentBackgroundStyle(accentColor: string | null): CSSProperties | null {
+function getPanelAccentStyle(accentColor: string | null): CSSProperties | null {
   const normalized = normalizeAccentColor(accentColor);
 
   if (!normalized) {
@@ -99,23 +89,108 @@ function getAccentBackgroundStyle(accentColor: string | null): CSSProperties | n
 
   if (rgb) {
     return {
-      backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.34)`,
-      backgroundImage: `radial-gradient(circle at top left, rgba(255,255,255,0.18), transparent 34%), linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.72), rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28) 58%, rgba(7,9,12,0.84) 100%)`
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.22)`,
+      backgroundImage: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1), rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.02) 45%, rgba(255,255,255,0.01) 100%)`,
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.03), 0 16px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05)`
     };
   }
 
   return {
-    backgroundColor: normalized,
-    backgroundImage:
-      "radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 55%)"
+    borderColor: "rgba(255,255,255,0.09)",
+    backgroundImage: `linear-gradient(135deg, ${normalized}16, rgba(255,255,255,0.015) 58%, rgba(255,255,255,0.01) 100%)`
   };
 }
 
-function getFallbackBackgroundStyle(): CSSProperties {
+function getFallbackPanelStyle(): CSSProperties {
   return {
     backgroundImage:
-      "radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 26%), linear-gradient(135deg, rgba(255,255,255,0.03), transparent 58%), linear-gradient(180deg, rgba(18,19,22,0.94), rgba(10,11,14,0.98))"
+      "linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 45%, rgba(255,255,255,0) 100%)"
   };
+}
+
+function getAccentGlowStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      background: `radial-gradient(circle, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08) 36%, transparent 72%)`
+    };
+  }
+
+  return {
+    background: `radial-gradient(circle, ${normalized}24 0%, transparent 72%)`
+  };
+}
+
+function getAccentBadgeStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.16)`,
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`,
+      color: "rgba(255,255,255,0.86)"
+    };
+  }
+
+  return {
+    backgroundColor: `${normalized}18`,
+    borderColor: `${normalized}40`,
+    color: "rgba(255,255,255,0.86)"
+  };
+}
+
+function getAvatarFrameStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)`,
+      backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`,
+      boxShadow: `0 12px 30px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`
+    };
+  }
+
+  return {
+    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: `${normalized}16`
+  };
+}
+
+function DashboardAvatarPlaceholder() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-5 w-5 text-white/60 sm:h-6 sm:w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 12.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
+      <path d="M5.75 19.25a6.25 6.25 0 0 1 12.5 0" />
+    </svg>
+  );
 }
 
 export function DashboardAuthProfileCard({
@@ -124,9 +199,7 @@ export function DashboardAuthProfileCard({
   const copy = getDashboardCopy(locale);
   const [authState, setAuthState] = useState<DashboardAuthState | null>(null);
   const identity = authState?.status === "authenticated" ? authState.identity : null;
-  const bannerUrl = identity?.bannerUrl ?? null;
   const avatarUrl = identity?.avatarUrl ?? null;
-  const [showBanner, setShowBanner] = useState(Boolean(bannerUrl));
   const [showAvatar, setShowAvatar] = useState(Boolean(avatarUrl));
 
   useEffect(() => {
@@ -149,80 +222,79 @@ export function DashboardAuthProfileCard({
   }, []);
 
   useEffect(() => {
-    setShowBanner(Boolean(bannerUrl));
-  }, [bannerUrl]);
-
-  useEffect(() => {
     setShowAvatar(Boolean(avatarUrl));
   }, [avatarUrl]);
 
-  const accentBackgroundStyle = getAccentBackgroundStyle(identity?.accentColor ?? null);
+  const accentColor = identity?.accentColor ?? null;
   const displayName = getIdentityName(identity, copy.overview.viewerFallbackName);
   const username = getIdentityHandle(identity);
-  const avatarInitial = getIdentityInitial(identity, copy.overview.viewerFallbackName);
+  const panelStyle = getPanelAccentStyle(accentColor) ?? getFallbackPanelStyle();
+  const glowStyle = getAccentGlowStyle(accentColor);
+  const avatarFrameStyle = getAvatarFrameStyle(accentColor);
+  const accentBadgeStyle = getAccentBadgeStyle(accentColor);
 
   return (
-    <DashboardPanel className="relative isolate overflow-hidden p-5 sm:p-6">
-      <div className="absolute inset-0">
-        {showBanner && bannerUrl ? (
-          <img
-            src={bannerUrl}
-            alt=""
-            className="h-full w-full object-cover object-center"
-            onError={() => setShowBanner(false)}
-          />
-        ) : (
-          <div
-            className="h-full w-full"
-            style={accentBackgroundStyle ?? getFallbackBackgroundStyle()}
-          />
-        )}
-      </div>
+    <DashboardPanel
+      className="relative isolate overflow-hidden border p-4 sm:p-5"
+      style={panelStyle}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,11,14,0.18),rgba(10,11,14,0.04))]" />
+      <div className="absolute inset-y-3 left-0 w-px bg-white/10" />
+      {glowStyle ? (
+        <div
+          aria-hidden="true"
+          className="absolute -right-8 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full blur-2xl sm:h-28 sm:w-28"
+          style={glowStyle}
+        />
+      ) : null}
 
-      <div className="absolute inset-0 bg-[linear-gradient(112deg,rgba(8,10,14,0.9)_0%,rgba(8,10,14,0.7)_46%,rgba(8,10,14,0.92)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_30%)]" />
+      <div className="relative z-10 flex min-h-[5.25rem] items-center gap-3 sm:min-h-[5.75rem] sm:gap-4">
+        <div
+          className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[1rem] border border-white/[0.09] bg-white/[0.04] sm:h-14 sm:w-14"
+          style={avatarFrameStyle ?? undefined}
+        >
+          {showAvatar && avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={displayName}
+              className="h-full w-full object-cover"
+              onError={() => setShowAvatar(false)}
+            />
+          ) : (
+            <DashboardAvatarPlaceholder />
+          )}
+        </div>
 
-      <div className="relative z-10 grid min-h-[13rem] gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-        <div className="min-w-0 space-y-3">
-          <p className="text-[11px] uppercase tracking-[0.24em] text-white/56">
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="text-[11px] uppercase tracking-[0.24em] text-white/44">
             {copy.overview.viewerLabel}
           </p>
 
           {authState === null ? (
-            <div className="space-y-2.5">
-              <span className="block h-8 max-w-[18rem] rounded-full bg-white/[0.11]" />
-              <span className="block h-4 w-28 rounded-full bg-white/[0.08]" />
+            <div className="space-y-2">
+              <span className="block h-6 max-w-[11rem] rounded-full bg-white/[0.11]" />
+              <span className="block h-3.5 w-24 rounded-full bg-white/[0.08]" />
             </div>
           ) : (
-            <div className="space-y-2">
-              <h2 className="max-w-[16ch] break-words text-[1.9rem] font-semibold leading-tight tracking-[-0.04em] text-white sm:text-[2.2rem]">
+            <div className="min-w-0 space-y-1">
+              <h2 className="truncate text-lg font-medium leading-tight tracking-[-0.03em] text-white/92 sm:text-[1.15rem]">
                 {displayName}
               </h2>
               {username ? (
-                <p className="text-sm text-white/72 sm:text-base">{username}</p>
+                <p className="truncate text-sm text-white/60">{username}</p>
               ) : null}
             </div>
           )}
         </div>
 
-        <div className="flex justify-start sm:justify-end">
-          <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/[0.12] bg-[rgba(255,255,255,0.06)] shadow-[0_12px_36px_rgba(0,0,0,0.24)] sm:h-24 sm:w-24">
-            {showAvatar && avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={displayName}
-                className="h-full w-full object-cover"
-                onError={() => setShowAvatar(false)}
-              />
-            ) : (
-              <span className="text-2xl font-semibold tracking-[-0.04em] text-white/84 sm:text-[1.75rem]">
-                {avatarInitial}
-              </span>
-            )}
-          </div>
+        <div className="shrink-0 self-start sm:self-center">
+          <span
+            className="inline-flex h-2.5 w-2.5 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-[0_0_0_4px_rgba(255,255,255,0.02)]"
+            style={accentBadgeStyle ?? undefined}
+            aria-hidden="true"
+          />
         </div>
       </div>
     </DashboardPanel>
   );
 }
-
