@@ -1,4 +1,5 @@
 import type {
+  DashboardAccessLevel,
   DashboardBrandAsset,
   DashboardEntitlement,
   DashboardIdentityField,
@@ -735,6 +736,138 @@ function resolveServerState(value: unknown): DashboardServerState {
   return explicitState;
 }
 
+function normalizeDashboardAccessLevel(
+  value: unknown
+): DashboardAccessLevel | null {
+  const normalized = asString(value)
+    ?.toLowerCase()
+    .replace(/[\s-]+/g, "_");
+
+  switch (normalized) {
+    case "owner":
+    case "guild_owner":
+    case "server_owner":
+    case "owner_only":
+      return "owner";
+    case "admin":
+    case "administrator":
+    case "moderator":
+    case "staff":
+    case "editor":
+      return "admin";
+    case "none":
+    case "no_access":
+    case "read_only":
+    case "readonly":
+    case "locked":
+    case "forbidden":
+    case "denied":
+    case "viewer":
+      return "none";
+    default:
+      return null;
+  }
+}
+
+function resolveDashboardAccessLevel(value: unknown): DashboardAccessLevel {
+  const explicitAccess = normalizeDashboardAccessLevel(
+    pickString(value, [
+      ["permissions", "access_level"],
+      ["permissions", "accessLevel"],
+      ["access_level"],
+      ["accessLevel"],
+      ["access"],
+      ["role"]
+    ])
+  );
+
+  if (explicitAccess) {
+    return explicitAccess;
+  }
+
+  const isOwner = asBoolean(
+    pickPathValue(value, [
+      ["permissions", "is_owner"],
+      ["permissions", "isOwner"],
+      ["permissions", "owner_context"],
+      ["permissions", "ownerContext"],
+      ["is_owner"],
+      ["isOwner"],
+      ["owner_context"],
+      ["ownerContext"]
+    ])
+  );
+
+  if (isOwner === true) {
+    return "owner";
+  }
+
+  const isAdmin = asBoolean(
+    pickPathValue(value, [
+      ["permissions", "is_admin"],
+      ["permissions", "isAdmin"],
+      ["is_admin"],
+      ["isAdmin"]
+    ])
+  );
+  const dashboardWrite = asBoolean(
+    pickPathValue(value, [
+      ["permissions", "allow_dashboard_write"],
+      ["permissions", "allowDashboardWrite"],
+      ["allow_dashboard_write"],
+      ["allowDashboardWrite"]
+    ])
+  );
+  const botWrite = asBoolean(
+    pickPathValue(value, [
+      ["permissions", "allow_bot_write"],
+      ["permissions", "allowBotWrite"],
+      ["allow_bot_write"],
+      ["allowBotWrite"]
+    ])
+  );
+  const lockedFlag = asBoolean(
+    pickPathValue(value, [
+      ["permissions", "locked"],
+      ["permissions", "read_only"],
+      ["permissions", "readOnly"],
+      ["locked"],
+      ["read_only"],
+      ["readOnly"]
+    ])
+  );
+
+  if (isAdmin === true || dashboardWrite === true || botWrite === true) {
+    return "admin";
+  }
+
+  if (
+    lockedFlag === true ||
+    isAdmin === false ||
+    dashboardWrite === false ||
+    botWrite === false
+  ) {
+    return "none";
+  }
+
+  return "admin";
+}
+
+function mergeDashboardAccessLevel(
+  primary: DashboardAccessLevel,
+  secondary: DashboardAccessLevel
+): DashboardAccessLevel {
+  if (primary === "none" || secondary === "none") {
+    return "none";
+  }
+
+  if (primary === "owner" || secondary === "owner") {
+    return "owner";
+  }
+
+  return "admin";
+}
+
 function normalizeTone(
   value: unknown,
   fallback: DashboardTone = "muted"
@@ -1244,6 +1377,7 @@ function mapDashboardServerSummary(
   const overviewIdentity = buildOverviewIdentity(payload);
   const overviewStatus = buildOverviewStatus(payload);
   const overviewNotices = buildOverviewNotices(payload);
+  const accessLevel = resolveDashboardAccessLevel(payload);
 
   return {
     id,
@@ -1258,6 +1392,7 @@ function mapDashboardServerSummary(
       pickString(payload, [["branding", "accent_color"], ["accent"], ["accent_color"], ["accentColor"], ["color"]]) ??
       "#c4c9d4",
     state: resolveServerState(payload),
+    accessLevel,
     description,
     environment:
       formatLocaleLabel(
@@ -1326,6 +1461,7 @@ function mergeDashboardServerSummary(
     iconUrl: primary.iconUrl || secondary.iconUrl,
     accent: primary.accent || secondary.accent,
     state: primary.state !== "inactive" ? primary.state : secondary.state,
+    accessLevel: mergeDashboardAccessLevel(primary.accessLevel, secondary.accessLevel),
     description: primary.description || secondary.description,
     environment: primary.environment || secondary.environment,
     region: primary.region || secondary.region,
@@ -1639,19 +1775,40 @@ export async function fetchDashboardServerPage(
   serverId: string,
   page: DashboardServerRoutePage,
   signal?: AbortSignal
-) {
+): Promise<DashboardServer> {
   const encodedServerId = encodeURIComponent(serverId);
-  const [serverResponse, pageResponse] = await Promise.all([
-    fetchDashboardJson<unknown>(`servers/${encodedServerId}`, signal),
-    fetchDashboardJson<unknown>(`servers/${encodedServerId}/${page}`, signal)
-  ]);
-
-  ensureServerMatch(pageResponse.data, serverId, pageResponse.path);
-
+  const serverResponse = await fetchDashboardJson<unknown>(
+    `servers/${encodedServerId}`,
+    signal
+  );
   const baseServer = mapDashboardServerSummary(serverResponse.data, {
     expectedServerId: serverId,
     path: serverResponse.path
   });
+
+  if (baseServer.accessLevel === "none") {
+    return baseServer;
+  }
+
+  let pageResponse: DashboardApiResponse<unknown>;
+
+  try {
+    pageResponse = await fetchDashboardJson<unknown>(
+      `servers/${encodedServerId}/${page}`,
+      signal
+    );
+  } catch (error) {
+    if (error instanceof DashboardApiError && error.status === 403) {
+      return {
+        ...baseServer,
+        accessLevel: "none" as const
+      };
+    }
+
+    throw error;
+  }
+
+  ensureServerMatch(pageResponse.data, serverId, pageResponse.path);
 
   return mapServerPagePayload(page, baseServer, pageResponse.data);
 }

@@ -1,4 +1,5 @@
 import type {
+  DashboardAccessLevel,
   DashboardPageKey,
   DashboardServerState,
   DashboardTone
@@ -36,12 +37,20 @@ const dashboardCopy = {
       close: "Close",
       closeMenu: "Close menu"
     },
+    access: {
+      owner: "Owner",
+      admin: "Admin",
+      none: "No access"
+    },
     runtime: {
       loadingTitle: "Loading workspace",
       loading: "Loading live data.",
       fallback: "Live data is unavailable right now. Showing preview data.",
       selectServerTitle: "Select a server",
       selectServerBody: "Open a server from the servers list to load its workspace.",
+      lockedTitle: "No access",
+      lockedBody:
+        "This server is still visible in your workspace, but dashboard actions are locked for this account.",
       unavailableTitle: "Live data unavailable",
       unavailableBody: "This dashboard view could not be loaded right now."
     },
@@ -56,6 +65,7 @@ const dashboardCopy = {
       region: "Region",
       environment: "Locale",
       plan: "Plan",
+      lockedAction: "Open locked view",
       groups: {
         connected: "Active",
         invite: "Setup",
@@ -136,12 +146,20 @@ const dashboardCopy = {
       close: "Закрыть",
       closeMenu: "Закрыть меню"
     },
+    access: {
+      owner: "Владелец",
+      admin: "Админ",
+      none: "Нет доступа"
+    },
     runtime: {
       loadingTitle: "Загрузка рабочего пространства",
       loading: "Загрузка живых данных.",
       fallback: "Живые данные сейчас недоступны. Показан режим предпросмотра.",
       selectServerTitle: "Выберите сервер",
       selectServerBody: "Откройте сервер из списка, чтобы загрузить его рабочее пространство.",
+      lockedTitle: "Нет доступа",
+      lockedBody:
+        "Этот сервер остается видимым в рабочем пространстве, но действия dashboard для этой учетной записи закрыты.",
       unavailableTitle: "Живые данные недоступны",
       unavailableBody: "Сейчас не удалось загрузить это представление панели."
     },
@@ -156,6 +174,7 @@ const dashboardCopy = {
       region: "Регион",
       environment: "Локаль",
       plan: "План",
+      lockedAction: "Открыть заблокированный экран",
       groups: {
         connected: "Активные",
         invite: "Подключение",
@@ -254,6 +273,13 @@ export function getDashboardStateAction(
   } as const;
 
   return labels[locale][state];
+}
+
+export function getDashboardAccessLabel(
+  locale: Locale,
+  accessLevel: DashboardAccessLevel
+): string {
+  return getDashboardCopy(locale).access[accessLevel];
 }
 
 export function getDashboardPageTitle(

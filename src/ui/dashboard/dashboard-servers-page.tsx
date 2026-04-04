@@ -7,6 +7,7 @@ import { useState } from "react";
 import type { Locale } from "@/config/site.config";
 import type { DashboardServer, DashboardServerState } from "@/lib/dashboard-mock";
 import {
+  getDashboardAccessLabel,
   getDashboardCopy,
   getDashboardStateAction,
   getDashboardStateLabel
@@ -14,6 +15,7 @@ import {
 import { getDashboardAppPath } from "@/ui/dashboard/dashboard-routing";
 import {
   DashboardMessagePanel,
+  DashboardLockGlyph,
   DashboardPanel,
   DashboardStatusPill
 } from "@/ui/dashboard/dashboard-primitives";
@@ -37,6 +39,17 @@ function getStateTone(server: DashboardServer) {
     case "invite":
       return "warning" as const;
     case "test":
+      return "info" as const;
+    default:
+      return "muted" as const;
+  }
+}
+
+function getAccessTone(server: DashboardServer) {
+  switch (server.accessLevel) {
+    case "owner":
+      return "positive" as const;
+    case "admin":
       return "info" as const;
     default:
       return "muted" as const;
@@ -129,14 +142,21 @@ export function DashboardServersPage({
                 </div>
 
                 <div className="grid gap-3 lg:grid-cols-2">
-                  {group.servers.map((server) => (
+                  {group.servers.map((server) => {
+                    const isLocked = server.accessLevel === "none";
+
+                    return (
                     <Link
                       key={server.id}
                       href={getDashboardAppPath(locale, server.id, "overview")}
                       className="group"
                     >
                       <DashboardPanel className="h-full p-5 transition hover:border-white/[0.08] hover:bg-[rgba(15,16,18,0.92)] sm:p-6">
-                        <div className="flex h-full flex-col gap-5">
+                        <div
+                          className={`flex h-full flex-col gap-5 ${
+                            isLocked ? "opacity-80" : ""
+                          }`}
+                        >
                           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div className="flex min-w-0 items-start gap-3">
                               <div
@@ -161,9 +181,21 @@ export function DashboardServersPage({
                               </div>
                             </div>
 
-                            <DashboardStatusPill tone={getStateTone(server)}>
-                              {getDashboardStateLabel(locale, server.state)}
-                            </DashboardStatusPill>
+                            <div className="flex flex-wrap justify-end gap-1.5">
+                              <DashboardStatusPill tone={getStateTone(server)}>
+                                {getDashboardStateLabel(locale, server.state)}
+                              </DashboardStatusPill>
+                              <DashboardStatusPill tone={getAccessTone(server)}>
+                                {isLocked ? (
+                                  <>
+                                    <DashboardLockGlyph className="mr-1 h-4 w-4 border-0 bg-transparent p-0 text-inherit" />
+                                    {getDashboardAccessLabel(locale, server.accessLevel)}
+                                  </>
+                                ) : (
+                                  getDashboardAccessLabel(locale, server.accessLevel)
+                                )}
+                              </DashboardStatusPill>
+                            </div>
                           </div>
 
                           <p className="text-sm leading-6 text-white/56">{server.description}</p>
@@ -197,13 +229,16 @@ export function DashboardServersPage({
 
                           <div className="mt-auto flex items-center justify-end text-sm">
                             <span className="text-sm text-white/60 transition group-hover:text-white/76">
-                              {getDashboardStateAction(locale, server.state)}
+                              {isLocked
+                                ? copy.servers.lockedAction
+                                : getDashboardStateAction(locale, server.state)}
                             </span>
                           </div>
                         </div>
                       </DashboardPanel>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             ) : null

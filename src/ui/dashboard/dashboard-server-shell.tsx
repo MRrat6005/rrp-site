@@ -10,12 +10,14 @@ import type { DashboardPageKey, DashboardServer } from "@/lib/dashboard-mock";
 import { getLocalizedPath } from "@/lib/i18n";
 import { LogoTile } from "@/ui/common/logo-tile";
 import {
+  getDashboardAccessLabel,
   getDashboardCopy,
   getDashboardPageTitle,
   getDashboardStateLabel
 } from "@/ui/dashboard/dashboard-copy";
 import { getDashboardAppPath } from "@/ui/dashboard/dashboard-routing";
 import {
+  DashboardLockGlyph,
   DashboardStatusPill,
   cx
 } from "@/ui/dashboard/dashboard-primitives";
@@ -46,6 +48,17 @@ function getServerStateTone(server?: DashboardServer) {
   }
 }
 
+function getServerAccessTone(server?: DashboardServer) {
+  switch (server?.accessLevel) {
+    case "owner":
+      return "positive" as const;
+    case "admin":
+      return "info" as const;
+    default:
+      return "muted" as const;
+  }
+}
+
 export function DashboardServerShell({
   activePage,
   isFallback = false,
@@ -59,17 +72,29 @@ export function DashboardServerShell({
   const copy = getDashboardCopy(locale);
   const resolvedServerId = server?.id ?? serverId?.trim() ?? null;
   const stateTone = getServerStateTone(server);
+  const accessTone = getServerAccessTone(server);
+  const isLocked = server?.accessLevel === "none";
 
-  const navItems: Array<{ key: DashboardPageKey; href: string }> = resolvedServerId
-    ? [
-        { key: "servers", href: getLocalizedPath(locale, "dashboard/servers") },
-        { key: "overview", href: getDashboardAppPath(locale, resolvedServerId, "overview") },
-        { key: "settings", href: getDashboardAppPath(locale, resolvedServerId, "settings") },
-        { key: "modules", href: getDashboardAppPath(locale, resolvedServerId, "modules") },
-        { key: "branding", href: getDashboardAppPath(locale, resolvedServerId, "branding") },
-        { key: "licenses", href: getDashboardAppPath(locale, resolvedServerId, "licenses") },
-        { key: "status", href: getDashboardAppPath(locale, resolvedServerId, "status") }
-      ]
+  const navItems: Array<{
+    disabled?: boolean;
+    href: string;
+    key: DashboardPageKey;
+  }> = resolvedServerId
+    ? (
+        [
+          { key: "servers", href: getLocalizedPath(locale, "dashboard/servers") },
+          { key: "overview", href: getDashboardAppPath(locale, resolvedServerId, "overview") },
+          { key: "settings", href: getDashboardAppPath(locale, resolvedServerId, "settings") },
+          { key: "modules", href: getDashboardAppPath(locale, resolvedServerId, "modules") },
+          { key: "branding", href: getDashboardAppPath(locale, resolvedServerId, "branding") },
+          { key: "licenses", href: getDashboardAppPath(locale, resolvedServerId, "licenses") },
+          { key: "status", href: getDashboardAppPath(locale, resolvedServerId, "status") }
+        ] as Array<{ href: string; key: DashboardPageKey }>
+      ).map((item) => ({
+        ...item,
+        disabled:
+          isLocked && item.key !== "servers" && item.key !== "overview"
+      }))
     : [{ key: "servers", href: getLocalizedPath(locale, "dashboard/servers") }];
 
   useEffect(() => {
@@ -173,6 +198,16 @@ export function DashboardServerShell({
                 <DashboardStatusPill tone={stateTone}>
                   {getDashboardStateLabel(locale, server.state)}
                 </DashboardStatusPill>
+                <DashboardStatusPill tone={accessTone}>
+                  {isLocked ? (
+                    <>
+                      <DashboardLockGlyph className="mr-1 h-4 w-4 border-0 bg-transparent p-0 text-inherit" />
+                      {getDashboardAccessLabel(locale, server.accessLevel)}
+                    </>
+                  ) : (
+                    getDashboardAccessLabel(locale, server.accessLevel)
+                  )}
+                </DashboardStatusPill>
                 {isFallback ? (
                   <DashboardStatusPill tone="muted">{copy.sidebar.mockMode}</DashboardStatusPill>
                 ) : null}
@@ -209,23 +244,45 @@ export function DashboardServerShell({
           {navItems.map((item) => {
             const isActive = item.key === activePage;
 
+            const className = cx(
+              "group relative rounded-[0.95rem] px-3 py-2.5 text-sm transition",
+              isActive
+                ? "bg-white/[0.04] text-white/82"
+                : item.disabled
+                  ? "cursor-default text-white/26"
+                  : "text-white/48 hover:bg-white/[0.02] hover:text-white/68"
+            );
+
+            const content = (
+              <>
+                {isActive ? (
+                  <span className="absolute inset-y-2 left-0 w-px rounded-full bg-white/24" />
+                ) : null}
+                <span className="block pl-2">{getDashboardPageTitle(locale, item.key)}</span>
+              </>
+            );
+
+            if (item.disabled) {
+              return (
+                <span
+                  key={item.key}
+                  aria-disabled="true"
+                  className={className}
+                >
+                  {content}
+                </span>
+              );
+            }
+
             return (
               <Link
                 key={item.key}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 onClick={() => setDrawerOpen(false)}
-                className={cx(
-                  "group relative rounded-[0.95rem] px-3 py-2.5 text-sm transition",
-                  isActive
-                    ? "bg-white/[0.04] text-white/82"
-                    : "text-white/48 hover:bg-white/[0.02] hover:text-white/68"
-                )}
+                className={className}
               >
-                {isActive ? (
-                  <span className="absolute inset-y-2 left-0 w-px rounded-full bg-white/24" />
-                ) : null}
-                <span className="block pl-2">{getDashboardPageTitle(locale, item.key)}</span>
+                {content}
               </Link>
             );
           })}
@@ -294,6 +351,16 @@ export function DashboardServerShell({
                         <DashboardStatusPill tone={stateTone}>
                           {getDashboardStateLabel(locale, server.state)}
                         </DashboardStatusPill>
+                        <DashboardStatusPill tone={accessTone}>
+                          {isLocked ? (
+                            <>
+                              <DashboardLockGlyph className="mr-1 h-4 w-4 border-0 bg-transparent p-0 text-inherit" />
+                              {getDashboardAccessLabel(locale, server.accessLevel)}
+                            </>
+                          ) : (
+                            getDashboardAccessLabel(locale, server.accessLevel)
+                          )}
+                        </DashboardStatusPill>
                         {isFallback ? (
                           <DashboardStatusPill tone="muted">
                             {copy.sidebar.mockMode}
@@ -321,6 +388,16 @@ export function DashboardServerShell({
                   <>
                     <DashboardStatusPill tone={stateTone}>
                       {getDashboardStateLabel(locale, server.state)}
+                    </DashboardStatusPill>
+                    <DashboardStatusPill tone={accessTone}>
+                      {isLocked ? (
+                        <>
+                          <DashboardLockGlyph className="mr-1 h-4 w-4 border-0 bg-transparent p-0 text-inherit" />
+                          {getDashboardAccessLabel(locale, server.accessLevel)}
+                        </>
+                      ) : (
+                        getDashboardAccessLabel(locale, server.accessLevel)
+                      )}
                     </DashboardStatusPill>
                     {isFallback ? (
                       <DashboardStatusPill tone="muted">

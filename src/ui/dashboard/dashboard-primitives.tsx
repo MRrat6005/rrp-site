@@ -56,6 +56,36 @@ export function DashboardStatusPill({
   );
 }
 
+interface DashboardLockGlyphProps {
+  className?: string;
+}
+
+export function DashboardLockGlyph({ className }: DashboardLockGlyphProps) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cx(
+        "inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-white/58",
+        className
+      )}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        className="h-3.5 w-3.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M8.5 10V7.75a3.5 3.5 0 1 1 7 0V10" />
+        <rect x="6.5" y="10" width="11" height="8.5" rx="2.2" />
+        <path d="M12 13.25v2.25" />
+      </svg>
+    </span>
+  );
+}
+
 interface DashboardSectionHeadingProps {
   title: string;
   body?: string;

@@ -24,6 +24,7 @@ import { DashboardLicensesPage } from "@/ui/dashboard/dashboard-licenses-page";
 import { DashboardModulesPage } from "@/ui/dashboard/dashboard-modules-page";
 import { DashboardOverviewPage } from "@/ui/dashboard/dashboard-overview-page";
 import {
+  DashboardLockGlyph,
   DashboardMessagePanel,
   DashboardPanel
 } from "@/ui/dashboard/dashboard-primitives";
@@ -151,6 +152,26 @@ function renderDashboardServerPage(
   locale: Locale,
   server: DashboardServer
 ): ReactNode {
+  if (server.accessLevel === "none") {
+    const copy = getDashboardCopy(locale);
+
+    return (
+      <DashboardPanel className="p-6 sm:p-8">
+        <div className="space-y-4">
+          <DashboardLockGlyph className="h-10 w-10" />
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-white">
+              {copy.runtime.lockedTitle}
+            </h2>
+            <p className="max-w-2xl text-sm leading-6 text-white/56">
+              {copy.runtime.lockedBody}
+            </p>
+          </div>
+        </div>
+      </DashboardPanel>
+    );
+  }
+
   switch (page) {
     case "overview":
       return <DashboardOverviewPage locale={locale} server={server} />;

@@ -1,6 +1,7 @@
 import type { Locale } from "@/config/site.config";
 
 export type DashboardServerState = "connected" | "invite" | "inactive" | "test";
+export type DashboardAccessLevel = "owner" | "admin" | "none";
 export type DashboardTone = "positive" | "warning" | "muted" | "info";
 export type DashboardModuleKey =
   | "bank"
@@ -79,6 +80,7 @@ export interface DashboardServer {
   iconUrl?: string;
   accent: string;
   state: DashboardServerState;
+  accessLevel: DashboardAccessLevel;
   description: string;
   environment: string;
   region: string;
@@ -167,6 +169,7 @@ type DashboardServerSeed = {
   iconUrl?: string;
   accent: string;
   state: DashboardServerState;
+  accessLevel: DashboardAccessLevel;
   description: LocalizedString;
   environment: LocalizedString;
   region: LocalizedString;
@@ -388,6 +391,7 @@ const serverSeeds: DashboardServerSeed[] = [
     iconLabel: "CM",
     accent: "#d2c7b0",
     state: "connected",
+    accessLevel: "owner",
     description: text(
       "Primary server with full module coverage and steady daily operations.",
       "Основной сервер с полным набором модулей и стабильным рабочим контуром."
@@ -576,6 +580,7 @@ const serverSeeds: DashboardServerSeed[] = [
     iconLabel: "NA",
     accent: "#d6d1c6",
     state: "invite",
+    accessLevel: "admin",
     description: text("Server waiting for first connection and initial setup.", "Сервер ожидает первое подключение и начальную настройку."),
     environment: text("Setup", "Подготовка"),
     region: text("US East", "Восток США"),
@@ -761,6 +766,7 @@ const serverSeeds: DashboardServerSeed[] = [
     iconLabel: "AS",
     accent: "#c7c9ce",
     state: "inactive",
+    accessLevel: "none",
     description: text("Reference server kept for review and migration planning.", "Справочный сервер для просмотра и подготовки миграции."),
     environment: text("Archive", "Архив"),
     region: text("EU West", "Западная Европа"),
@@ -946,6 +952,7 @@ const serverSeeds: DashboardServerSeed[] = [
     iconLabel: "SL",
     accent: "#d0d4db",
     state: "test",
+    accessLevel: "owner",
     description: text("Internal server for layout, copy, and state checks.", "Внутренний сервер для проверки верстки, текста и состояний."),
     environment: text("Test", "Тестовая"),
     region: text("Internal", "Внутренняя"),
@@ -1137,6 +1144,7 @@ function materializeServer(locale: Locale, seed: DashboardServerSeed): Dashboard
     iconUrl: "",
     accent: seed.accent,
     state: seed.state,
+    accessLevel: seed.accessLevel,
     description: pick(locale, seed.description),
     environment: pick(locale, seed.environment),
     region: pick(locale, seed.region),
