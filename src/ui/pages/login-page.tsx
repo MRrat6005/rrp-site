@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 import { siteConfig, type Locale } from "@/config/site.config";
 import {
@@ -40,6 +40,138 @@ function getIdentityMeta(identity: DashboardAuthIdentity | null): string | null 
   return null;
 }
 
+function normalizeAccentColor(value: string | null): string | null {
+  const normalized = value?.trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(normalized)) {
+    return normalized;
+  }
+
+  if (/^([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(normalized)) {
+    return `#${normalized}`;
+  }
+
+  if (/^(rgb|rgba|hsl|hsla)\(/i.test(normalized)) {
+    return normalized;
+  }
+
+  return null;
+}
+
+function hexToRgb(value: string) {
+  const hex = value.replace("#", "");
+  const expanded =
+    hex.length === 3 || hex.length === 4
+      ? hex
+          .slice(0, 3)
+          .split("")
+          .map((segment) => segment + segment)
+          .join("")
+      : hex.slice(0, 6);
+
+  if (!/^[0-9a-f]{6}$/i.test(expanded)) {
+    return null;
+  }
+
+  const numeric = Number.parseInt(expanded, 16);
+
+  return {
+    r: (numeric >> 16) & 255,
+    g: (numeric >> 8) & 255,
+    b: numeric & 255
+  };
+}
+
+function getIdentityPanelStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18)`,
+      backgroundImage: `linear-gradient(135deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.09), rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.025) 46%, rgba(255,255,255,0.02) 100%)`,
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.025), 0 0 0 1px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.04)`
+    };
+  }
+
+  return {
+    borderColor: "rgba(255,255,255,0.08)",
+    backgroundImage: `linear-gradient(135deg, ${normalized}14, rgba(255,255,255,0.02) 56%, rgba(255,255,255,0.015) 100%)`
+  };
+}
+
+function getIdentityAvatarStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.24)`,
+      backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`,
+      boxShadow: `0 10px 24px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`
+    };
+  }
+
+  return {
+    borderColor: "rgba(255,255,255,0.1)",
+    backgroundColor: `${normalized}16`
+  };
+}
+
+function getIdentityAccentDotStyle(accentColor: string | null): CSSProperties | null {
+  const normalized = normalizeAccentColor(accentColor);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const rgb = normalized.startsWith("#") ? hexToRgb(normalized) : null;
+
+  if (rgb) {
+    return {
+      backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18)`,
+      borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.28)`
+    };
+  }
+
+  return {
+    backgroundColor: `${normalized}20`,
+    borderColor: `${normalized}42`
+  };
+}
+
+function LoginIdentityPlaceholder() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-5 w-5 text-white/60"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 12.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
+      <path d="M5.75 19.25a6.25 6.25 0 0 1 12.5 0" />
+    </svg>
+  );
+}
+
 export function LoginPage({ locale, messages }: LoginPageProps) {
   const workspaceHref = getLocalizedPath(locale, siteConfig.ctaRoutes.workspace);
   const publicCrownHref = getLocalizedPath(locale, siteConfig.ctaRoutes.projects.crown);
@@ -48,6 +180,7 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
   const [authState, setAuthState] = useState<DashboardAuthState | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutFailed, setLogoutFailed] = useState(false);
+  const [showAvatar, setShowAvatar] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -72,6 +205,8 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
   const authStatus = authState?.status ?? "loading";
   const isAuthenticated = authStatus === "authenticated";
   const identity = authState?.status === "authenticated" ? authState.identity : null;
+  const avatarUrl = identity?.avatarUrl ?? null;
+  const accentColor = identity?.accentColor ?? null;
   const authNotice = isAuthenticated
     ? messages.login.authenticatedNotice
     : authStatus === "loading"
@@ -109,6 +244,14 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
 
     window.location.assign(loginUrl);
   }
+
+  useEffect(() => {
+    setShowAvatar(Boolean(avatarUrl));
+  }, [avatarUrl]);
+
+  const identityPanelStyle = getIdentityPanelStyle(accentColor);
+  const identityAvatarStyle = getIdentityAvatarStyle(accentColor);
+  const identityAccentDotStyle = getIdentityAccentDotStyle(accentColor);
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -276,16 +419,46 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
                   </div>
 
                   {isAuthenticated ? (
-                    <div className="rounded-[1.15rem] border border-white/[0.05] bg-white/[0.03] p-4">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/28">
-                        {messages.login.identityLabel}
-                      </p>
-                      <p className="mt-2 text-sm font-medium text-white/82">
-                        {getIdentityName(identity, messages.login.identityFallback)}
-                      </p>
-                      {getIdentityMeta(identity) ? (
-                        <p className="mt-1 text-xs text-white/44">{getIdentityMeta(identity)}</p>
-                      ) : null}
+                    <div
+                      className="relative overflow-hidden rounded-[1.15rem] border border-white/[0.05] bg-white/[0.03] p-4"
+                      style={identityPanelStyle ?? undefined}
+                    >
+                      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]" />
+                      <div className="relative z-10 flex items-center gap-3">
+                        <div
+                          className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[0.95rem] border border-white/[0.09] bg-white/[0.04]"
+                          style={identityAvatarStyle ?? undefined}
+                        >
+                          {showAvatar && avatarUrl ? (
+                            <img
+                              src={avatarUrl}
+                              alt={getIdentityName(identity, messages.login.identityFallback)}
+                              className="h-full w-full object-cover"
+                              onError={() => setShowAvatar(false)}
+                            />
+                          ) : (
+                            <LoginIdentityPlaceholder />
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/28">
+                            {messages.login.identityLabel}
+                          </p>
+                          <p className="mt-2 truncate text-sm font-medium text-white/82">
+                            {getIdentityName(identity, messages.login.identityFallback)}
+                          </p>
+                          {getIdentityMeta(identity) ? (
+                            <p className="mt-1 truncate text-xs text-white/44">{getIdentityMeta(identity)}</p>
+                          ) : null}
+                        </div>
+
+                        <span
+                          className="inline-flex h-2.5 w-2.5 shrink-0 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-[0_0_0_4px_rgba(255,255,255,0.02)]"
+                          style={identityAccentDotStyle ?? undefined}
+                          aria-hidden="true"
+                        />
+                      </div>
                     </div>
                   ) : null}
                 </div>
@@ -364,5 +537,6 @@ export function LoginPage({ locale, messages }: LoginPageProps) {
     </main>
   );
 }
+
 
 
