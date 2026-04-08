@@ -101,6 +101,60 @@ export interface DashboardLocalizationSettings {
   translationsVersion: string | null;
 }
 
+export type DashboardDiscordEntityStatus = "active" | "missing" | "unresolved";
+export type DashboardDiscordRefreshState = "idle" | "requested" | "in_progress";
+export type DashboardDiscordEntityKind = "role" | "channel" | "category";
+export type DashboardDiscordChannelKind = "category" | "text" | "voice" | "forum" | "announcement" | "stage" | "unknown";
+
+export interface DashboardDiscordRoleOption {
+  id: string;
+  name: string;
+  isEveryone: boolean;
+  isManaged: boolean;
+  position: number | null;
+}
+
+export interface DashboardDiscordChannelOption {
+  id: string;
+  name: string;
+  kind: DashboardDiscordChannelKind;
+  parentId: string | null;
+  parentName: string | null;
+}
+
+export interface DashboardDiscordResolvedEntity {
+  kind: DashboardDiscordEntityKind;
+  value: string;
+  id: string | null;
+  name: string;
+  status: DashboardDiscordEntityStatus;
+}
+
+export interface DashboardDiscordAccessAutofill {
+  dashboardAdminRoles: DashboardDiscordResolvedEntity[];
+  botManagerRoles: DashboardDiscordResolvedEntity[];
+}
+
+export interface DashboardDiscordSyncState {
+  lastSyncAt: string | null;
+  isStale: boolean;
+  staleReason: string | null;
+  refreshRequestedAt: string | null;
+  refreshStartedAt: string | null;
+  refreshState: DashboardDiscordRefreshState;
+  status: string | null;
+  note: string | null;
+}
+
+export interface DashboardDiscordStructure {
+  guildId: string | null;
+  roleOptions: DashboardDiscordRoleOption[];
+  channelOptions: DashboardDiscordChannelOption[];
+  categoryOptions: DashboardDiscordChannelOption[];
+  accessAutofill: DashboardDiscordAccessAutofill;
+  sync: DashboardDiscordSyncState;
+}
+
 export interface DashboardBrandAsset {
   label: string;
   value: string;
@@ -518,4 +572,5 @@ export function getDashboardServer(id: string, locale: Locale = "en"): Dashboard
   const seed = seeds.find((item) => item.id === id);
   return seed ? materializeServer(locale, seed) : null;
 }
+
 

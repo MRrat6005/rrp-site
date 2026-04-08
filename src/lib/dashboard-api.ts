@@ -2,6 +2,13 @@ import type {
   DashboardAccessLevel,
   DashboardAccessSettings,
   DashboardBrandingModule,
+  DashboardDiscordAccessAutofill,
+  DashboardDiscordChannelKind,
+  DashboardDiscordChannelOption,
+  DashboardDiscordResolvedEntity,
+  DashboardDiscordRoleOption,
+  DashboardDiscordStructure,
+  DashboardDiscordSyncState,
   DashboardGeneralSettings,
   DashboardIdentityField,
   DashboardLocalizationSettings,
@@ -140,6 +147,37 @@ async function patchDashboardJson<T>(path: string, body: unknown, signal?: Abort
   try {
     response = await fetch(buildDashboardApiUrl(baseUrl, path), {
       method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      cache: "no-store",
+      body: JSON.stringify(body),
+      signal
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
+  }
+  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
+  if (response.status === 204 || response.status === 205) return { data: null, path };
+  const raw = await response.text();
+  if (!raw.trim()) return { data: null, path };
+  try {
+    return { data: JSON.parse(raw) as T, path };
+  } catch {
+    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
+  }
+}
+
+async function postDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<DashboardApiResponse<T | null>> {
+  const baseUrl = getDashboardApiBaseUrl();
+  if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
+  let response: Response;
+  try {
+    response = await fetch(buildDashboardApiUrl(baseUrl, path), {
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
@@ -340,6 +378,209 @@ function normalizeLocaleCode(value: unknown): string | null {
 
 function normalizeLocaleCodes(value: unknown): string[] {
   return (asArray(value) ?? []).map((item) => normalizeLocaleCode(item)).filter((item): item is string => Boolean(item));
+}
+
+function normalizeDiscordEntityStatus(value: unknown, fallback: DashboardDiscordResolvedEntity["status"] = "unresolved"): DashboardDiscordResolvedEntity["status"] {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "active":
+    case "present":
+    case "resolved":
+      return "active";
+    case "missing":
+    case "deleted":
+    case "removed":
+      return "missing";
+    case "unresolved":
+    case "unknown":
+      return "unresolved";
+    default:
+      return fallback;
+  }
+}
+
+function normalizeDiscordChannelKind(value: unknown): DashboardDiscordChannelKind {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "category":
+      return "category";
+    case "text":
+    case "guild_text":
+      return "text";
+    case "voice":
+    case "guild_voice":
+      return "voice";
+    case "forum":
+    case "guild_forum":
+      return "forum";
+    case "announcement":
+    case "news":
+    case "guild_announcement":
+    case "guild_news":
+      return "announcement";
+    case "stage":
+    case "stage_voice":
+    case "guild_stage_voice":
+      return "stage";
+    default:
+      break;
+  }
+
+  switch (asNumber(value)) {
+    case 4:
+      return "category";
+    case 0:
+      return "text";
+    case 2:
+      return "voice";
+    case 15:
+      return "forum";
+    case 5:
+      return "announcement";
+    case 13:
+      return "stage";
+    default:
+      return "unknown";
+  }
+}
+
+function buildDiscordRoleOptions(value: unknown): DashboardDiscordRoleOption[] {
+  const items = pickRecordArray(value, [["roles"], ["structure", "roles"], ["discord_structure", "roles"], ["discordStructure", "roles"], ["cache", "roles"], ["data", "roles"], ["data", "structure", "roles"]]);
+  return items
+    .map((item) => {
+      const id = pickString(item, [["id"], ["role_id"], ["roleId"], ["discord_id"], ["discordId"]]);
+      const name = pickString(item, [["name"], ["label"], ["role_name"], ["roleName"]]);
+      if (!id || !name) return null;
+      return {
+        id,
+        name,
+        isEveryone: asBoolean(pickPathValue(item, [["is_everyone"], ["isEveryone"]])) === true,
+        isManaged: asBoolean(pickPathValue(item, [["is_managed"], ["isManaged"], ["managed"]])) === true,
+        position: pickNumber(item, [["position"], ["sort"], ["sort_order"], ["sortOrder"]])
+      };
+    })
+    .filter((item): item is DashboardDiscordRoleOption => item !== null)
+    .sort((left, right) => {
+      const leftPosition = left.position ?? -1;
+      const rightPosition = right.position ?? -1;
+      if (leftPosition !== rightPosition) return rightPosition - leftPosition;
+      return left.name.localeCompare(right.name);
+    });
+}
+
+function buildDiscordChannelOptions(value: unknown): DashboardDiscordChannelOption[] {
+  const items = pickRecordArray(value, [["channels"], ["structure", "channels"], ["discord_structure", "channels"], ["discordStructure", "channels"], ["cache", "channels"], ["data", "channels"], ["data", "structure", "channels"]]);
+  return items
+    .map((item) => {
+      const id = pickString(item, [["id"], ["channel_id"], ["channelId"], ["discord_id"], ["discordId"]]);
+      const name = pickString(item, [["name"], ["label"], ["channel_name"], ["channelName"]]);
+      if (!id || !name) return null;
+      return {
+        id,
+        name,
+        kind: normalizeDiscordChannelKind(pickPathValue(item, [["type"], ["kind"], ["channel_type"], ["channelType"]])),
+        parentId: pickString(item, [["parent_id"], ["parentId"], ["category_id"], ["categoryId"]]),
+        parentName: pickString(item, [["parent_name"], ["parentName"], ["category_name"], ["categoryName"]])
+      };
+    })
+    .filter((item): item is DashboardDiscordChannelOption => item !== null)
+    .sort((left, right) => {
+      if (left.kind === right.kind) return left.name.localeCompare(right.name);
+      return left.kind.localeCompare(right.kind);
+    });
+}
+
+function buildDiscordCategoryOptions(value: unknown, channels: DashboardDiscordChannelOption[]): DashboardDiscordChannelOption[] {
+  const items = pickRecordArray(value, [["categories"], ["structure", "categories"], ["discord_structure", "categories"], ["discordStructure", "categories"], ["cache", "categories"], ["data", "categories"], ["data", "structure", "categories"]]);
+  const explicitCategories = items.reduce<DashboardDiscordChannelOption[]>((result, item) => {
+    const id = pickString(item, [["id"], ["channel_id"], ["channelId"], ["category_id"], ["categoryId"]]);
+    const name = pickString(item, [["name"], ["label"], ["category_name"], ["categoryName"]]);
+    if (!id || !name) return result;
+    result.push({ id, name, kind: "category", parentId: null, parentName: null });
+    return result;
+  }, []);
+  if (explicitCategories.length > 0) return explicitCategories.sort((left, right) => left.name.localeCompare(right.name));
+  return channels.filter((item) => item.kind === "category");
+}
+
+function buildDiscordAutofillList(value: unknown, kind: DashboardDiscordResolvedEntity["kind"]): DashboardDiscordResolvedEntity[] {
+  return (asArray(value) ?? [])
+    .map((item) => {
+      if (typeof item === "string") {
+        const normalized = item.trim();
+        return normalized ? { kind, value: normalized, id: null, name: normalized, status: "unresolved" as const } : null;
+      }
+      const record = asRecord(item);
+      if (!record) return null;
+      const id = pickString(record, [["id"], ["role_id"], ["roleId"], ["channel_id"], ["channelId"], ["discord_id"], ["discordId"]]);
+      const name = pickString(record, [["name"], ["label"], ["role_name"], ["roleName"], ["channel_name"], ["channelName"]]) ?? id;
+      const valueToken = pickString(record, [["value"], ["raw"], ["setting_value"], ["settingValue"], ["id"], ["role_id"], ["roleId"], ["channel_id"], ["channelId"], ["name"]]) ?? name;
+      if (!name || !valueToken) return null;
+      const status = normalizeDiscordEntityStatus(
+        pickPathValue(record, [["status"], ["state"]]),
+        asBoolean(pickPathValue(record, [["missing"], ["is_missing"], ["isMissing"], ["deleted"], ["is_deleted"], ["isDeleted"]])) === true ? "missing" : "unresolved"
+      );
+      return { kind, value: valueToken, id, name, status };
+    })
+    .filter((item): item is DashboardDiscordResolvedEntity => item !== null);
+}
+
+function buildDiscordAccessAutofill(value: unknown): DashboardDiscordAccessAutofill {
+  const payload = asRecord(pickPathValue(value, [["autofill", "access"], ["autofill", "settings", "access"], ["data", "autofill", "access"], ["access_autofill"], ["accessAutofill"]])) ?? {};
+  return {
+    dashboardAdminRoles: buildDiscordAutofillList(pickPathValue(payload, [["dashboard_admin_roles"], ["dashboardAdminRoles"]]), "role"),
+    botManagerRoles: buildDiscordAutofillList(pickPathValue(payload, [["bot_manager_roles"], ["botManagerRoles"]]), "role")
+  };
+}
+
+function normalizeDiscordRefreshState(value: unknown): DashboardDiscordSyncState["refreshState"] {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "requested":
+    case "queued":
+    case "pending":
+      return "requested";
+    case "in_progress":
+    case "running":
+    case "processing":
+      return "in_progress";
+    default:
+      return "idle";
+  }
+}
+
+function buildDiscordSyncState(value: unknown): DashboardDiscordSyncState {
+  const refreshStateFromFlags = asBoolean(pickPathValue(value, [["refresh", "in_progress"], ["refresh", "is_in_progress"], ["refresh", "isInProgress"], ["sync", "refresh_in_progress"], ["sync", "refreshInProgress"], ["refresh_in_progress"], ["refreshInProgress"]])) === true
+    ? "in_progress"
+    : asBoolean(pickPathValue(value, [["refresh", "requested"], ["refresh", "pending"], ["sync", "refresh_requested"], ["sync", "pending_refresh"], ["refresh_requested"], ["pending_refresh"], ["pendingRefresh"]])) === true
+      ? "requested"
+      : null;
+  const refreshState = refreshStateFromFlags
+    ?? normalizeDiscordRefreshState(pickPathValue(value, [["refresh", "status"], ["sync", "refresh_status"], ["sync", "refreshStatus"], ["refresh_status"], ["refreshStatus"]]));
+  return {
+    lastSyncAt: pickString(value, [["sync", "last_sync_at"], ["sync", "lastSyncAt"], ["sync_metadata", "last_sync_at"], ["syncMetadata", "lastSyncAt"], ["metadata", "last_sync_at"], ["metadata", "lastSyncAt"], ["last_sync_at"], ["lastSyncAt"], ["captured_at"], ["capturedAt"]]),
+    isStale: asBoolean(pickPathValue(value, [["sync", "is_stale"], ["sync", "isStale"], ["sync", "stale"], ["sync_metadata", "is_stale"], ["syncMetadata", "isStale"], ["is_stale"], ["isStale"], ["stale"]])) === true,
+    staleReason: pickString(value, [["sync", "stale_reason"], ["sync", "staleReason"], ["sync_metadata", "stale_reason"], ["syncMetadata", "staleReason"], ["stale_reason"], ["staleReason"]]),
+    refreshRequestedAt: pickString(value, [["refresh", "requested_at"], ["refresh", "requestedAt"], ["sync", "refresh_requested_at"], ["sync", "refreshRequestedAt"], ["refresh_requested_at"], ["refreshRequestedAt"]]),
+    refreshStartedAt: pickString(value, [["refresh", "started_at"], ["refresh", "startedAt"], ["sync", "refresh_started_at"], ["sync", "refreshStartedAt"], ["refresh_started_at"], ["refreshStartedAt"]]),
+    refreshState,
+    status: pickString(value, [["sync", "status"], ["sync_metadata", "status"], ["syncMetadata", "status"], ["status"]]),
+    note: pickString(value, [["sync", "note"], ["sync", "sync_note"], ["sync", "message"], ["sync_metadata", "note"], ["syncMetadata", "note"], ["note"], ["message"]])
+  };
+}
+
+function mapDiscordStructure(value: unknown): DashboardDiscordStructure {
+  const payload = asRecord(value) ?? {};
+  const roleOptions = buildDiscordRoleOptions(payload);
+  const channelOptions = buildDiscordChannelOptions(payload);
+  return {
+    guildId: pickString(payload, [["guild_id"], ["guildId"], ["server", "guild_id"], ["server", "guildId"], ["server_id"], ["serverId"]]),
+    roleOptions,
+    channelOptions,
+    categoryOptions: buildDiscordCategoryOptions(payload, channelOptions),
+    accessAutofill: buildDiscordAccessAutofill(payload),
+    sync: buildDiscordSyncState(payload)
+  };
 }
 
 function normalizeSettingsPolicy(value: unknown): string | null {
@@ -891,6 +1132,21 @@ export async function fetchDashboardServerPage(serverId: string, page: Dashboard
 
 
 
+export async function fetchDashboardDiscordStructure(serverId: string, signal?: AbortSignal): Promise<DashboardDiscordStructure> {
+  const path = `servers/${encodeURIComponent(serverId)}/discord-structure`;
+  const response = await fetchDashboardJson<unknown>(path, signal);
+  ensureServerMatch(response.data, serverId, response.path);
+  return mapDiscordStructure(response.data);
+}
+
+export async function refreshDashboardDiscordStructure(serverId: string, signal?: AbortSignal): Promise<DashboardDiscordStructure | null> {
+  const path = `servers/${encodeURIComponent(serverId)}/discord-structure/refresh`;
+  const response = await postDashboardJson<unknown>(path, {}, signal);
+  if (response.data === null) return null;
+  ensureServerMatch(response.data, serverId, response.path);
+  return mapDiscordStructure(response.data);
+}
+
 export async function patchDashboardServerSettings(server: DashboardServer, patch: DashboardSettingsPatch, signal?: AbortSignal): Promise<DashboardServer> {
   const path = `servers/${encodeURIComponent(server.id)}/settings`;
   const body = buildSettingsPatchBody(patch);
@@ -912,3 +1168,8 @@ export async function patchDashboardServerSettings(server: DashboardServer, patc
     ? applySettingsData(mergedServer, mergeSettingsData(cloneSettingsData(mergedServer.settingsData), responseSettings))
     : mergedServer;
 }
+
+
+
+
+

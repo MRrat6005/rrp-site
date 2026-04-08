@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import type { Locale } from "@/config/site.config";
 import { DashboardApiError, patchDashboardServerSettings } from "@/lib/dashboard-api";
 import type { DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
+import { DashboardDiscordSyncPanel } from "@/ui/dashboard/dashboard-discord-structure";
 import {
   DashboardEditActions,
   DashboardField,
@@ -13,8 +16,8 @@ import {
   getDashboardEditorCopy,
   normalizeOptionalText
 } from "@/ui/dashboard/dashboard-settings-editor";
-import { DashboardMessagePanel, DashboardPanel, DashboardSectionHeading } from "@/ui/dashboard/dashboard-primitives";
-import { useEffect, useMemo, useState } from "react";
+import { DashboardPanel, DashboardSectionHeading } from "@/ui/dashboard/dashboard-primitives";
+import { useDashboardDiscordStructure } from "@/ui/dashboard/use-dashboard-discord-structure";
 
 interface DashboardGeneralPageProps {
   locale: Locale;
@@ -66,6 +69,7 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
   const copy = getDashboardCopy(locale);
   const editorCopy = getDashboardEditorCopy(locale);
   const general = server.settingsData?.general;
+  const discord = useDashboardDiscordStructure(server.id, server.accessLevel !== "none");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ tone: "error" | "success"; value: string } | null>(null);
@@ -75,8 +79,6 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
   useEffect(() => {
     if (!isEditing) setForm(initialForm);
   }, [initialForm, isEditing]);
-
-  if (server.general.length === 0) return <DashboardMessagePanel title={copy.general.emptyTitle} body={copy.general.emptyBody} />;
 
   const initialPatch = buildGeneralPatch(initialForm);
   const currentPatch = buildGeneralPatch(form);
@@ -123,41 +125,54 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
       <DashboardPanel className="p-5 sm:p-6">
         <div className="space-y-4">
           <DashboardSectionHeading title={copy.general.title} />
-          {renderRows(server.general)}
+          {server.general.length > 0 ? renderRows(server.general) : <p className="text-sm leading-6 text-white/52">{copy.general.emptyBody}</p>}
         </div>
       </DashboardPanel>
-      <DashboardPanel className="p-5 sm:p-6">
-        <div className="space-y-4">
-          <DashboardSectionHeading title={copy.general.noteTitle} body={copy.general.note} />
-          {isEditing ? (
-            <div className="grid gap-4 border-t border-white/[0.05] pt-4">
-              <DashboardField label="Name" hint="Primary server label shown in the dashboard.">
-                <DashboardTextInput value={form.name} maxLength={120} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-              </DashboardField>
-              <DashboardField label="Contact email" hint="A simple contact point for ops or support.">
-                <DashboardTextInput type="email" value={form.contactEmail} placeholder="ops@example.com" onChange={(event) => setForm((current) => ({ ...current, contactEmail: event.target.value }))} />
-              </DashboardField>
-              <DashboardField label="Support URL" hint="Optional link to support docs or a contact surface.">
-                <DashboardTextInput type="url" value={form.supportUrl} placeholder="https://" onChange={(event) => setForm((current) => ({ ...current, supportUrl: event.target.value }))} />
-              </DashboardField>
-              <DashboardField label="Notes" hint="Short internal context shown in the dashboard summary.">
-                <DashboardTextarea value={form.notes} placeholder="Operational note" onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} />
-              </DashboardField>
-            </div>
-          ) : (
-            <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-              {renderCard("Name", general?.name || server.name || "-")}
-              {renderCard("Contact", general?.contactEmail ?? "-")}
-              {renderCard("Support", general?.supportUrl ?? "-")}
-              {renderCard("Notes", general?.notes ?? "-")}
-              {renderCard("Dashboard", formatFlag(general?.dashboardEnabled, "Enabled", "Disabled"))}
-              {renderCard("Bot sync", formatFlag(general?.botSyncEnabled, "Enabled", "Disabled"))}
-            </div>
-          )}
-          {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
-          <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
-        </div>
-      </DashboardPanel>
+      <div className="space-y-4">
+        <DashboardPanel className="p-5 sm:p-6">
+          <DashboardDiscordSyncPanel
+            locale={locale}
+            structure={discord.data}
+            isLoading={discord.isLoading}
+            isRefreshing={discord.isRefreshing}
+            error={discord.error}
+            onRefresh={discord.requestRefresh}
+            body="General keeps the existing clean edit flow. Discord structure is shown here only as sync context."
+          />
+        </DashboardPanel>
+        <DashboardPanel className="p-5 sm:p-6">
+          <div className="space-y-4">
+            <DashboardSectionHeading title={copy.general.noteTitle} body={copy.general.note} />
+            {isEditing ? (
+              <div className="grid gap-4 border-t border-white/[0.05] pt-4">
+                <DashboardField label="Name" hint="Primary server label shown in the dashboard.">
+                  <DashboardTextInput value={form.name} maxLength={120} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+                </DashboardField>
+                <DashboardField label="Contact email" hint="A simple contact point for ops or support.">
+                  <DashboardTextInput type="email" value={form.contactEmail} placeholder="ops@example.com" onChange={(event) => setForm((current) => ({ ...current, contactEmail: event.target.value }))} />
+                </DashboardField>
+                <DashboardField label="Support URL" hint="Optional link to support docs or a contact surface.">
+                  <DashboardTextInput type="url" value={form.supportUrl} placeholder="https://" onChange={(event) => setForm((current) => ({ ...current, supportUrl: event.target.value }))} />
+                </DashboardField>
+                <DashboardField label="Notes" hint="Short internal context shown in the dashboard summary.">
+                  <DashboardTextarea value={form.notes} placeholder="Operational note" onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} />
+                </DashboardField>
+              </div>
+            ) : (
+              <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+                {renderCard("Name", general?.name || server.name || "-")}
+                {renderCard("Contact", general?.contactEmail ?? "-")}
+                {renderCard("Support", general?.supportUrl ?? "-")}
+                {renderCard("Notes", general?.notes ?? "-")}
+                {renderCard("Dashboard", formatFlag(general?.dashboardEnabled, "Enabled", "Disabled"))}
+                {renderCard("Bot sync", formatFlag(general?.botSyncEnabled, "Enabled", "Disabled"))}
+              </div>
+            )}
+            {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
+            <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+          </div>
+        </DashboardPanel>
+      </div>
     </div>
   );
 }

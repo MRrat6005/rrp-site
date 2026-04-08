@@ -4,20 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Locale } from "@/config/site.config";
 import { DashboardApiError, patchDashboardServerSettings } from "@/lib/dashboard-api";
-import type { DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
+import type { DashboardDiscordResolvedEntity, DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
 import { DashboardAuthProfileCard } from "@/ui/dashboard/dashboard-auth-profile-card";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
+import { DashboardDiscordEntitySelector, DashboardDiscordSyncPanel } from "@/ui/dashboard/dashboard-discord-structure";
 import {
   DashboardEditActions,
   DashboardField,
   DashboardInlineState,
   DashboardSelect,
-  DashboardTextInput,
   getDashboardEditorCopy,
-  normalizeListInput,
   normalizeOptionalText
 } from "@/ui/dashboard/dashboard-settings-editor";
-import { DashboardMessagePanel, DashboardPanel, DashboardSectionHeading } from "@/ui/dashboard/dashboard-primitives";
+import { DashboardPanel, DashboardSectionHeading } from "@/ui/dashboard/dashboard-primitives";
+import { useDashboardDiscordStructure } from "@/ui/dashboard/use-dashboard-discord-structure";
 
 interface DashboardAccessPageProps {
   locale: Locale;
@@ -29,8 +29,8 @@ interface AccessFormState {
   adminAccess: string;
   allowBotWrite: string;
   allowDashboardWrite: string;
-  botManagerRoles: string;
-  dashboardAdminRoles: string;
+  botManagerRoles: string[];
+  dashboardAdminRoles: string[];
   ownerAccess: string;
 }
 
@@ -64,8 +64,8 @@ function createAccessForm(server: DashboardServer): AccessFormState {
     adminAccess: access?.adminAccess ?? "",
     allowBotWrite: access?.allowBotWrite === null || access?.allowBotWrite === undefined ? "" : String(access.allowBotWrite),
     allowDashboardWrite: access?.allowDashboardWrite === null || access?.allowDashboardWrite === undefined ? "" : String(access.allowDashboardWrite),
-    botManagerRoles: access?.botManagerRoles.join(", ") ?? "",
-    dashboardAdminRoles: access?.dashboardAdminRoles.join(", ") ?? "",
+    botManagerRoles: [...(access?.botManagerRoles ?? [])],
+    dashboardAdminRoles: [...(access?.dashboardAdminRoles ?? [])],
     ownerAccess: access?.ownerAccess ?? ""
   };
 }
@@ -81,16 +81,37 @@ function buildAccessPatch(form: AccessFormState) {
     adminAccess: normalizeOptionalText(form.adminAccess),
     allowBotWrite: normalizeGateValue(form.allowBotWrite),
     allowDashboardWrite: normalizeGateValue(form.allowDashboardWrite),
-    botManagerRoles: normalizeListInput(form.botManagerRoles),
-    dashboardAdminRoles: normalizeListInput(form.dashboardAdminRoles),
+    botManagerRoles: [...form.botManagerRoles],
+    dashboardAdminRoles: [...form.dashboardAdminRoles],
     ownerAccess: normalizeOptionalText(form.ownerAccess)
   };
+}
+
+function resolveRoleSelections(
+  values: string[],
+  knownSelections: DashboardDiscordResolvedEntity[],
+  liveRoles: Array<{ id: string; name: string }>
+): DashboardDiscordResolvedEntity[] {
+  const autofillByValue = new Map(knownSelections.map((item) => [item.value, item]));
+  const roleById = new Map(liveRoles.map((item) => [item.id, item]));
+  const roleByName = new Map(liveRoles.map((item) => [item.name.toLowerCase(), item]));
+
+  return values.map((value) => {
+    const autofillItem = autofillByValue.get(value);
+    if (autofillItem) return autofillItem;
+    const directRole = roleById.get(value);
+    if (directRole) return { kind: "role", value, id: directRole.id, name: directRole.name, status: "active" };
+    const namedRole = roleByName.get(value.toLowerCase());
+    if (namedRole) return { kind: "role", value, id: namedRole.id, name: namedRole.name, status: "active" };
+    return { kind: "role", value, id: null, name: value, status: "unresolved" };
+  });
 }
 
 export function DashboardAccessPage({ locale, onServerChange, server }: DashboardAccessPageProps) {
   const copy = getDashboardCopy(locale);
   const editorCopy = getDashboardEditorCopy(locale);
   const access = server.settingsData?.access;
+  const discord = useDashboardDiscordStructure(server.id, server.accessLevel !== "none");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ tone: "error" | "success"; value: string } | null>(null);
@@ -101,11 +122,16 @@ export function DashboardAccessPage({ locale, onServerChange, server }: Dashboar
     if (!isEditing) setForm(initialForm);
   }, [initialForm, isEditing]);
 
-  if (server.access.length === 0) return <DashboardMessagePanel title={copy.accessPage.emptyTitle} body={copy.accessPage.emptyBody} />;
-
   const initialPatch = buildAccessPatch(initialForm);
   const currentPatch = buildAccessPatch(form);
   const isDirty = JSON.stringify(currentPatch) !== JSON.stringify(initialPatch);
+  const liveRoleOptions = (discord.data?.roleOptions ?? []).map((item) => ({
+    value: item.id,
+    label: item.name,
+    description: item.isManaged ? "managed" : item.isEveryone ? "everyone" : undefined
+  }));
+  const dashboardAdminRoles = resolveRoleSelections(form.dashboardAdminRoles, discord.data?.accessAutofill.dashboardAdminRoles ?? [], discord.data?.roleOptions ?? []);
+  const botManagerRoles = resolveRoleSelections(form.botManagerRoles, discord.data?.accessAutofill.botManagerRoles ?? [], discord.data?.roleOptions ?? []);
 
   const startEditing = () => {
     setForm(initialForm);
@@ -141,86 +167,117 @@ export function DashboardAccessPage({ locale, onServerChange, server }: Dashboar
   return (
     <div className="space-y-4">
       <DashboardAuthProfileCard locale={locale} />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
             <DashboardSectionHeading title={copy.accessPage.title} />
-            {renderRows(server.access)}
+            {server.access.length > 0 ? renderRows(server.access) : <p className="text-sm leading-6 text-white/52">{copy.accessPage.emptyBody}</p>}
           </div>
         </DashboardPanel>
-        <DashboardPanel className="p-5 sm:p-6">
-          <div className="space-y-4">
-            <DashboardSectionHeading title={copy.accessPage.noteTitle} body={copy.accessPage.note} />
-            {isEditing ? (
-              <div className="grid gap-4 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-                <DashboardField label="Owner policy" hint="What owner-level operators can do in this workspace.">
-                  <DashboardSelect value={form.ownerAccess} onChange={(event) => setForm((current) => ({ ...current, ownerAccess: event.target.value }))}>
-                    <option value="">Not set</option>
-                    <option value="read_write">Read & write</option>
-                    <option value="read_only">Read only</option>
-                    <option value="none">No access</option>
-                  </DashboardSelect>
-                </DashboardField>
-                <DashboardField label="Admin policy" hint="Current admin default for dashboard surfaces.">
-                  <DashboardSelect value={form.adminAccess} onChange={(event) => setForm((current) => ({ ...current, adminAccess: event.target.value }))}>
-                    <option value="">Not set</option>
-                    <option value="read_write">Read & write</option>
-                    <option value="read_only">Read only</option>
-                    <option value="none">No access</option>
-                  </DashboardSelect>
-                </DashboardField>
-                <DashboardField label="Dashboard admin roles" hint="Comma-separated role ids or labels.">
-                  <DashboardTextInput value={form.dashboardAdminRoles} placeholder="lead-admin, ops" onChange={(event) => setForm((current) => ({ ...current, dashboardAdminRoles: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Bot manager roles" hint="Comma-separated role ids or labels.">
-                  <DashboardTextInput value={form.botManagerRoles} placeholder="bot-ops, support" onChange={(event) => setForm((current) => ({ ...current, botManagerRoles: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Dashboard write" hint="Write gate for dashboard edits.">
-                  <DashboardSelect value={form.allowDashboardWrite} onChange={(event) => setForm((current) => ({ ...current, allowDashboardWrite: event.target.value }))}>
-                    <option value="">Not set</option>
-                    <option value="true">Allowed</option>
-                    <option value="false">Blocked</option>
-                  </DashboardSelect>
-                </DashboardField>
-                <DashboardField label="Bot write" hint="Write gate for bot-originated changes.">
-                  <DashboardSelect value={form.allowBotWrite} onChange={(event) => setForm((current) => ({ ...current, allowBotWrite: event.target.value }))}>
-                    <option value="">Not set</option>
-                    <option value="true">Allowed</option>
-                    <option value="false">Blocked</option>
-                  </DashboardSelect>
-                </DashboardField>
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-                  {renderCard("Owner policy", formatPolicy(access?.ownerAccess))}
-                  {renderCard("Admin policy", formatPolicy(access?.adminAccess))}
-                  {renderCard("Owners", access?.ownerCount !== null && access?.ownerCount !== undefined ? String(access.ownerCount) : "-")}
-                  {renderCard("Admins", access?.adminCount !== null && access?.adminCount !== undefined ? String(access.adminCount) : "-")}
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4">
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Role groups</p>
-                    <div className="mt-3 space-y-2 text-sm leading-6 text-white/64">
-                      <p><span className="text-white/42">Dashboard admins:</span> {access?.dashboardAdminRoles?.join(", ") || "-"}</p>
-                      <p><span className="text-white/42">Bot managers:</span> {access?.botManagerRoles?.join(", ") || "-"}</p>
-                    </div>
+
+        <div className="space-y-4">
+          <DashboardPanel className="p-5 sm:p-6">
+            <DashboardDiscordSyncPanel
+              locale={locale}
+              structure={discord.data}
+              isLoading={discord.isLoading}
+              isRefreshing={discord.isRefreshing}
+              error={discord.error}
+              onRefresh={discord.requestRefresh}
+            />
+          </DashboardPanel>
+
+          <DashboardPanel className="p-5 sm:p-6">
+            <div className="space-y-4">
+              <DashboardSectionHeading title={copy.accessPage.noteTitle} body={copy.accessPage.note} />
+              {isEditing ? (
+                <div className="grid gap-4 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+                  <DashboardField label="Owner policy" hint="What owner-level operators can do in this workspace.">
+                    <DashboardSelect value={form.ownerAccess} onChange={(event) => setForm((current) => ({ ...current, ownerAccess: event.target.value }))}>
+                      <option value="">Not set</option>
+                      <option value="read_write">Read & write</option>
+                      <option value="read_only">Read only</option>
+                      <option value="none">No access</option>
+                    </DashboardSelect>
+                  </DashboardField>
+                  <DashboardField label="Admin policy" hint="Current admin default for dashboard surfaces.">
+                    <DashboardSelect value={form.adminAccess} onChange={(event) => setForm((current) => ({ ...current, adminAccess: event.target.value }))}>
+                      <option value="">Not set</option>
+                      <option value="read_write">Read & write</option>
+                      <option value="read_only">Read only</option>
+                      <option value="none">No access</option>
+                    </DashboardSelect>
+                  </DashboardField>
+                  <div className="sm:col-span-2">
+                    <DashboardDiscordEntitySelector
+                      locale={locale}
+                      label="Dashboard admin roles"
+                      hint="Live Discord roles from the cached server structure. Missing selections stay visible until you remove them."
+                      options={liveRoleOptions}
+                      selected={dashboardAdminRoles}
+                      onChange={(nextValues) => setForm((current) => ({ ...current, dashboardAdminRoles: nextValues }))}
+                    />
                   </div>
-                  <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4">
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Write gates</p>
-                    <div className="mt-3 space-y-2 text-sm leading-6 text-white/64">
-                      <p><span className="text-white/42">Dashboard:</span> {formatFlag(access?.allowDashboardWrite)}</p>
-                      <p><span className="text-white/42">Bot:</span> {formatFlag(access?.allowBotWrite)}</p>
-                      <p><span className="text-white/42">Policy version:</span> {access?.policyVersion ?? "-"}</p>
-                    </div>
+                  <div className="sm:col-span-2">
+                    <DashboardDiscordEntitySelector
+                      locale={locale}
+                      label="Bot manager roles"
+                      hint="Uses autofill.access statuses active, missing, and unresolved from the backend contract."
+                      options={liveRoleOptions}
+                      selected={botManagerRoles}
+                      onChange={(nextValues) => setForm((current) => ({ ...current, botManagerRoles: nextValues }))}
+                    />
+                  </div>
+                  <DashboardField label="Dashboard write" hint="Write gate for dashboard edits.">
+                    <DashboardSelect value={form.allowDashboardWrite} onChange={(event) => setForm((current) => ({ ...current, allowDashboardWrite: event.target.value }))}>
+                      <option value="">Not set</option>
+                      <option value="true">Allowed</option>
+                      <option value="false">Blocked</option>
+                    </DashboardSelect>
+                  </DashboardField>
+                  <DashboardField label="Bot write" hint="Write gate for bot-originated changes.">
+                    <DashboardSelect value={form.allowBotWrite} onChange={(event) => setForm((current) => ({ ...current, allowBotWrite: event.target.value }))}>
+                      <option value="">Not set</option>
+                      <option value="true">Allowed</option>
+                      <option value="false">Blocked</option>
+                    </DashboardSelect>
+                  </DashboardField>
+                </div>
+              ) : (
+                <div className="space-y-4 border-t border-white/[0.05] pt-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {renderCard("Owner policy", formatPolicy(access?.ownerAccess))}
+                    {renderCard("Admin policy", formatPolicy(access?.adminAccess))}
+                    {renderCard("Owners", access?.ownerCount !== null && access?.ownerCount !== undefined ? String(access.ownerCount) : "-")}
+                    {renderCard("Admins", access?.adminCount !== null && access?.adminCount !== undefined ? String(access.adminCount) : "-")}
+                  </div>
+                  <DashboardDiscordEntitySelector
+                    locale={locale}
+                    label="Dashboard admin roles"
+                    hint="Current saved roles resolved against Discord cache and autofill metadata."
+                    options={liveRoleOptions}
+                    selected={dashboardAdminRoles}
+                  />
+                  <DashboardDiscordEntitySelector
+                    locale={locale}
+                    label="Bot manager roles"
+                    hint="Missing roles remain visible as chips instead of being silently dropped."
+                    options={liveRoleOptions}
+                    selected={botManagerRoles}
+                  />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {renderCard("Dashboard write", formatFlag(access?.allowDashboardWrite))}
+                    {renderCard("Bot write", formatFlag(access?.allowBotWrite))}
+                    {renderCard("Policy version", access?.policyVersion !== null && access?.policyVersion !== undefined ? String(access.policyVersion) : "-")}
+                    {renderCard("Role state", dashboardAdminRoles.length + botManagerRoles.length > 0 ? "Live Discord cache" : "Not set")}
                   </div>
                 </div>
-              </>
-            )}
-            {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
-            <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
-          </div>
-        </DashboardPanel>
+              )}
+              {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
+              <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+            </div>
+          </DashboardPanel>
+        </div>
       </div>
     </div>
   );
