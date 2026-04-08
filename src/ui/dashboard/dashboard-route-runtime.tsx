@@ -65,7 +65,7 @@ function DashboardRouteNotice({ locale, error, isFallback, isLoading }: { locale
   return <DashboardPanel className="px-4 py-3 sm:px-5"><p className="text-sm leading-6 text-white/54">{message}</p></DashboardPanel>;
 }
 
-function renderDashboardServerPage(page: DashboardServerRoutePage, locale: Locale, server: DashboardServer): ReactNode {
+function renderDashboardServerPage(page: DashboardServerRoutePage, locale: Locale, server: DashboardServer, onServerChange: (nextServer: DashboardServer) => void): ReactNode {
   if (server.accessLevel === "none") {
     const copy = getDashboardCopy(locale);
     return <DashboardPanel className="p-6 sm:p-8"><div className="space-y-4"><DashboardLockGlyph className="h-10 w-10" /><div className="space-y-2"><h2 className="text-lg font-semibold text-white">{copy.runtime.lockedTitle}</h2><p className="max-w-2xl text-sm leading-6 text-white/56">{copy.runtime.lockedBody}</p></div></div></DashboardPanel>;
@@ -73,9 +73,9 @@ function renderDashboardServerPage(page: DashboardServerRoutePage, locale: Local
 
   switch (page) {
     case "overview": return <DashboardOverviewPage locale={locale} server={server} />;
-    case "general": return <DashboardGeneralPage locale={locale} server={server} />;
-    case "access": return <DashboardAccessPage locale={locale} server={server} />;
-    case "localization": return <DashboardLocalizationPage locale={locale} server={server} />;
+    case "general": return <DashboardGeneralPage locale={locale} server={server} onServerChange={onServerChange} />;
+    case "access": return <DashboardAccessPage locale={locale} server={server} onServerChange={onServerChange} />;
+    case "localization": return <DashboardLocalizationPage locale={locale} server={server} onServerChange={onServerChange} />;
     case "branding": return <DashboardBrandingPage locale={locale} server={server} />;
     case "license": return <DashboardLicensesPage locale={locale} server={server} />;
     case "status": return <DashboardStatusPage locale={locale} server={server} />;
@@ -141,12 +141,20 @@ export function DashboardAppRoute({ locale }: { locale: Locale }) {
     if (!state.isLoading && isDashboardUnauthorizedError(state.error)) router.replace(getDashboardLoginPath(locale));
   }, [locale, router, state.error, state.isLoading]);
 
-  const server = state.data ?? fallbackServer;
+  const [serverOverride, setServerOverride] = useState<DashboardServer | null>(null);
+
+  useEffect(() => {
+    setServerOverride(null);
+  }, [page, serverId, state.data]);
+
+  const server = serverOverride ?? state.data ?? fallbackServer;
 
   return (
     <DashboardServerShell activePage={serverId ? page : "servers"} isFallback={state.isFallback} locale={locale} server={server ?? undefined} serverId={serverId || undefined}>
       {serverId ? <DashboardRouteNotice locale={locale} error={state.error} isFallback={state.isFallback} isLoading={state.isLoading} /> : null}
-      {!serverId ? <DashboardMessagePanel title={copy.runtime.selectServerTitle} body={copy.runtime.selectServerBody} /> : server ? renderDashboardServerPage(page, locale, server) : state.isLoading ? <DashboardMessagePanel title={copy.runtime.loadingTitle} body={copy.runtime.loading} /> : <DashboardMessagePanel title={copy.runtime.unavailableTitle} body={copy.runtime.unavailableBody} />}
+      {!serverId ? <DashboardMessagePanel title={copy.runtime.selectServerTitle} body={copy.runtime.selectServerBody} /> : server ? renderDashboardServerPage(page, locale, server, setServerOverride) : state.isLoading ? <DashboardMessagePanel title={copy.runtime.loadingTitle} body={copy.runtime.loading} /> : <DashboardMessagePanel title={copy.runtime.unavailableTitle} body={copy.runtime.unavailableBody} />}
     </DashboardServerShell>
   );
 }
+
+

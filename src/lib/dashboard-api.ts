@@ -31,6 +31,36 @@ type DashboardRawRecord = Record<string, unknown>;
 interface DashboardApiResponse<T> { data: T; path: string; }
 type DashboardSettingsData = NonNullable<DashboardServer["settingsData"]>;
 
+export interface DashboardGeneralSettingsPatch {
+  name: string;
+  contactEmail: string | null;
+  supportUrl: string | null;
+  notes: string | null;
+}
+
+export interface DashboardAccessSettingsPatch {
+  ownerAccess: string | null;
+  adminAccess: string | null;
+  dashboardAdminRoles: string[];
+  botManagerRoles: string[];
+  allowDashboardWrite: boolean | null;
+  allowBotWrite: boolean | null;
+}
+
+export interface DashboardLocalizationSettingsPatch {
+  timezone: string | null;
+  preferredLocale: string | null;
+  defaultLocale: string | null;
+  fallbackLocale: string | null;
+  supportedLocales: string[];
+}
+
+export interface DashboardSettingsPatch {
+  general?: DashboardGeneralSettingsPatch;
+  access?: DashboardAccessSettingsPatch;
+  localization?: DashboardLocalizationSettingsPatch;
+}
+
 declare global {
   interface Window { __RRP_RUNTIME_CONFIG__?: { dashboardApiBaseUrl?: string }; }
 }
@@ -98,6 +128,37 @@ async function fetchDashboardJson<T>(path: string, signal?: AbortSignal): Promis
   if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
   try {
     return { data: (await response.json()) as T, path };
+  } catch {
+    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
+  }
+}
+
+async function patchDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<DashboardApiResponse<T | null>> {
+  const baseUrl = getDashboardApiBaseUrl();
+  if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
+  let response: Response;
+  try {
+    response = await fetch(buildDashboardApiUrl(baseUrl, path), {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      cache: "no-store",
+      body: JSON.stringify(body),
+      signal
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
+  }
+  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
+  if (response.status === 204 || response.status === 205) return { data: null, path };
+  const raw = await response.text();
+  if (!raw.trim()) return { data: null, path };
+  try {
+    return { data: JSON.parse(raw) as T, path };
   } catch {
     throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
   }
@@ -377,6 +438,145 @@ function buildSettingsData(value: unknown): DashboardSettingsData {
     access: buildAccessSettingsSection(payload?.access),
     localization: buildLocalizationSettingsSection(payload?.localization)
   };
+}
+
+function createEmptyGeneralSettings(): DashboardGeneralSettings {
+  return {
+    id: "",
+    guildId: "",
+    slug: "",
+    name: "",
+    iconUrl: null,
+    isActive: null,
+    contactEmail: null,
+    supportUrl: null,
+    dashboardEnabled: null,
+    botSyncEnabled: null,
+    notes: null
+  };
+}
+
+function createEmptyAccessSettings(): DashboardAccessSettings {
+  return {
+    ownerAccess: null,
+    adminAccess: null,
+    ownerCount: null,
+    adminCount: null,
+    dashboardAdminRoles: [],
+    botManagerRoles: [],
+    allowDashboardWrite: null,
+    allowBotWrite: null,
+    policyVersion: null
+  };
+}
+
+function createEmptyLocalizationSettings(): DashboardLocalizationSettings {
+  return {
+    timezone: null,
+    preferredLocale: null,
+    defaultLocale: null,
+    fallbackLocale: null,
+    supportedLocales: [],
+    translationsVersion: null
+  };
+}
+
+function cloneSettingsData(settingsData: DashboardServer["settingsData"] | undefined): DashboardSettingsData {
+  return {
+    general: settingsData?.general ? { ...settingsData.general } : null,
+    access: settingsData?.access
+      ? {
+          ...settingsData.access,
+          dashboardAdminRoles: [...settingsData.access.dashboardAdminRoles],
+          botManagerRoles: [...settingsData.access.botManagerRoles]
+        }
+      : null,
+    localization: settingsData?.localization
+      ? {
+          ...settingsData.localization,
+          supportedLocales: [...settingsData.localization.supportedLocales]
+        }
+      : null
+  };
+}
+
+function mergeSettingsData(base: DashboardSettingsData, incoming: DashboardSettingsData): DashboardSettingsData {
+  return {
+    general: incoming.general ?? base.general,
+    access: incoming.access ?? base.access,
+    localization: incoming.localization ?? base.localization
+  };
+}
+
+function hasSettingsData(settingsData: DashboardSettingsData): boolean {
+  return Boolean(settingsData.general || settingsData.access || settingsData.localization);
+}
+
+function buildSettingsPatchBody(patch: DashboardSettingsPatch): DashboardRawRecord {
+  const body: DashboardRawRecord = {};
+  if (patch.general) {
+    body.general = {
+      name: patch.general.name,
+      contact_email: patch.general.contactEmail,
+      support_url: patch.general.supportUrl,
+      notes: patch.general.notes
+    };
+  }
+  if (patch.access) {
+    body.access = {
+      owner_access: patch.access.ownerAccess,
+      admin_access: patch.access.adminAccess,
+      dashboard_admin_roles: patch.access.dashboardAdminRoles,
+      bot_manager_roles: patch.access.botManagerRoles,
+      allow_dashboard_write: patch.access.allowDashboardWrite,
+      allow_bot_write: patch.access.allowBotWrite
+    };
+  }
+  if (patch.localization) {
+    body.localization = {
+      timezone: patch.localization.timezone,
+      preferred_locale: patch.localization.preferredLocale,
+      default_locale: patch.localization.defaultLocale,
+      fallback_locale: patch.localization.fallbackLocale,
+      supported_locales: patch.localization.supportedLocales
+    };
+  }
+  return body;
+}
+
+function applySettingsPatch(server: DashboardServer, patch: DashboardSettingsPatch): DashboardServer {
+  const settingsData = cloneSettingsData(server.settingsData);
+  if (patch.general) {
+    settingsData.general = {
+      ...(settingsData.general ?? createEmptyGeneralSettings()),
+      name: patch.general.name,
+      contactEmail: patch.general.contactEmail,
+      supportUrl: patch.general.supportUrl,
+      notes: patch.general.notes
+    };
+  }
+  if (patch.access) {
+    settingsData.access = {
+      ...(settingsData.access ?? createEmptyAccessSettings()),
+      ownerAccess: patch.access.ownerAccess,
+      adminAccess: patch.access.adminAccess,
+      dashboardAdminRoles: [...patch.access.dashboardAdminRoles],
+      botManagerRoles: [...patch.access.botManagerRoles],
+      allowDashboardWrite: patch.access.allowDashboardWrite,
+      allowBotWrite: patch.access.allowBotWrite
+    };
+  }
+  if (patch.localization) {
+    settingsData.localization = {
+      ...(settingsData.localization ?? createEmptyLocalizationSettings()),
+      timezone: patch.localization.timezone,
+      preferredLocale: patch.localization.preferredLocale,
+      defaultLocale: patch.localization.defaultLocale,
+      fallbackLocale: patch.localization.fallbackLocale,
+      supportedLocales: [...patch.localization.supportedLocales]
+    };
+  }
+  return applySettingsData(server, settingsData);
 }
 
 function getSettingsEnvironment(localization: DashboardLocalizationSettings | null): string {
@@ -688,3 +888,27 @@ export async function fetchDashboardServerPage(serverId: string, page: Dashboard
   return mapServerPagePayload(page, baseServer, pageResponse.data);
 }
 
+
+
+
+export async function patchDashboardServerSettings(server: DashboardServer, patch: DashboardSettingsPatch, signal?: AbortSignal): Promise<DashboardServer> {
+  const path = `servers/${encodeURIComponent(server.id)}/settings`;
+  const body = buildSettingsPatchBody(patch);
+  if (Object.keys(body).length === 0) return server;
+
+  const fallbackServer = applySettingsPatch(server, patch);
+  const response = await patchDashboardJson<unknown>(path, body, signal);
+  if (response.data === null) return fallbackServer;
+
+  ensureServerMatch(response.data, server.id, response.path);
+
+  const sectionServerPayload = pickPathValue(response.data, [["server"], ["data", "server"]]);
+  const mergedServer = mergeSummary(
+    fallbackServer,
+    sectionServerPayload ? mapSummaryServer(sectionServerPayload, { expectedServerId: server.id, path: response.path }) : null
+  );
+  const responseSettings = buildSettingsData(getSectionPayload(response.data, "settings"));
+  return hasSettingsData(responseSettings)
+    ? applySettingsData(mergedServer, mergeSettingsData(cloneSettingsData(mergedServer.settingsData), responseSettings))
+    : mergedServer;
+}

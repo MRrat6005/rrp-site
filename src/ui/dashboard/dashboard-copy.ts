@@ -81,21 +81,21 @@ const dashboardCopy = {
     general: {
       title: "General",
       noteTitle: "Backend summary",
-      note: "Normalized fields from settings.general are shown here in read-only form.",
+      note: "Core identity fields from settings.general stay compact here, with an inline edit flow for the basics.",
       emptyTitle: "No general data yet",
       emptyBody: "General server data will appear here when the backend returns it."
     },
     accessPage: {
       title: "Access",
       noteTitle: "Policies",
-      note: "Owner and admin policies are shown directly from settings.access without write flows.",
+      note: "Owner and admin policies, role groups, and write gates stay compact here, with inline editing for the current scope.",
       emptyTitle: "No access data yet",
       emptyBody: "Access details will appear here when the backend returns them."
     },
     localizationPage: {
       title: "Localization",
       noteTitle: "Locale chain",
-      note: "Timezone and locale fields are shown directly from settings.localization.",
+      note: "Timezone and locale chain stay compact here, with a small edit flow for server defaults.",
       emptyTitle: "No localization data yet",
       emptyBody: "Localization details will appear here when the backend returns them."
     },
@@ -197,21 +197,21 @@ const dashboardCopy = {
     general: {
       title: "General",
       noteTitle: "Backend summary",
-      note: "Здесь в read-only виде показаны нормализованные поля из settings.general.",
+      note: "Здесь компактно собраны базовые поля из settings.general, с небольшим inline edit-flow для основных настроек.",
       emptyTitle: "Данных General пока нет",
       emptyBody: "Базовые данные сервера появятся здесь, когда backend их вернет."
     },
     accessPage: {
       title: "Access",
       noteTitle: "Policies",
-      note: "Owner/admin policies показываются напрямую из settings.access без write-flow.",
+      note: "Owner/admin policies, role groups и write-gates собраны в компактный блок с inline edit-flow в текущем скоупе.",
       emptyTitle: "Данных Access пока нет",
       emptyBody: "Детали доступа появятся здесь, когда backend их вернет."
     },
     localizationPage: {
       title: "Localization",
       noteTitle: "Locale chain",
-      note: "Timezone и locale-поля показываются напрямую из settings.localization.",
+      note: "Timezone и locale chain собраны в компактный блок с небольшим edit-flow для server defaults.",
       emptyTitle: "Данных Localization пока нет",
       emptyBody: "Детали локализации появятся здесь, когда backend их вернет."
     },
@@ -271,4 +271,5 @@ export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): stri
   } as const;
   return labels[locale][tone];
 }
+
 
