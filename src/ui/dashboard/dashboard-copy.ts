@@ -1,10 +1,5 @@
-import type {
-  DashboardAccessLevel,
-  DashboardPageKey,
-  DashboardServerState,
-  DashboardTone
-} from "@/lib/dashboard-mock";
 import type { Locale } from "@/config/site.config";
+import type { DashboardAccessLevel, DashboardPageKey, DashboardServerState, DashboardTone } from "@/lib/dashboard-model";
 
 const dashboardCopy = {
   en: {
@@ -13,23 +8,24 @@ const dashboardCopy = {
     nav: {
       servers: "Servers",
       overview: "Overview",
-      settings: "Settings",
-      modules: "Modules",
+      general: "General",
+      access: "Access",
+      localization: "Localization",
       branding: "Branding",
-      licenses: "Licenses",
+      license: "License",
       status: "Status"
     },
     descriptions: {
       servers: "Select a server to open its workspace.",
-      overview: "Identity, current state, modules, and recent updates.",
-      settings: "Core server settings and access context.",
-      modules: "Module states and primary actions.",
-      branding: "Identity fields and visual assets.",
-      licenses: "Plan details and enabled access.",
-      status: "Current service signals in one view."
+      overview: "Identity, health, license, and a compact server summary.",
+      general: "Base server record and dashboard-level summary.",
+      access: "Who can operate the dashboard and what stays locked.",
+      localization: "Locale and timezone scaffold from current backend data.",
+      branding: "Module-based branding catalog. No server-wide branding editor.",
+      license: "License summary and visible entitlements.",
+      status: "Backend, bot, and workspace signals in one view."
     },
     sidebar: {
-      allServers: "All servers",
       publicSite: "Public site",
       shellState: "Workspace state",
       mockMode: "Preview mode",
@@ -40,17 +36,16 @@ const dashboardCopy = {
     access: {
       owner: "Owner",
       admin: "Admin",
-      none: "No access"
+      none: "Locked"
     },
     runtime: {
       loadingTitle: "Loading workspace",
       loading: "Loading live data.",
       fallback: "Live data is unavailable right now. Showing preview data.",
       selectServerTitle: "Select a server",
-      selectServerBody: "Open a server from the servers list to load its workspace.",
-      lockedTitle: "No access",
-      lockedBody:
-        "This server is still visible in your workspace, but dashboard actions are locked for this account.",
+      selectServerBody: "Open a server from the list to load its workspace.",
+      lockedTitle: "Access is locked",
+      lockedBody: "This server remains visible in your workspace, but detailed dashboard surfaces are locked for this account.",
       unavailableTitle: "Live data unavailable",
       unavailableBody: "This dashboard view could not be loaded right now."
     },
@@ -59,7 +54,7 @@ const dashboardCopy = {
       emptyTitle: "No servers yet",
       emptyBody: "Servers will appear here once the dashboard API returns them.",
       searchEmptyTitle: "No matching servers",
-      searchEmptyBody: "Try another name, region, or plan.",
+      searchEmptyBody: "Try another name, locale, or plan.",
       resultsLabel: "Servers",
       members: "Summary",
       region: "Region",
@@ -78,39 +73,44 @@ const dashboardCopy = {
       viewerFallbackName: "Discord member",
       identity: "Server details",
       status: "Current state",
-      modules: "Modules",
+      modules: "Module summary",
       notices: "Recent updates",
       emptyTitle: "Overview is empty",
       emptyBody: "No overview data is available for this server yet."
     },
-    settings: {
-      title: "Server settings",
-      noteTitle: "Read-only",
-      note: "Settings are shown for reference in this pass.",
-      detail:
-        "Localization, roles, enabled modules, and access remain visible here without edit flows.",
-      emptyTitle: "No settings yet",
-      emptyBody: "Settings will appear here when the backend returns them."
+    general: {
+      title: "General",
+      noteTitle: "Summary",
+      note: "This page stays intentionally light and read-only.",
+      emptyTitle: "No general data yet",
+      emptyBody: "General server data will appear here when the backend returns it."
     },
-    modules: {
-      title: "Modules",
-      note: "Module states and actions stay concise by design.",
-      emptyTitle: "No modules yet",
-      emptyBody: "Module data will appear here when the backend returns it."
+    accessPage: {
+      title: "Access",
+      noteTitle: "Current scope",
+      note: "Access is shown without management flows in this pass.",
+      emptyTitle: "No access data yet",
+      emptyBody: "Access details will appear here when the backend returns them."
+    },
+    localizationPage: {
+      title: "Localization",
+      noteTitle: "Scaffold",
+      note: "Locale-related data is kept compact until fuller backend payloads arrive.",
+      emptyTitle: "No localization data yet",
+      emptyBody: "Localization details will appear here when the backend returns them."
     },
     branding: {
-      assets: "Assets",
-      identity: "Identity",
-      note: "Live sync is not part of this pass.",
-      emptyTitle: "No branding data yet",
-      emptyBody: "Branding assets and identity fields will appear here when available."
+      title: "Branding modules",
+      note: "Branding remains module-based. Server-wide branding stays out of scope.",
+      emptyTitle: "No branding modules yet",
+      emptyBody: "Module categories will appear here when the backend returns them."
     },
     licenses: {
       current: "Current plan",
       available: "Available access",
       summary: "Access summary",
       emptyTitle: "No license data yet",
-      emptyBody: "License and entitlement details will appear here when available."
+      emptyBody: "License details will appear here when the backend returns them."
     },
     status: {
       note: "Current service signals for this server.",
@@ -120,27 +120,28 @@ const dashboardCopy = {
   },
   ru: {
     brand: "CROWN Dashboard",
-    subtitle: "Панель серверов",
+    subtitle: "Панель сервера",
     nav: {
       servers: "Серверы",
       overview: "Обзор",
-      settings: "Настройки",
-      modules: "Модули",
-      branding: "Брендинг",
-      licenses: "Лицензии",
-      status: "Статус"
+      general: "General",
+      access: "Access",
+      localization: "Localization",
+      branding: "Branding",
+      license: "License",
+      status: "Status"
     },
     descriptions: {
       servers: "Выберите сервер, чтобы открыть его рабочее пространство.",
-      overview: "Данные сервера, текущее состояние, модули и последние обновления.",
-      settings: "Базовые настройки сервера и контекст доступа.",
-      modules: "Состояния модулей и основные действия.",
-      branding: "Поля идентичности и визуальные материалы.",
-      licenses: "План и доступные возможности.",
-      status: "Текущие сигналы системы в одном представлении."
+      overview: "Идентичность, состояние, лицензия и краткая серверная сводка.",
+      general: "Базовая server-запись и dashboard-level summary.",
+      access: "Кто может работать с dashboard и что остается locked.",
+      localization: "Locale и timezone scaffold из текущих backend-данных.",
+      branding: "Модульный branding-каталог. Без server-wide branding editor.",
+      license: "Сводка лицензии и видимые права доступа.",
+      status: "Сигналы backend, bot и workspace в одном месте."
     },
     sidebar: {
-      allServers: "Все серверы",
       publicSite: "Публичный сайт",
       shellState: "Состояние",
       mockMode: "Режим предпросмотра",
@@ -151,17 +152,16 @@ const dashboardCopy = {
     access: {
       owner: "Владелец",
       admin: "Админ",
-      none: "Нет доступа"
+      none: "Закрыт"
     },
     runtime: {
-      loadingTitle: "Загрузка рабочего пространства",
+      loadingTitle: "Загрузка workspace",
       loading: "Загрузка живых данных.",
       fallback: "Живые данные сейчас недоступны. Показан режим предпросмотра.",
       selectServerTitle: "Выберите сервер",
-      selectServerBody: "Откройте сервер из списка, чтобы загрузить его рабочее пространство.",
-      lockedTitle: "Нет доступа",
-      lockedBody:
-        "Этот сервер остается видимым в рабочем пространстве, но действия dashboard для этой учетной записи закрыты.",
+      selectServerBody: "Откройте сервер из списка, чтобы загрузить его workspace.",
+      lockedTitle: "Доступ закрыт",
+      lockedBody: "Этот сервер остается видимым в workspace, но детальные dashboard-поверхности закрыты для этой учетной записи.",
       unavailableTitle: "Живые данные недоступны",
       unavailableBody: "Сейчас не удалось загрузить это представление панели."
     },
@@ -170,13 +170,13 @@ const dashboardCopy = {
       emptyTitle: "Серверов пока нет",
       emptyBody: "Серверы появятся здесь, когда dashboard API вернет данные.",
       searchEmptyTitle: "Подходящие серверы не найдены",
-      searchEmptyBody: "Попробуйте другое имя, регион или план.",
+      searchEmptyBody: "Попробуйте другое имя, локаль или план.",
       resultsLabel: "Серверы",
       members: "Сводка",
       region: "Регион",
       environment: "Локаль",
       plan: "План",
-      lockedAction: "Открыть заблокированный экран",
+      lockedAction: "Открыть locked view",
       groups: {
         connected: "Активные",
         invite: "Подключение",
@@ -189,42 +189,47 @@ const dashboardCopy = {
       viewerFallbackName: "Участник Discord",
       identity: "Данные сервера",
       status: "Текущее состояние",
-      modules: "Модули",
+      modules: "Сводка модулей",
       notices: "Последние обновления",
       emptyTitle: "Обзор пока пуст",
       emptyBody: "Для этого сервера пока нет данных обзора."
     },
-    settings: {
-      title: "Настройки сервера",
-      noteTitle: "Только просмотр",
-      note: "В этом проходе настройки показаны без редактирования.",
-      detail:
-        "Здесь остаются видимыми локализация, роли, состав модулей и доступ, без форм записи и проверок.",
-      emptyTitle: "Настроек пока нет",
-      emptyBody: "Настройки появятся здесь, когда backend вернет данные."
+    general: {
+      title: "General",
+      noteTitle: "Summary",
+      note: "Страница намеренно остается легкой и read-only.",
+      emptyTitle: "Данных General пока нет",
+      emptyBody: "Базовые данные сервера появятся здесь, когда backend их вернет."
     },
-    modules: {
-      title: "Модули",
-      note: "Состояния модулей и действия показаны в коротком рабочем формате.",
-      emptyTitle: "Модулей пока нет",
-      emptyBody: "Данные модулей появятся здесь, когда backend их вернет."
+    accessPage: {
+      title: "Access",
+      noteTitle: "Current scope",
+      note: "Доступ показывается без management-flow в этот проход.",
+      emptyTitle: "Данных Access пока нет",
+      emptyBody: "Детали доступа появятся здесь, когда backend их вернет."
+    },
+    localizationPage: {
+      title: "Localization",
+      noteTitle: "Scaffold",
+      note: "Locale-related data остается компактной, пока backend не вернет более полный payload.",
+      emptyTitle: "Данных Localization пока нет",
+      emptyBody: "Детали локализации появятся здесь, когда backend их вернет."
     },
     branding: {
-      assets: "Материалы",
-      identity: "Идентичность",
-      note: "Синхронизация в реальном времени в этот проход не входит.",
-      emptyTitle: "Данных брендинга пока нет",
-      emptyBody: "Материалы и поля идентичности появятся здесь, когда будут доступны."
+      title: "Branding modules",
+      note: "Branding остается модульным. Server-wide branding остается вне скоупа.",
+      emptyTitle: "Branding-модулей пока нет",
+      emptyBody: "Категории модулей появятся здесь, когда backend вернет данные."
     },
     licenses: {
       current: "Текущий план",
       available: "Доступные возможности",
       summary: "Сводка доступа",
-      emptyTitle: "Данных лицензий пока нет",
-      emptyBody: "Лицензии и права доступа появятся здесь, когда будут доступны."
+      emptyTitle: "Данных лицензии пока нет",
+      emptyBody: "Детали лицензии появятся здесь, когда backend их вернет."
     },
     status: {
-      note: "Текущие сигналы системы для этого сервера.",
+      note: "Текущие сервисные сигналы для этого сервера.",
       emptyTitle: "Сигналов статуса пока нет",
       emptyBody: "Группы статуса появятся здесь, когда backend вернет данные."
     }
@@ -235,80 +240,34 @@ export function getDashboardCopy(locale: Locale) {
   return dashboardCopy[locale];
 }
 
-export function getDashboardStateLabel(
-  locale: Locale,
-  state: DashboardServerState
-): string {
+export function getDashboardStateLabel(locale: Locale, state: DashboardServerState): string {
   const labels = {
-    en: {
-      connected: "Connected",
-      invite: "Setup",
-      inactive: "Archive",
-      test: "Test"
-    },
-    ru: {
-      connected: "Подключен",
-      invite: "Подключение",
-      inactive: "Архив",
-      test: "Тест"
-    }
+    en: { connected: "Connected", invite: "Setup", inactive: "Archive", test: "Test" },
+    ru: { connected: "Подключен", invite: "Подключение", inactive: "Архив", test: "Тест" }
   } as const;
-
   return labels[locale][state];
 }
 
-export function getDashboardStateAction(
-  locale: Locale,
-  state: DashboardServerState
-): string {
+export function getDashboardStateAction(locale: Locale, state: DashboardServerState): string {
   const labels = {
-    en: {
-      connected: "Open workspace",
-      invite: "Continue setup",
-      inactive: "Open archive",
-      test: "Open test view"
-    },
-    ru: {
-      connected: "Открыть рабочее пространство",
-      invite: "Продолжить настройку",
-      inactive: "Открыть архив",
-      test: "Открыть тестовый режим"
-    }
+    en: { connected: "Open workspace", invite: "Continue setup", inactive: "Open archive", test: "Open test view" },
+    ru: { connected: "Открыть workspace", invite: "Продолжить настройку", inactive: "Открыть архив", test: "Открыть тестовый режим" }
   } as const;
-
   return labels[locale][state];
 }
 
-export function getDashboardAccessLabel(
-  locale: Locale,
-  accessLevel: DashboardAccessLevel
-): string {
+export function getDashboardAccessLabel(locale: Locale, accessLevel: DashboardAccessLevel): string {
   return getDashboardCopy(locale).access[accessLevel];
 }
 
-export function getDashboardPageTitle(
-  locale: Locale,
-  key: DashboardPageKey
-): string {
+export function getDashboardPageTitle(locale: Locale, key: DashboardPageKey): string {
   return getDashboardCopy(locale).nav[key];
 }
 
 export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): string {
   const labels = {
-    en: {
-      positive: "Healthy",
-      warning: "Attention",
-      info: "Ready",
-      muted: "Limited"
-    },
-    ru: {
-      positive: "Норма",
-      warning: "Внимание",
-      info: "Готово",
-      muted: "Ограничено"
-    }
+    en: { positive: "Healthy", warning: "Attention", info: "Ready", muted: "Limited" },
+    ru: { positive: "Норма", warning: "Внимание", info: "Готово", muted: "Ограничено" }
   } as const;
-
   return labels[locale][tone];
 }
-

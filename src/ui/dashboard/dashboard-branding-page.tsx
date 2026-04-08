@@ -1,78 +1,36 @@
 import type { Locale } from "@/config/site.config";
-import type { DashboardServer } from "@/lib/dashboard-mock";
+import type { DashboardServer } from "@/lib/dashboard-model";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
-import {
-  DashboardMessagePanel,
-  DashboardPanel,
-  DashboardSectionHeading
-} from "@/ui/dashboard/dashboard-primitives";
+import { DashboardMessagePanel, DashboardPanel, DashboardSectionHeading, DashboardStatusPill } from "@/ui/dashboard/dashboard-primitives";
 
-interface DashboardBrandingPageProps {
-  locale: Locale;
-  server: DashboardServer;
-}
-
-export function DashboardBrandingPage({
-  locale,
-  server
-}: DashboardBrandingPageProps) {
+export function DashboardBrandingPage({ locale, server }: { locale: Locale; server: DashboardServer }) {
   const copy = getDashboardCopy(locale);
-  const isEmpty =
-    server.branding.assets.length === 0 &&
-    server.branding.fields.length === 0 &&
-    server.branding.note.trim().length === 0;
-
-  if (isEmpty) {
-    return (
-      <DashboardMessagePanel
-        title={copy.branding.emptyTitle}
-        body={copy.branding.emptyBody}
-      />
-    );
-  }
-
+  if (server.brandingModules.length === 0) return <DashboardMessagePanel title={copy.branding.emptyTitle} body={copy.branding.emptyBody} />;
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <DashboardPanel className="p-5 sm:p-6">
-          <div className="space-y-4">
-            <DashboardSectionHeading title={copy.branding.assets} />
-            <div className="divide-y divide-white/[0.05]">
-              {server.branding.assets.map((asset) => (
-                <div key={asset.label} className="py-4">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
-                    {asset.label}
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-white/82">{asset.value}</p>
-                  <p className="mt-1 text-sm leading-6 text-white/50">{asset.note}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DashboardPanel>
-
-        <DashboardPanel className="p-5 sm:p-6">
-          <div className="space-y-4">
-            <DashboardSectionHeading title={copy.branding.identity} />
-            <div className="divide-y divide-white/[0.05]">
-              {server.branding.fields.map((field) => (
-                <div key={field.label} className="py-4">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">
-                    {field.label}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-white/76">{field.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DashboardPanel>
-      </div>
-
       <DashboardPanel className="p-5 sm:p-6">
-        <p className="border-t border-white/[0.05] pt-4 text-sm leading-6 text-white/54">
-          {server.branding.note} {copy.branding.note}
-        </p>
+        <DashboardSectionHeading title={copy.branding.title} body={copy.branding.note} />
       </DashboardPanel>
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        {server.brandingModules.map((module) => (
+          <DashboardPanel key={module.key} className="p-5 sm:p-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-base font-medium text-white/90">{module.name}</p>
+                  <DashboardStatusPill tone={module.tone}>{module.stateLabel}</DashboardStatusPill>
+                </div>
+                <p className="text-sm leading-6 text-white/54">{module.description}</p>
+              </div>
+              <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Availability</p>
+                <p className="mt-2 text-sm font-medium text-white/82">{module.availability}</p>
+                <p className="mt-1 text-sm leading-6 text-white/50">{module.note}</p>
+              </div>
+            </div>
+          </DashboardPanel>
+        ))}
+      </div>
     </div>
   );
 }

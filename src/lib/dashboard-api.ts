@@ -1,7 +1,6 @@
 import type {
   DashboardAccessLevel,
-  DashboardBrandAsset,
-  DashboardEntitlement,
+  DashboardBrandingModule,
   DashboardIdentityField,
   DashboardModule,
   DashboardModuleKey,
@@ -12,48 +11,31 @@ import type {
   DashboardStatusGroup,
   DashboardStatusItem,
   DashboardTone
-} from "@/lib/dashboard-mock";
+} from "@/lib/dashboard-model";
 
 export type DashboardServerRoutePage =
   | "overview"
-  | "settings"
-  | "modules"
+  | "general"
+  | "access"
+  | "localization"
   | "branding"
-  | "licenses"
+  | "license"
   | "status";
 
-export type DashboardApiErrorKind =
-  | "config"
-  | "network"
-  | "http"
-  | "parse"
-  | "contract";
-
+type DashboardApiSectionPage = "overview" | "settings" | "modules" | "licenses" | "status";
+export type DashboardApiErrorKind = "config" | "network" | "http" | "parse" | "contract";
 type DashboardRawRecord = Record<string, unknown>;
-
-interface DashboardApiResponse<T> {
-  data: T;
-  path: string;
-}
+interface DashboardApiResponse<T> { data: T; path: string; }
 
 declare global {
-  interface Window {
-    __RRP_RUNTIME_CONFIG__?: {
-      dashboardApiBaseUrl?: string;
-    };
-  }
+  interface Window { __RRP_RUNTIME_CONFIG__?: { dashboardApiBaseUrl?: string }; }
 }
 
 export class DashboardApiError extends Error {
   kind: DashboardApiErrorKind;
   path?: string;
   status?: number;
-
-  constructor(
-    kind: DashboardApiErrorKind,
-    message: string,
-    options?: { path?: string; status?: number }
-  ) {
+  constructor(kind: DashboardApiErrorKind, message: string, options?: { path?: string; status?: number }) {
     super(message);
     this.name = "DashboardApiError";
     this.kind = kind;
@@ -64,42 +46,21 @@ export class DashboardApiError extends Error {
 
 function normalizeBaseUrl(value?: string | null): string | null {
   const normalized = value?.trim();
-
-  if (!normalized) {
-    return null;
-  }
-
-  return normalized.replace(/\/+$/, "");
+  return normalized ? normalized.replace(/\/+$/, "") : null;
 }
 
 function isLocalDashboardHostname(hostname?: string | null): boolean {
   const normalized = hostname?.trim().toLowerCase();
-
-  return Boolean(
-    normalized &&
-      ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(normalized)
-  );
+  return Boolean(normalized && ["localhost", "127.0.0.1", "0.0.0.0", "::1"].includes(normalized));
 }
 
 export function getDashboardApiBaseUrl(): string | null {
-  const envBaseUrl = normalizeBaseUrl(
-    process.env.NEXT_PUBLIC_DASHBOARD_API_BASE_URL ?? null
-  );
-
+  const envBaseUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_DASHBOARD_API_BASE_URL ?? null);
   if (typeof window !== "undefined") {
-    if (envBaseUrl && isLocalDashboardHostname(window.location.hostname)) {
-      return envBaseUrl;
-    }
-
-    const runtimeBaseUrl = normalizeBaseUrl(
-      window.__RRP_RUNTIME_CONFIG__?.dashboardApiBaseUrl
-    );
-
-    if (runtimeBaseUrl) {
-      return runtimeBaseUrl;
-    }
+    if (envBaseUrl && isLocalDashboardHostname(window.location.hostname)) return envBaseUrl;
+    const runtimeBaseUrl = normalizeBaseUrl(window.__RRP_RUNTIME_CONFIG__?.dashboardApiBaseUrl);
+    if (runtimeBaseUrl) return runtimeBaseUrl;
   }
-
   return envBaseUrl;
 }
 
@@ -107,1353 +68,333 @@ function buildDashboardApiUrl(baseUrl: string, path: string): string {
   const url = new URL(baseUrl);
   const baseSegments = url.pathname.split("/").filter(Boolean);
   const normalizedPath = path.split("/").filter(Boolean);
-  const endsWithApiV1 =
-    baseSegments.at(-2)?.toLowerCase() === "api" &&
-    baseSegments.at(-1)?.toLowerCase() === "v1";
+  const endsWithApiV1 = baseSegments.at(-2)?.toLowerCase() === "api" && baseSegments.at(-1)?.toLowerCase() === "v1";
   const endsWithApi = baseSegments.at(-1)?.toLowerCase() === "api";
-  const routeSegments = endsWithApiV1
-    ? normalizedPath
-    : endsWithApi
-      ? ["v1", ...normalizedPath]
-      : ["api", "v1", ...normalizedPath];
-
+  const routeSegments = endsWithApiV1 ? normalizedPath : endsWithApi ? ["v1", ...normalizedPath] : ["api", "v1", ...normalizedPath];
   url.pathname = `/${[...baseSegments, ...routeSegments].join("/")}`;
-
   return url.toString();
 }
 
-async function fetchDashboardJson<T>(
-  path: string,
-  signal?: AbortSignal
-): Promise<DashboardApiResponse<T>> {
+async function fetchDashboardJson<T>(path: string, signal?: AbortSignal): Promise<DashboardApiResponse<T>> {
   const baseUrl = getDashboardApiBaseUrl();
-
-  if (!baseUrl) {
-    throw new DashboardApiError(
-      "config",
-      "Dashboard API base URL is not configured.",
-      { path }
-    );
-  }
-
-  const url = buildDashboardApiUrl(baseUrl, path);
+  if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
   let response: Response;
-
   try {
-    response = await fetch(url, {
+    response = await fetch(buildDashboardApiUrl(baseUrl, path), {
       method: "GET",
-      headers: {
-        Accept: "application/json"
-      },
+      headers: { Accept: "application/json" },
       credentials: "include",
       cache: "no-store",
       signal
     });
   } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      throw error;
-    }
-
-    throw new DashboardApiError("network", "Dashboard API is unreachable.", {
-      path
-    });
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
   }
-
-  if (!response.ok) {
-    throw new DashboardApiError("http", "Dashboard API request failed.", {
-      path,
-      status: response.status
-    });
-  }
-
+  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
   try {
-    return {
-      data: (await response.json()) as T,
-      path
-    };
+    return { data: (await response.json()) as T, path };
   } catch {
-    throw new DashboardApiError(
-      "parse",
-      "Dashboard API returned invalid JSON.",
-      { path }
-    );
+    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
   }
 }
 
-function asArray(value: unknown): unknown[] | null {
-  return Array.isArray(value) ? value : null;
-}
-
+function asArray(value: unknown): unknown[] | null { return Array.isArray(value) ? value : null; }
 function asRecord(value: unknown): DashboardRawRecord | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return null;
-  }
-
-  return value as DashboardRawRecord;
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as DashboardRawRecord) : null;
 }
-
+function asRecordArray(value: unknown): DashboardRawRecord[] {
+  return (asArray(value) ?? []).map((item) => asRecord(item)).filter((item): item is DashboardRawRecord => item !== null);
+}
 function getPathValue(value: unknown, path: readonly string[]): unknown {
   let current: unknown = value;
-
   for (const segment of path) {
     const record = asRecord(current);
-
-    if (!record || !(segment in record)) {
-      return undefined;
-    }
-
+    if (!record || !(segment in record)) return undefined;
     current = record[segment];
   }
-
   return current;
 }
-
-function pickPathValue(
-  value: unknown,
-  paths: readonly (readonly string[])[]
-): unknown {
+function pickPathValue(value: unknown, paths: readonly (readonly string[])[]): unknown {
   for (const path of paths) {
     const resolved = getPathValue(value, path);
-
-    if (resolved !== undefined) {
-      return resolved;
-    }
+    if (resolved !== undefined) return resolved;
   }
-
   return undefined;
 }
-
 function asString(value: unknown): string | null {
   if (typeof value === "string") {
     const normalized = value.trim();
     return normalized.length > 0 ? normalized : null;
   }
-
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-
-  return null;
+  return typeof value === "number" || typeof value === "boolean" ? String(value) : null;
 }
-
 function asNumber(value: unknown): number | null {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-
+  if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value === "string") {
     const normalized = Number(value);
     return Number.isFinite(normalized) ? normalized : null;
   }
-
   return null;
 }
-
-function asRecordArray(value: unknown): DashboardRawRecord[] {
-  return (asArray(value) ?? [])
-    .map((item) => asRecord(item))
-    .filter((item): item is DashboardRawRecord => item !== null);
+function asBoolean(value: unknown): boolean | null {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  const normalized = asString(value)?.toLowerCase();
+  if (!normalized) return null;
+  if (["true", "1", "yes", "active", "enabled", "connected", "healthy", "ready"].includes(normalized)) return true;
+  if (["false", "0", "no", "inactive", "disabled", "disconnected", "locked", "denied"].includes(normalized)) return false;
+  return null;
 }
-
-function pickString(
-  value: unknown,
-  paths: readonly (readonly string[])[]
-): string | null {
-  return asString(pickPathValue(value, paths));
-}
-
-function pickNumber(
-  value: unknown,
-  paths: readonly (readonly string[])[]
-): number | null {
-  return asNumber(pickPathValue(value, paths));
-}
-
-function pickRecord(
-  value: unknown,
-  paths: readonly (readonly string[])[]
-): DashboardRawRecord | null {
-  return asRecord(pickPathValue(value, paths));
-}
-
-function pickRecordArray(
-  value: unknown,
-  paths: readonly (readonly string[])[]
-): DashboardRawRecord[] {
+function pickString(value: unknown, paths: readonly (readonly string[])[]): string | null { return asString(pickPathValue(value, paths)); }
+function pickNumber(value: unknown, paths: readonly (readonly string[])[]): number | null { return asNumber(pickPathValue(value, paths)); }
+function pickRecordArray(value: unknown, paths: readonly (readonly string[])[]): DashboardRawRecord[] {
   for (const path of paths) {
     const candidate = getPathValue(value, path);
     const items = asRecordArray(candidate);
-
-    if (items.length > 0 || Array.isArray(candidate)) {
-      return items;
-    }
+    if (items.length > 0 || Array.isArray(candidate)) return items;
   }
-
   return [];
 }
-
-function toInitials(value: string): string {
-  const initials = value
-    .split(/[\s_-]+/)
-    .map((item) => item[0]?.toUpperCase() ?? "")
-    .join("")
-    .slice(0, 2);
-
-  return initials || value.slice(0, 2).toUpperCase();
-}
-
-function asBoolean(value: unknown): boolean | null {
-  if (typeof value === "boolean") {
-    return value;
-  }
-
-  if (typeof value === "number") {
-    return value !== 0;
-  }
-
-  const normalized = asString(value)?.toLowerCase();
-
-  if (!normalized) {
-    return null;
-  }
-
-  if (["true", "1", "yes", "enabled", "active", "connected", "healthy", "reachable"].includes(normalized)) {
-    return true;
-  }
-
-  if (["false", "0", "no", "disabled", "inactive", "disconnected", "unreachable"].includes(normalized)) {
-    return false;
-  }
-
-  return null;
-}
-
 function toTitleCase(value: string): string {
-  return value
-    .replace(/[_-]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((item) => item[0]?.toUpperCase() + item.slice(1).toLowerCase())
-    .join(" ");
+  return value.replace(/[_-]+/g, " ").split(/\s+/).filter(Boolean).map((item) => item[0]?.toUpperCase() + item.slice(1).toLowerCase()).join(" ");
 }
-
+function normalizeTone(value: unknown, fallback: DashboardTone = "muted"): DashboardTone {
+  const normalized = asString(value)?.toLowerCase();
+  if (!normalized) return fallback;
+  if (["healthy", "ready", "active", "enabled", "connected", "ok"].includes(normalized)) return "positive";
+  if (["warning", "attention", "pending", "review", "degraded"].includes(normalized)) return "warning";
+  if (["info", "setup", "trial", "detected", "visible"].includes(normalized)) return "info";
+  if (["muted", "inactive", "locked", "hidden", "disabled", "archived"].includes(normalized)) return "muted";
+  return fallback;
+}
 function formatTimestamp(value: unknown): string | null {
   const normalized = asString(value);
-
-  if (!normalized) {
-    return null;
-  }
-
+  if (!normalized) return null;
   const parsed = new Date(normalized);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return normalized;
-  }
-
+  if (Number.isNaN(parsed.getTime())) return normalized;
   const pad = (part: number) => String(part).padStart(2, "0");
-
   return `${parsed.getUTCFullYear()}-${pad(parsed.getUTCMonth() + 1)}-${pad(parsed.getUTCDate())} ${pad(parsed.getUTCHours())}:${pad(parsed.getUTCMinutes())} UTC`;
 }
-
-function buildSyncNote(value: unknown): string {
-  const capturedAt = formatTimestamp(
-    pickPathValue(value, [["latest_status", "captured_at"], ["latestStatus", "captured_at"], ["captured_at"], ["capturedAt"]])
-  );
-
-  if (capturedAt) {
-    return `Captured ${capturedAt}`;
-  }
-
-  const lastSyncAt = formatTimestamp(
-    pickPathValue(value, [["latest_status", "last_sync_at"], ["latestStatus", "last_sync_at"], ["last_sync_at"], ["lastSyncAt"]])
-  );
-
-  if (lastSyncAt) {
-    return `Last sync ${lastSyncAt}`;
-  }
-
-  return pickString(value, [["sync_note"], ["syncNote"], ["updated_at"], ["updatedAt"]]) ?? "";
-}
-
 function formatLocaleLabel(value: unknown): string | null {
   const normalized = asString(value)?.replace(/_/g, "-");
-
-  if (!normalized) {
-    return null;
-  }
-
+  if (!normalized) return null;
   const [language, region] = normalized.split("-");
-
   try {
     const languageName = new Intl.DisplayNames(["en"], { type: "language" }).of(language.toLowerCase());
-    const regionName = region
-      ? new Intl.DisplayNames(["en"], { type: "region" }).of(region.toUpperCase())
-      : null;
-
-    if (languageName && regionName) {
-      return `${languageName} (${regionName})`;
-    }
-
-    if (languageName) {
-      return languageName;
-    }
+    const regionName = region ? new Intl.DisplayNames(["en"], { type: "region" }).of(region.toUpperCase()) : null;
+    if (languageName && regionName) return `${languageName} (${regionName})`;
+    if (languageName) return languageName;
   } catch {
-    // Fallback to the raw locale code below.
+    return normalized;
   }
-
   return normalized;
 }
-
-function formatRegionLabel(value: unknown): string | null {
-  const normalized = asString(value)?.replace(/_/g, "-");
-
-  if (!normalized) {
-    return null;
-  }
-
-  const [, region] = normalized.split("-");
-
-  if (!region) {
-    return null;
-  }
-
-  try {
-    return (
-      new Intl.DisplayNames(["en"], { type: "region" }).of(region.toUpperCase()) ??
-      region.toUpperCase()
-    );
-  } catch {
-    return region.toUpperCase();
+function buildSyncNote(value: unknown): string {
+  return formatTimestamp(pickPathValue(value, [["latest_status", "captured_at"], ["latestStatus", "captured_at"], ["captured_at"], ["capturedAt"]])) ?? formatTimestamp(pickPathValue(value, [["latest_status", "last_sync_at"], ["latestStatus", "last_sync_at"], ["last_sync_at"], ["lastSyncAt"]])) ?? pickString(value, [["sync_note"], ["syncNote"], ["updated_at"], ["updatedAt"]]) ?? "";
+}
+function normalizeServerState(value: unknown): DashboardServerState {
+  const normalized = asString(value)?.toLowerCase();
+  switch (normalized) {
+    case "connected": case "active": case "enabled": case "healthy": case "ready": return "connected";
+    case "invite": case "invited": case "pending": case "setup": return "invite";
+    case "test": case "testing": case "sandbox": case "staging": return "test";
+    default: return "inactive";
   }
 }
-
-function formatModuleCount(modules: DashboardModule[]): string {
-  if (modules.length === 0) {
-    return "";
-  }
-
-  const enabledCount = modules.filter((module) => {
-    const normalized = module.stateLabel.toLowerCase();
-    return ["active", "connected", "enabled", "healthy", "ready"].includes(normalized);
-  }).length;
-
-  if (enabledCount === modules.length) {
-    return `${modules.length} modules enabled`;
-  }
-
-  if (enabledCount > 0) {
-    return `${enabledCount} of ${modules.length} modules enabled`;
-  }
-
-  return `${modules.length} modules tracked`;
+function resolveServerState(value: unknown): DashboardServerState {
+  return normalizeServerState(pickString(value, [["state"], ["status"], ["connection_state"], ["connectionState"], ["latest_status", "status"], ["latestStatus", "status"]]));
 }
-
-function buildPlanLabel(value: unknown): string {
-  const tier = pickString(value, [
-    ["active_license", "tier"],
-    ["activeLicense", "tier"],
-    ["tier"],
-    ["plan"],
-    ["plan_name"],
-    ["planName"]
-  ]);
-  const status = pickString(value, [
-    ["active_license", "status"],
-    ["activeLicense", "status"],
-    ["license_status"],
-    ["status"]
-  ]);
-
-  return [tier ? toTitleCase(tier) : null, status ? toTitleCase(status) : null]
-    .filter((item): item is string => Boolean(item))
-    .join(" · ");
-}
-
-const moduleMetadata: Record<
-  DashboardModuleKey,
-  { actionLabel: string; description: string; name: string }
-> = {
-  bank: {
-    name: "Bank",
-    description: "Balances, transfers, and salary rules.",
-    actionLabel: "Open bank"
-  },
-  social: {
-    name: "Social",
-    description: "Profiles, reactions, and player progression.",
-    actionLabel: "Open social"
-  },
-  weather: {
-    name: "Weather",
-    description: "Forecast controls and saved locations.",
-    actionLabel: "Open weather"
-  },
-  sessions: {
-    name: "Sessions",
-    description: "Session timing and event structure.",
-    actionLabel: "Open sessions"
-  },
-  radio: {
-    name: "Radio",
-    description: "Channel presets and radio access.",
-    actionLabel: "Review radio"
-  },
-  rentals: {
-    name: "Rentals",
-    description: "Lease records and property states.",
-    actionLabel: "Open rentals"
-  },
-  branding: {
-    name: "Branding",
-    description: "Brand assets, display name, and visual identity.",
-    actionLabel: "Open branding"
-  },
-  dashboard: {
-    name: "Dashboard",
-    description: "Workspace access, overview, and dashboard routing.",
-    actionLabel: "Open overview"
-  },
-  licenses: {
-    name: "Licenses",
-    description: "License status, seats, and access entitlements.",
-    actionLabel: "Open licenses"
+function normalizeAccess(value: unknown): DashboardAccessLevel | null {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "owner": case "server_owner": case "guild_owner": return "owner";
+    case "admin": case "administrator": case "staff": case "moderator": case "editor": return "admin";
+    case "none": case "read_only": case "locked": case "denied": case "forbidden": case "viewer": return "none";
+    default: return null;
   }
+}
+function resolveAccessLevel(value: unknown): DashboardAccessLevel {
+  const explicit = normalizeAccess(pickString(value, [["permissions", "access_level"], ["permissions", "accessLevel"], ["access_level"], ["accessLevel"], ["access"], ["role"]]));
+  if (explicit) return explicit;
+  if (asBoolean(pickPathValue(value, [["permissions", "is_owner"], ["is_owner"], ["isOwner"]])) === true) return "owner";
+  if (asBoolean(pickPathValue(value, [["permissions", "is_admin"], ["is_admin"], ["isAdmin"]])) === true || asBoolean(pickPathValue(value, [["permissions", "allow_dashboard_write"], ["allow_dashboard_write"]])) === true || asBoolean(pickPathValue(value, [["permissions", "allow_bot_write"], ["allow_bot_write"]])) === true) return "admin";
+  return "none";
+}
+function normalizeModuleKey(value: unknown): DashboardModuleKey | null {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "bank": case "social": case "weather": case "sessions": case "radio": case "rentals": case "branding": case "dashboard": case "licenses": return normalized;
+    default: return null;
+  }
+}
+const moduleMetadata: Record<DashboardModuleKey, { name: string; description: string }> = {
+  bank: { name: "Bank", description: "Economy and balance surfaces." },
+  social: { name: "Social", description: "Profiles and social-facing surfaces." },
+  weather: { name: "Weather", description: "Forecast and environment surfaces." },
+  sessions: { name: "Sessions", description: "Session cadence and event structure." },
+  radio: { name: "Radio", description: "Channels and operator-facing radio flows." },
+  rentals: { name: "Rentals", description: "Property and rentals surfaces." },
+  branding: { name: "Branding", description: "Module-facing branding surface." },
+  dashboard: { name: "Dashboard", description: "Shell, access, and workspace routing." },
+  licenses: { name: "Licenses", description: "License visibility and entitlements." }
 };
-
-function buildServerDescription(value: unknown, modules: DashboardModule[]): string {
-  const note = pickString(value, [
-    ["profile", "notes"],
-    ["notes"],
-    ["description"],
-    ["summary"],
-    ["detail"],
-    ["note"]
-  ]);
-
-  if (note) {
-    return note;
-  }
-
-  const status = pickString(value, [["latest_status", "status"], ["latestStatus", "status"]]);
-  const moduleSummary = formatModuleCount(modules);
-  const plan = buildPlanLabel(value);
-
-  return [plan || null, status ? toTitleCase(status) : null, moduleSummary || null]
-    .filter((item): item is string => Boolean(item))
-    .join(". ");
+function mapModuleRecord(item: DashboardRawRecord): DashboardModule | null {
+  const key = normalizeModuleKey(pickString(item, [["key"], ["module_key"], ["moduleKey"], ["slug"], ["name"], ["module"]]));
+  if (!key) return null;
+  const stateLabel = pickString(item, [["state"], ["status"], ["value"], ["state_label"], ["stateLabel"]]) ?? "Detected";
+  return { key, name: moduleMetadata[key].name, description: pickString(item, [["description"], ["summary"], ["detail"]]) ?? moduleMetadata[key].description, stateLabel: toTitleCase(stateLabel), tone: normalizeTone(pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ?? stateLabel, "info"), actionLabel: "Module scaffold" };
+}
+function mapModules(value: unknown): DashboardModule[] {
+  const items = pickRecordArray(value, [["items"], ["modules"], ["module_summary"], ["moduleSummary"]]);
+  if (items.length > 0) return items.map((item) => mapModuleRecord(item)).filter((item): item is DashboardModule => item !== null);
+  const record = asRecord(pickPathValue(value, [["module_summary"], ["moduleSummary"]])) ?? asRecord(value);
+  if (!record) return [];
+  return Object.entries(record).map(([key, state]) => mapModuleRecord({ module_key: key, state })).filter((item): item is DashboardModule => item !== null);
+}
+function mapBrandingModules(value: unknown, fallbackModules: DashboardModule[]): DashboardBrandingModule[] {
+  const modules = mapModules(value);
+  const source = modules.length > 0 ? modules : fallbackModules;
+  return source.map((module) => ({
+    key: module.key,
+    name: module.name,
+    description: module.description,
+    stateLabel: module.stateLabel,
+    tone: module.tone,
+    availability: module.tone === "positive" ? "Available later" : module.tone === "warning" ? "Coming soon" : "Not connected yet",
+    note: module.tone === "positive" ? "Module is present on the server, but its branding editor is not connected yet." : module.tone === "warning" ? "Module remains visible as a future branding category." : "Module branding is kept as a scaffold until module editors are connected."
+  }));
+}
+function buildGeneralSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
+  const locale = formatLocaleLabel(pickPathValue(value, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"]])) ?? baseServer.environment;
+  const displayName = pickString(value, [["branding", "display_name"], ["server", "name"], ["name"]]) ?? baseServer.name;
+  const plan = pickString(value, [["active_license", "tier"], ["activeLicense", "tier"], ["plan"], ["plan_name"], ["planName"]]) ?? baseServer.plan;
+  return [
+    { label: "Server ID", value: baseServer.id, note: "Uses the current backend server record." },
+    { label: "Display name", value: displayName, note: "Shown without a server-wide branding editor." },
+    { label: "Plan", value: toTitleCase(plan), note: "Detailed separately on the License page." },
+    { label: "Primary locale", value: locale, note: "Part of the server-level dashboard summary." }
+  ].filter((item) => item.value.trim().length > 0);
 }
 
-function buildOverviewIdentity(
-  value: unknown,
-  baseServer?: DashboardServer
-): DashboardIdentityField[] {
-  const items: DashboardIdentityField[] = [];
-  const pushItem = (label: string, itemValue: string | null) => {
-    if (!itemValue || items.some((item) => item.label === label && item.value === itemValue)) {
-      return;
-    }
-
-    items.push({ label, value: itemValue });
-  };
-
-  const locale = formatLocaleLabel(
-    pickPathValue(value, [
-      ["profile", "preferred_locale"],
-      ["preferred_locale"],
-      ["localization", "default_locale"],
-      ["localization", "fallback_locale"]
-    ])
-  );
-  const supportLink =
-    pickString(value, [["profile", "support_url"], ["branding", "support_invite_url"]]) ??
-    null;
-  const seats = pickNumber(value, [["active_license", "seats"], ["activeLicense", "seats"]]);
-  const plan = buildPlanLabel(value) || baseServer?.plan || null;
-
-  pushItem(
-    "Display name",
-    pickString(value, [["branding", "display_name"], ["server", "name"], ["name"]]) ??
-      baseServer?.name ??
-      null
-  );
-  pushItem("Locale", locale ?? baseServer?.environment ?? null);
-  pushItem("Timezone", pickString(value, [["profile", "timezone"], ["timezone"]]) ?? null);
-  pushItem(
-    "Contact",
-    pickString(value, [["profile", "contact_email"], ["contact_email"]]) ?? null
-  );
-  pushItem("Support", supportLink);
-  pushItem("Plan", plan);
-  pushItem("Seats", seats !== null ? String(seats) : null);
-
-  return items;
+function buildAccessSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
+  const accessLevel = resolveAccessLevel(value);
+  const dashboardWrite = asBoolean(pickPathValue(value, [["permissions", "allow_dashboard_write"], ["allow_dashboard_write"]]));
+  const botWrite = asBoolean(pickPathValue(value, [["permissions", "allow_bot_write"], ["allow_bot_write"]]));
+  const policyVersion = pickNumber(value, [["permissions", "policy_version"], ["policy_version"]]);
+  return [
+    { label: "Dashboard scope", value: accessLevel === "owner" ? "Owner access" : accessLevel === "admin" ? "Admin access" : "Locked", note: baseServer.accessLevel === "none" ? "This workspace is list-visible but locked." : "Read surfaces are open for this account." },
+    { label: "Write path", value: dashboardWrite === true || botWrite === true ? "Partially available" : dashboardWrite === false || botWrite === false ? "Limited" : "Not in scope", note: policyVersion !== null ? `Policy v${policyVersion}` : "Heavy forms and write actions stay disabled in this pass." }
+  ];
 }
 
-function buildOverviewStatus(
-  value: unknown,
-  baseServer?: DashboardServer
-): DashboardStatusItem[] {
-  const items: DashboardStatusItem[] = [];
-  const pushItem = (
-    label: string,
-    itemValue: string | null,
-    note: string,
-    tone: DashboardTone
-  ) => {
-    if (!itemValue) {
-      return;
-    }
+function buildLocalizationSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
+  const primaryLocale = formatLocaleLabel(pickPathValue(value, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"], ["localization", "fallback_locale"]])) ?? baseServer.environment;
+  const supportedLocales = (asArray(pickPathValue(value, [["localization", "supported_locales"]])) ?? []).map((item) => formatLocaleLabel(item)).filter((item): item is string => Boolean(item)).join(", ");
+  const timezone = pickString(value, [["profile", "timezone"], ["timezone"]]) ?? baseServer.region;
+  const translationsVersion = pickString(value, [["localization", "translations_version"]]);
+  return [
+    { label: "Primary locale", value: primaryLocale, note: "Main dashboard locale for the server." },
+    { label: "Supported locales", value: supportedLocales || "Not provided", note: translationsVersion ? `Translations ${translationsVersion}` : "Shown as a light scaffold when payloads are partial." },
+    { label: "Timezone", value: timezone, note: "Part of the server-level localization context." }
+  ];
+}
 
-    items.push({ label, value: itemValue, note, tone });
-  };
+function buildOverviewIdentity(value: unknown, baseServer: DashboardServer): DashboardIdentityField[] {
+  const displayName = pickString(value, [["branding", "display_name"], ["server", "name"], ["name"]]) ?? baseServer.name;
+  const locale = formatLocaleLabel(pickPathValue(value, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"]])) ?? baseServer.environment;
+  return [{ label: "Server", value: displayName }, { label: "Plan", value: baseServer.plan }, { label: "Locale", value: locale }];
+}
 
-  const overallStatus = pickString(value, [["latest_status", "status"], ["latestStatus", "status"]]);
-  const capturedAt = formatTimestamp(
-    pickPathValue(value, [["latest_status", "captured_at"], ["latestStatus", "captured_at"]])
-  );
-  const lastSyncAt = formatTimestamp(
-    pickPathValue(value, [["latest_status", "last_sync_at"], ["latestStatus", "last_sync_at"]])
-  );
-  const botConnected = asBoolean(
-    pickPathValue(value, [["latest_status", "bot_connected"], ["latestStatus", "bot_connected"], ["profile", "bot_sync_enabled"]])
-  );
-  const dashboardReachable = asBoolean(
-    pickPathValue(value, [["latest_status", "dashboard_reachable"], ["latestStatus", "dashboard_reachable"], ["profile", "dashboard_enabled"]])
-  );
-
-  pushItem(
-    "System health",
-    overallStatus ? toTitleCase(overallStatus) : baseServer ? toTitleCase(baseServer.state) : null,
-    capturedAt ? `Captured ${capturedAt}` : "",
-    normalizeTone(overallStatus ?? baseServer?.state, baseServer?.state === "connected" ? "positive" : "muted")
-  );
-  pushItem(
-    "Bot connection",
-    botConnected === null ? null : botConnected ? "Connected" : "Disconnected",
-    botConnected === null ? "" : botConnected ? "Live bot session is active." : "Bot sync is not active.",
-    botConnected ? "positive" : "muted"
-  );
-  pushItem(
-    "Dashboard reachability",
-    dashboardReachable === null ? null : dashboardReachable ? "Reachable" : "Unavailable",
-    dashboardReachable === null ? "" : dashboardReachable ? "Dashboard heartbeat succeeded." : "Dashboard is not reachable.",
-    dashboardReachable ? "positive" : "warning"
-  );
-  pushItem(
-    "Last sync",
-    lastSyncAt,
-    capturedAt ? `Captured ${capturedAt}` : "",
-    lastSyncAt ? "info" : "muted"
-  );
-
-  return items;
+function buildOverviewStatus(value: unknown, baseServer: DashboardServer): DashboardStatusItem[] {
+  const systemHealth = pickString(value, [["latest_status", "status"], ["latestStatus", "status"], ["status"]]) ?? baseServer.state;
+  return [{ label: "Workspace", value: toTitleCase(systemHealth), note: buildSyncNote(value) || baseServer.description, tone: normalizeTone(systemHealth, "info") }];
 }
 
 function buildOverviewNotices(value: unknown): DashboardNotice[] {
-  const notices: DashboardNotice[] = [];
+  const items = pickRecordArray(value, [["notices"], ["updates"], ["items"], ["events"]]);
+  if (items.length > 0) {
+    return items.map((item) => ({ title: pickString(item, [["title"], ["label"], ["name"]]) ?? "Update", detail: pickString(item, [["detail"], ["description"], ["message"], ["summary"]]) ?? "", time: pickString(item, [["time"], ["timestamp"], ["updated_at"], ["updatedAt"]]) ?? "" })).filter((item) => item.title || item.detail || item.time);
+  }
   const note = pickString(value, [["profile", "notes"], ["notes"]]);
-
-  if (note) {
-    notices.push({
-      title: "Server note",
-      detail: note,
-      time: ""
-    });
-  }
-
-  const startsAt = formatTimestamp(
-    pickPathValue(value, [["active_license", "starts_at"], ["activeLicense", "starts_at"]])
-  );
-  const endsAt = formatTimestamp(
-    pickPathValue(value, [["active_license", "ends_at"], ["activeLicense", "ends_at"]])
-  );
-  const plan = buildPlanLabel(value);
-
-  if (startsAt || endsAt || plan) {
-    notices.push({
-      title: "License window",
-      detail: [plan || null, startsAt ? `Starts ${startsAt}` : null, endsAt ? `Ends ${endsAt}` : null]
-        .filter((item): item is string => Boolean(item))
-        .join(". "),
-      time: endsAt ?? startsAt ?? ""
-    });
-  }
-
-  return notices;
+  return note ? [{ title: "Server note", detail: note, time: "" }] : [];
 }
 
-function normalizeServerState(value: unknown): DashboardServerState {
-  const normalized = asString(value)?.toLowerCase();
-
-  switch (normalized) {
-    case "connected":
-    case "active":
-    case "enabled":
-    case "healthy":
-    case "ready":
-      return "connected";
-    case "invite":
-    case "invited":
-    case "pending":
-      return "invite";
-    case "test":
-    case "testing":
-    case "sandbox":
-    case "staging":
-      return "test";
-    default:
-      return "inactive";
-  }
-}
-
-function resolveServerState(value: unknown): DashboardServerState {
-  const explicitState = normalizeServerState(
-    pickString(value, [
-      ["state"],
-      ["status"],
-      ["connection_state"],
-      ["connectionState"],
-      ["latest_status", "status"],
-      ["latestStatus", "status"]
-    ])
-  );
-  const activeFlag = asBoolean(
-    pickPathValue(value, [["is_active"], ["isActive"], ["server", "is_active"], ["server", "isActive"]])
-  );
-
-  if (activeFlag === true) {
-    return explicitState === "test" || explicitState === "invite" ? explicitState : "connected";
-  }
-
-  if (explicitState !== "inactive") {
-    return explicitState;
-  }
-
-  if (activeFlag === false) {
-    return "inactive";
-  }
-
-  return explicitState;
-}
-
-function normalizeDashboardAccessLevel(
-  value: unknown
-): DashboardAccessLevel | null {
-  const normalized = asString(value)
-    ?.toLowerCase()
-    .replace(/[\s-]+/g, "_");
-
-  switch (normalized) {
-    case "owner":
-    case "guild_owner":
-    case "server_owner":
-    case "owner_only":
-      return "owner";
-    case "admin":
-    case "administrator":
-    case "moderator":
-    case "staff":
-    case "editor":
-      return "admin";
-    case "none":
-    case "no_access":
-    case "read_only":
-    case "readonly":
-    case "locked":
-    case "forbidden":
-    case "denied":
-    case "viewer":
-      return "none";
-    default:
-      return null;
-  }
-}
-
-function resolveDashboardAccessLevel(value: unknown): DashboardAccessLevel {
-  const explicitAccess = normalizeDashboardAccessLevel(
-    pickString(value, [
-      ["permissions", "access_level"],
-      ["permissions", "accessLevel"],
-      ["access_level"],
-      ["accessLevel"],
-      ["access"],
-      ["role"]
-    ])
-  );
-
-  if (explicitAccess) {
-    return explicitAccess;
-  }
-
-  const isOwner = asBoolean(
-    pickPathValue(value, [
-      ["permissions", "is_owner"],
-      ["permissions", "isOwner"],
-      ["permissions", "owner_context"],
-      ["permissions", "ownerContext"],
-      ["is_owner"],
-      ["isOwner"],
-      ["owner_context"],
-      ["ownerContext"]
-    ])
-  );
-
-  if (isOwner === true) {
-    return "owner";
-  }
-
-  const isAdmin = asBoolean(
-    pickPathValue(value, [
-      ["permissions", "is_admin"],
-      ["permissions", "isAdmin"],
-      ["is_admin"],
-      ["isAdmin"]
-    ])
-  );
-  const dashboardWrite = asBoolean(
-    pickPathValue(value, [
-      ["permissions", "allow_dashboard_write"],
-      ["permissions", "allowDashboardWrite"],
-      ["allow_dashboard_write"],
-      ["allowDashboardWrite"]
-    ])
-  );
-  const botWrite = asBoolean(
-    pickPathValue(value, [
-      ["permissions", "allow_bot_write"],
-      ["permissions", "allowBotWrite"],
-      ["allow_bot_write"],
-      ["allowBotWrite"]
-    ])
-  );
-  const lockedFlag = asBoolean(
-    pickPathValue(value, [
-      ["permissions", "locked"],
-      ["permissions", "read_only"],
-      ["permissions", "readOnly"],
-      ["locked"],
-      ["read_only"],
-      ["readOnly"]
-    ])
-  );
-
-  if (isAdmin === true || dashboardWrite === true || botWrite === true) {
-    return "admin";
-  }
-
-  if (
-    lockedFlag === true ||
-    isAdmin === false ||
-    dashboardWrite === false ||
-    botWrite === false
-  ) {
-    return "none";
-  }
-
-  return "admin";
-}
-
-function mergeDashboardAccessLevel(
-  primary: DashboardAccessLevel,
-  secondary: DashboardAccessLevel
-): DashboardAccessLevel {
-  if (primary === "none" || secondary === "none") {
-    return "none";
-  }
-
-  if (primary === "owner" || secondary === "owner") {
-    return "owner";
-  }
-
-  return "admin";
-}
-
-function normalizeTone(
-  value: unknown,
-  fallback: DashboardTone = "muted"
-): DashboardTone {
-  const normalized = asString(value)?.toLowerCase();
-
-  switch (normalized) {
-    case "positive":
-    case "success":
-    case "healthy":
-    case "enabled":
-    case "included":
-    case "connected":
-    case "ready":
-    case "reachable":
-      return "positive";
-    case "warning":
-    case "warn":
-    case "review":
-    case "limited":
-    case "degraded":
-    case "deferred":
-    case "unavailable":
-      return "warning";
-    case "info":
-    case "preview":
-    case "testing":
-    case "test":
-      return "info";
-    case "muted":
-    case "inactive":
-    case "disabled":
-    case "disconnected":
-    case "not_included":
-    case "not included":
-      return "muted";
-    default:
-      return fallback;
-  }
-}
-
-function normalizeModuleKey(value: unknown): DashboardModuleKey | null {
-  const normalized = asString(value)?.toLowerCase();
-
-  switch (normalized) {
-    case "bank":
-      return "bank";
-    case "social":
-      return "social";
-    case "weather":
-      return "weather";
-    case "sessions":
-    case "session":
-      return "sessions";
-    case "radio":
-      return "radio";
-    case "rentals":
-    case "rental":
-      return "rentals";
-    case "branding":
-    case "brand":
-      return "branding";
-    case "dashboard":
-      return "dashboard";
-    case "license":
-    case "licenses":
-      return "licenses";
-    default:
-      return null;
-  }
-}
-
-function normalizeStatusGroupKey(value: unknown): DashboardStatusGroup["key"] {
-  const normalized = asString(value)?.toLowerCase();
-
-  switch (normalized) {
-    case "core":
-      return "core";
-    case "dashboard":
-      return "dashboard";
-    case "modules":
-    case "module":
-      return "modules";
-    default:
-      return "integrations";
-  }
-}
-
-function ensureServerMatch(
-  value: unknown,
-  expectedServerId: string,
-  path: string
-) {
-  const responseServerId = pickString(value, [
-    ["server", "id"],
-    ["server_id"],
-    ["serverId"],
-    ["guild_id"],
-    ["guildId"]
-  ]);
-
-  if (responseServerId && responseServerId !== expectedServerId) {
-    throw new DashboardApiError(
-      "contract",
-      "Dashboard API returned data for a different server.",
-      { path }
-    );
-  }
-}
-
-function getSectionPayload(
-  value: unknown,
-  section: DashboardServerRoutePage
-): unknown {
-  return (
-    pickPathValue(value, [
-      [section],
-      ["data", section],
-      ["payload", section],
-      ["data"]
-    ]) ?? value
-  );
-}
-
-function mapIdentityFields(value: unknown): DashboardIdentityField[] {
-  const record = asRecord(value);
-  const items = pickRecordArray(value, [["items"], ["fields"], ["identity"]]);
-
-  if (items.length > 0) {
-    return items
-      .map((item) => {
-        const label =
-          pickString(item, [["label"], ["name"], ["title"], ["key"]]) ?? "";
-        const itemValue = pickString(item, [["value"], ["detail"], ["text"]]) ?? "";
-
-        if (!label && !itemValue) {
-          return null;
-        }
-
-        return {
-          label: label || "Value",
-          value: itemValue
-        };
-      })
-      .filter((item): item is DashboardIdentityField => item !== null);
-  }
-
-  if (!record) {
-    return [];
-  }
-
-  return Object.entries(record).flatMap(([label, itemValue]) => {
-    const normalizedValue = asString(itemValue);
-    return normalizedValue ? [{ label, value: normalizedValue }] : [];
-  });
-}
-
-function mapStatusItems(value: unknown): DashboardStatusItem[] {
-  return pickRecordArray(value, [["items"], ["status"], ["system_status"], ["systemStatus"]])
-    .map((item) => {
-      const label = pickString(item, [["label"], ["name"], ["title"]]) ?? "";
-      const itemValue =
-        pickString(item, [["value"], ["status"], ["state"], ["result"]]) ?? "";
-      const note =
-        pickString(item, [["note"], ["detail"], ["description"], ["message"]]) ?? "";
-
-      if (!label && !itemValue && !note) {
-        return null;
-      }
-
-      return {
-        label: label || "Status",
-        value: itemValue || note || "Unknown",
-        note,
-        tone: normalizeTone(
-          pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ??
-            itemValue
-        )
-      };
-    })
-    .filter((item): item is DashboardStatusItem => item !== null);
-}
-
-function mapModuleRecord(item: DashboardRawRecord): DashboardModule | null {
-  const rawKey =
-    pickString(item, [["key"], ["module_key"], ["moduleKey"], ["slug"], ["name"], ["title"], ["module"]]);
-  const key = normalizeModuleKey(rawKey);
-
-  if (!key) {
-    return null;
-  }
-
-  const metadata = moduleMetadata[key];
-  const stateLabel =
-    pickString(item, [["state_label"], ["stateLabel"], ["status"], ["state"]]) ??
-    "Unknown";
-
-  return {
-    key,
-    name: pickString(item, [["name"], ["title"], ["module"]]) ?? metadata.name,
-    description:
-      pickString(item, [["description"], ["summary"], ["detail"]]) ?? metadata.description,
-    stateLabel: toTitleCase(stateLabel),
-    tone: normalizeTone(
-      pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ??
-        stateLabel
-    ),
-    actionLabel:
-      pickString(item, [["action_label"], ["actionLabel"], ["action"]]) ??
-      metadata.actionLabel
-  };
-}
-
-function mapModules(value: unknown): DashboardModule[] {
-  const items = pickRecordArray(value, [["items"], ["modules"], ["module_summary"], ["moduleSummary"]]);
-
-  if (items.length > 0) {
-    return items
-      .map((item) => mapModuleRecord(item))
-      .filter((item): item is DashboardModule => item !== null);
-  }
-
-  const summaryRecord =
-    asRecord(pickPathValue(value, [["module_summary"], ["moduleSummary"]])) ?? asRecord(value);
-
-  if (!summaryRecord) {
-    return [];
-  }
-
-  return Object.entries(summaryRecord)
-    .map(([key, state]) =>
-      mapModuleRecord({
-        module_key: key,
-        state
-      })
-    )
-    .filter((item): item is DashboardModule => item !== null);
-}
-
-function mapNotices(value: unknown): DashboardNotice[] {
-  return pickRecordArray(value, [["items"], ["notices"], ["updates"], ["events"]])
-    .map((item) => {
-      const title = pickString(item, [["title"], ["label"], ["name"]]) ?? "";
-      const detail =
-        pickString(item, [["detail"], ["description"], ["message"], ["summary"]]) ?? "";
-      const time =
-        pickString(item, [["time"], ["timestamp"], ["updated_at"], ["updatedAt"]]) ?? "";
-
-      if (!title && !detail && !time) {
-        return null;
-      }
-
-      return {
-        title: title || "Update",
-        detail,
-        time
-      };
-    })
-    .filter((item): item is DashboardNotice => item !== null);
-}
-
-function mapSettings(value: unknown): DashboardSettingGroup[] {
-  const mappedItems = pickRecordArray(value, [["items"], ["settings"], ["groups"]])
-    .map((item) => {
-      const label = pickString(item, [["label"], ["name"], ["title"], ["key"]]) ?? "";
-      const settingValue =
-        pickString(item, [["value"], ["detail"], ["text"], ["state"]]) ?? "";
-      const note =
-        pickString(item, [["note"], ["description"], ["summary"], ["message"]]) ?? "";
-
-      if (!label && !settingValue && !note) {
-        return null;
-      }
-
-      return {
-        label: label || "Setting",
-        value: settingValue,
-        note
-      };
-    })
-    .filter((item): item is DashboardSettingGroup => item !== null);
-
-  if (mappedItems.length > 0) {
-    return mappedItems;
-  }
-
-  const payload = asRecord(value);
-
-  if (!payload) {
-    return [];
-  }
-
-  const settings: DashboardSettingGroup[] = [];
-  const pushSetting = (label: string, settingValue: string | null, note = "") => {
-    if (!settingValue) {
-      return;
-    }
-
-    settings.push({
-      label,
-      value: settingValue,
-      note
-    });
-  };
-
-  const primaryLocale = formatLocaleLabel(
-    pickPathValue(payload, [
-      ["profile", "preferred_locale"],
-      ["localization", "default_locale"],
-      ["localization", "fallback_locale"]
-    ])
-  );
-  const supportedLocales = (asArray(
-    pickPathValue(payload, [["localization", "supported_locales"]])
-  ) ?? [])
-    .map((item) => formatLocaleLabel(item))
-    .filter((item): item is string => Boolean(item))
-    .join(", ");
-  const translationsVersion = pickString(payload, [["localization", "translations_version"]]);
-  const timezone = pickString(payload, [["profile", "timezone"], ["timezone"]]);
-  const contact = pickString(payload, [
-    ["profile", "contact_email"],
-    ["contact_email"],
-    ["profile", "support_url"],
-    ["support_url"]
-  ]);
-  const supportLink = pickString(payload, [
-    ["profile", "support_url"],
-    ["support_url"],
-    ["branding", "support_invite_url"]
-  ]);
-  const dashboardWrite = asBoolean(
-    pickPathValue(payload, [["permissions", "allow_dashboard_write"], ["allow_dashboard_write"]])
-  );
-  const botWrite = asBoolean(
-    pickPathValue(payload, [["permissions", "allow_bot_write"], ["allow_bot_write"]])
-  );
-  const policyVersion = pickNumber(payload, [["permissions", "policy_version"], ["policy_version"]]);
-
-  pushSetting(
-    "Locale",
-    primaryLocale,
-    supportedLocales
-      ? `Supported: ${supportedLocales}`
-      : translationsVersion
-        ? `Translations ${translationsVersion}`
-        : ""
-  );
-  pushSetting(
-    "Timezone",
-    timezone,
-    translationsVersion ? `Translations ${translationsVersion}` : ""
-  );
-  pushSetting(
-    "Contact",
-    contact,
-    supportLink && supportLink !== contact ? supportLink : ""
-  );
-
-  const accessValue =
-    dashboardWrite === null
-      ? botWrite === null
-        ? null
-        : botWrite
-          ? "Bot write enabled"
-          : "Bot write limited"
-      : dashboardWrite
-        ? "Dashboard write enabled"
-        : "Dashboard write limited";
-  const accessNote = [
-    botWrite === null ? null : botWrite ? "Bot write enabled." : "Bot write limited.",
-    policyVersion !== null ? `Policy v${policyVersion}` : null
-  ]
-    .filter((item): item is string => Boolean(item))
-    .join(" ");
-
-  pushSetting("Access", accessValue, accessNote);
-
-  return settings;
-}
-
-function mapBrandAssets(value: unknown): DashboardBrandAsset[] {
-  return pickRecordArray(value, [["items"], ["assets"]])
-    .map((item) => {
-      const label = pickString(item, [["label"], ["name"], ["title"], ["key"]]) ?? "";
-      const assetValue =
-        pickString(item, [["value"], ["state"], ["status"], ["detail"]]) ?? "";
-      const note =
-        pickString(item, [["note"], ["description"], ["summary"], ["message"]]) ?? "";
-
-      if (!label && !assetValue && !note) {
-        return null;
-      }
-
-      return {
-        label: label || "Asset",
-        value: assetValue,
-        note
-      };
-    })
-    .filter((item): item is DashboardBrandAsset => item !== null);
-}
-
-function mapEntitlements(value: unknown): DashboardEntitlement[] {
-  return pickRecordArray(value, [["items"], ["entitlements"]])
-    .map((item) => {
-      const label = pickString(item, [["label"], ["name"], ["title"]]) ?? "";
-      const entitlementValue =
-        pickString(item, [["value"], ["state"], ["status"]]) ?? "";
-
-      if (!label && !entitlementValue) {
-        return null;
-      }
-
-      return {
-        label: label || "Entitlement",
-        value: entitlementValue,
-        tone: normalizeTone(
-          pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ??
-            entitlementValue
-        )
-      };
-    })
-    .filter((item): item is DashboardEntitlement => item !== null);
-}
-
-function mapStatusGroups(value: unknown): DashboardStatusGroup[] {
-  const groups = pickRecordArray(value, [["items"], ["groups"], ["status"]]);
-
-  if (groups.length > 0) {
-    return groups
-      .map((group) => {
-        const items = mapStatusItems(group);
-        const title = pickString(group, [["title"], ["label"], ["name"]]) ?? "";
-
-        if (!title && items.length === 0) {
-          return null;
-        }
-
-        return {
-          key: normalizeStatusGroupKey(
-            pickString(group, [["key"], ["slug"], ["name"], ["title"]]) ?? title
-          ),
-          title: title || "Status",
-          items
-        };
-      })
-      .filter((group): group is DashboardStatusGroup => group !== null);
-  }
-
-  const items = mapStatusItems(value);
-  const derivedItems = items.length > 0 ? items : buildOverviewStatus(value);
-
-  return derivedItems.length > 0
-    ? [
-        {
-          key: "dashboard",
-          title: "Status",
-          items: derivedItems
-        }
-      ]
-    : [];
-}
-
-function mapDashboardServerSummary(
-  value: unknown,
-  options?: { expectedServerId?: string; path?: string }
-): DashboardServer {
-  const payload = asRecord(value);
-
-  if (!payload) {
-    throw new DashboardApiError(
-      "contract",
-      "Dashboard API returned an invalid server payload.",
-      { path: options?.path }
-    );
-  }
-
-  const id =
-    pickString(payload, [["server", "id"], ["id"], ["server_id"], ["serverId"]]) ??
-    options?.expectedServerId;
-
-  if (!id) {
-    throw new DashboardApiError(
-      "contract",
-      "Dashboard API server payload is missing an id.",
-      { path: options?.path }
-    );
-  }
-
-  const name =
-    pickString(payload, [["branding", "display_name"], ["server", "name"], ["name"], ["title"]]) ??
-    id;
+function mapOverview(baseServer: DashboardServer, value: unknown): DashboardServer["overview"] {
+  const payload = getSectionPayload(value, "overview");
   const modules = mapModules(payload);
-  const memberCount = pickNumber(payload, [
-    ["member_count"],
-    ["memberCount"],
-    ["members"],
-    ["users"]
-  ]);
-  const plan =
-    buildPlanLabel(payload) ||
-    pickString(payload, [["plan"], ["plan_name"], ["planName"], ["tier"]]) ||
-    "";
-  const seats = pickNumber(payload, [["active_license", "seats"], ["activeLicense", "seats"]]);
-  const description = buildServerDescription(payload, modules);
-  const overviewIdentity = buildOverviewIdentity(payload);
-  const overviewStatus = buildOverviewStatus(payload);
-  const overviewNotices = buildOverviewNotices(payload);
-  const accessLevel = resolveDashboardAccessLevel(payload);
+  return { identity: buildOverviewIdentity(payload, baseServer), systemStatus: buildOverviewStatus(payload, baseServer), moduleSummary: modules.length > 0 ? modules : baseServer.modules, notices: buildOverviewNotices(payload) };
+}
 
+function mapLicenses(value: unknown, baseServer: DashboardServer): DashboardServer["licenses"] {
+  const payload = asRecord(value) ?? {};
+  const tier = pickString(payload, [["active_license", "tier"], ["activeLicense", "tier"], ["plan"], ["plan_name"], ["planName"]]) ?? baseServer.plan;
+  const status = pickString(payload, [["active_license", "status"], ["activeLicense", "status"], ["status"]]);
+  const seats = pickNumber(payload, [["active_license", "seats"], ["activeLicense", "seats"]]);
+  const entitlements = pickRecordArray(payload, [["entitlements"], ["items"]]).map((item) => ({ label: pickString(item, [["label"], ["name"], ["title"]]) ?? "Entitlement", value: pickString(item, [["value"], ["state"], ["status"]]) ?? "", tone: normalizeTone(pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ?? pickString(item, [["value"], ["state"], ["status"]]), "info") })).filter((item) => item.value.trim().length > 0);
   return {
+    currentPlan: toTitleCase(tier),
+    availableLevel: seats !== null ? `${seats} seats` : status ? toTitleCase(status) : baseServer.licenses.availableLevel,
+    entitlementSummary: [toTitleCase(tier), status ? toTitleCase(status) : null, seats !== null ? `${seats} seats` : null].filter((item): item is string => Boolean(item)).join(" · ") || baseServer.licenses.entitlementSummary,
+    entitlements: entitlements.length > 0 ? entitlements : baseServer.licenses.entitlements
+  };
+}
+
+function mapStatusGroups(value: unknown, baseServer: DashboardServer): DashboardStatusGroup[] {
+  const groups = pickRecordArray(value, [["groups"], ["items"], ["status"]]);
+  if (groups.length > 0) {
+    return groups.map((group) => ({ key: "dashboard" as const, title: pickString(group, [["title"], ["label"], ["name"]]) ?? "Status", items: pickRecordArray(group, [["items"], ["status"]]).map((item) => ({ label: pickString(item, [["label"], ["name"], ["title"]]) ?? "Signal", value: pickString(item, [["value"], ["status"], ["state"]]) ?? "Unknown", note: pickString(item, [["note"], ["description"], ["detail"], ["message"]]) ?? "", tone: normalizeTone(pickString(item, [["tone"], ["status_tone"], ["statusTone"], ["state"]]) ?? pickString(item, [["value"], ["status"], ["state"]]), "info") })) })).filter((group) => group.items.length > 0);
+  }
+  const fallback = buildOverviewStatus(value, baseServer);
+  return fallback.length > 0 ? [{ key: "dashboard", title: "Status", items: fallback }] : [];
+}
+
+function mapSummaryServer(value: unknown, options?: { expectedServerId?: string; path?: string }): DashboardServer {
+  const payload = asRecord(value);
+  if (!payload) throw new DashboardApiError("contract", "Dashboard API returned an invalid server payload.", { path: options?.path });
+  const id = pickString(payload, [["server", "id"], ["id"], ["server_id"], ["serverId"]]) ?? options?.expectedServerId;
+  if (!id) throw new DashboardApiError("contract", "Dashboard API server payload is missing an id.", { path: options?.path });
+  const name = pickString(payload, [["branding", "display_name"], ["server", "name"], ["name"], ["title"]]) ?? id;
+  const modules = mapModules(payload);
+  const plan = pickString(payload, [["active_license", "tier"], ["activeLicense", "tier"], ["plan"], ["plan_name"], ["planName"]]) ?? "";
+  const base: DashboardServer = {
     id,
     name,
-    iconLabel:
-      pickString(payload, [["icon_label"], ["iconLabel"], ["server", "icon_label"], ["icon"], ["short_name"]]) ??
-      toInitials(name),
-    iconUrl:
-      pickString(payload, [["icon_url"], ["server", "icon_url"], ["branding", "logo_url"]]) ??
-      undefined,
-    accent:
-      pickString(payload, [["branding", "accent_color"], ["accent"], ["accent_color"], ["accentColor"], ["color"]]) ??
-      "#c4c9d4",
+    iconLabel: pickString(payload, [["icon_label"], ["iconLabel"], ["short_name"], ["icon"]]) ?? name.slice(0, 2).toUpperCase(),
+    iconUrl: pickString(payload, [["icon_url"], ["iconUrl"], ["branding", "logo_url"]]) ?? "",
+    accent: pickString(payload, [["branding", "accent_color"], ["accent_color"], ["accentColor"], ["accent"]]) ?? "#c4c9d4",
     state: resolveServerState(payload),
-    accessLevel,
-    description,
-    environment:
-      formatLocaleLabel(
-        pickPathValue(payload, [
-          ["profile", "preferred_locale"],
-          ["preferred_locale"],
-          ["localization", "default_locale"],
-          ["localization", "fallback_locale"]
-        ])
-      ) ??
-      pickString(payload, [["environment"], ["environment_name"], ["environmentName"]]) ??
-      "",
-    region:
-      formatRegionLabel(
-        pickPathValue(payload, [
-          ["profile", "preferred_locale"],
-          ["preferred_locale"],
-          ["localization", "default_locale"]
-        ])
-      ) ??
-      pickString(payload, [["profile", "timezone"], ["region"], ["location"]]) ??
-      "",
-    members:
-      formatModuleCount(modules) ||
-      (memberCount !== null ? `${memberCount} members` : ""),
-    plan,
+    accessLevel: resolveAccessLevel(payload),
+    description: pickString(payload, [["profile", "notes"], ["notes"], ["description"], ["summary"]]) ?? "",
+    environment: formatLocaleLabel(pickPathValue(payload, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"]])) ?? "",
+    region: pickString(payload, [["profile", "timezone"], ["timezone"], ["region"], ["location"]]) ?? "",
+    members: modules.length > 0 ? `${modules.length} modules tracked` : pickNumber(payload, [["member_count"], ["memberCount"], ["members"]]) !== null ? `${pickNumber(payload, [["member_count"], ["memberCount"], ["members"]])} members` : "",
+    plan: plan ? toTitleCase(plan) : "",
     syncNote: buildSyncNote(payload),
-    overview: {
-      identity: overviewIdentity,
-      systemStatus: overviewStatus,
-      moduleSummary: modules,
-      notices: overviewNotices
-    },
+    overview: { identity: [], systemStatus: [], moduleSummary: modules, notices: [] },
     settings: [],
+    general: [],
+    access: [],
+    localization: [],
     modules,
-    branding: {
-      assets: [],
-      fields: [],
-      note: pickString(payload, [["profile", "notes"], ["branding", "support_invite_url"]]) ?? ""
-    },
-    licenses: {
-      currentPlan: plan,
-      availableLevel: seats !== null ? `${seats} seats` : "",
-      entitlementSummary:
-        [plan || null, seats !== null ? `${seats} seats` : null]
-          .filter((item): item is string => Boolean(item))
-          .join(" · "),
-      entitlements: []
-    },
+    brandingModules: [],
+    branding: { assets: [], fields: [], note: "" },
+    licenses: { currentPlan: plan ? toTitleCase(plan) : "", availableLevel: "", entitlementSummary: "", entitlements: [] },
     status: []
   };
+  base.general = buildGeneralSettings(payload, base);
+  base.access = buildAccessSettings(payload, base);
+  base.localization = buildLocalizationSettings(payload, base);
+  base.settings = [...base.general, ...base.access, ...base.localization];
+  base.overview = { identity: buildOverviewIdentity(payload, base), systemStatus: buildOverviewStatus(payload, base), moduleSummary: base.modules, notices: buildOverviewNotices(payload) };
+  base.brandingModules = mapBrandingModules(payload, base.modules);
+  base.branding.note = "Branding stays a module catalog in this pass.";
+  base.licenses = mapLicenses(payload, base);
+  base.status = mapStatusGroups(payload, base);
+  return base;
 }
-
-function mergeDashboardServerSummary(
-  primary: DashboardServer,
-  secondary: DashboardServer | null
-): DashboardServer {
-  if (!secondary) {
-    return primary;
-  }
-
+function mergeSummary(primary: DashboardServer, secondary: DashboardServer | null): DashboardServer {
+  if (!secondary) return primary;
   return {
     ...primary,
     name: primary.name || secondary.name,
@@ -1461,7 +402,7 @@ function mergeDashboardServerSummary(
     iconUrl: primary.iconUrl || secondary.iconUrl,
     accent: primary.accent || secondary.accent,
     state: primary.state !== "inactive" ? primary.state : secondary.state,
-    accessLevel: mergeDashboardAccessLevel(primary.accessLevel, secondary.accessLevel),
+    accessLevel: primary.accessLevel !== "none" ? primary.accessLevel : secondary.accessLevel,
     description: primary.description || secondary.description,
     environment: primary.environment || secondary.environment,
     region: primary.region || secondary.region,
@@ -1469,24 +410,17 @@ function mergeDashboardServerSummary(
     plan: primary.plan || secondary.plan,
     syncNote: primary.syncNote || secondary.syncNote,
     overview: {
-      identity:
-        primary.overview.identity.length > 0
-          ? primary.overview.identity
-          : secondary.overview.identity,
-      systemStatus:
-        primary.overview.systemStatus.length > 0
-          ? primary.overview.systemStatus
-          : secondary.overview.systemStatus,
-      moduleSummary:
-        primary.overview.moduleSummary.length > 0
-          ? primary.overview.moduleSummary
-          : secondary.overview.moduleSummary,
-      notices:
-        primary.overview.notices.length > 0
-          ? primary.overview.notices
-          : secondary.overview.notices
+      identity: primary.overview.identity.length > 0 ? primary.overview.identity : secondary.overview.identity,
+      systemStatus: primary.overview.systemStatus.length > 0 ? primary.overview.systemStatus : secondary.overview.systemStatus,
+      moduleSummary: primary.overview.moduleSummary.length > 0 ? primary.overview.moduleSummary : secondary.overview.moduleSummary,
+      notices: primary.overview.notices.length > 0 ? primary.overview.notices : secondary.overview.notices
     },
+    settings: primary.settings.length > 0 ? primary.settings : secondary.settings,
+    general: primary.general.length > 0 ? primary.general : secondary.general,
+    access: primary.access.length > 0 ? primary.access : secondary.access,
+    localization: primary.localization.length > 0 ? primary.localization : secondary.localization,
     modules: primary.modules.length > 0 ? primary.modules : secondary.modules,
+    brandingModules: primary.brandingModules.length > 0 ? primary.brandingModules : secondary.brandingModules,
     branding: {
       assets: primary.branding.assets.length > 0 ? primary.branding.assets : secondary.branding.assets,
       fields: primary.branding.fields.length > 0 ? primary.branding.fields : secondary.branding.fields,
@@ -1495,322 +429,111 @@ function mergeDashboardServerSummary(
     licenses: {
       currentPlan: primary.licenses.currentPlan || secondary.licenses.currentPlan,
       availableLevel: primary.licenses.availableLevel || secondary.licenses.availableLevel,
-      entitlementSummary:
-        primary.licenses.entitlementSummary || secondary.licenses.entitlementSummary,
-      entitlements:
-        primary.licenses.entitlements.length > 0
-          ? primary.licenses.entitlements
-          : secondary.licenses.entitlements
+      entitlementSummary: primary.licenses.entitlementSummary || secondary.licenses.entitlementSummary,
+      entitlements: primary.licenses.entitlements.length > 0 ? primary.licenses.entitlements : secondary.licenses.entitlements
     },
     status: primary.status.length > 0 ? primary.status : secondary.status
   };
 }
 
-function mapOverview(
-  baseServer: DashboardServer,
-  value: unknown
-): DashboardServer["overview"] {
-  const payload = getSectionPayload(value, "overview");
-  const identity = mapIdentityFields(
-    pickPathValue(payload, [["identity"], ["fields"], ["items"]])
-  );
-  const systemStatus = mapStatusItems(
-    pickPathValue(payload, [["system_status"], ["systemStatus"], ["status"]])
-  );
-  const moduleSummary = mapModules(
-    pickPathValue(payload, [["module_summary"], ["moduleSummary"], ["modules"], ["items"]]) ??
-      payload
-  );
-  const notices = mapNotices(pickPathValue(payload, [["notices"], ["updates"], ["items"]]));
-  const derivedIdentity = buildOverviewIdentity(payload, baseServer);
-  const derivedSystemStatus = buildOverviewStatus(payload, baseServer);
-  const derivedNotices = buildOverviewNotices(payload);
-
-  return {
-    identity:
-      identity.length > 0
-        ? identity
-        : derivedIdentity.length > 0
-          ? derivedIdentity
-          : baseServer.overview.identity,
-    systemStatus:
-      systemStatus.length > 0
-        ? systemStatus
-        : derivedSystemStatus.length > 0
-          ? derivedSystemStatus
-          : baseServer.overview.systemStatus,
-    moduleSummary:
-      moduleSummary.length > 0
-        ? moduleSummary
-        : baseServer.modules.length > 0
-          ? baseServer.modules
-          : baseServer.overview.moduleSummary,
-    notices:
-      notices.length > 0
-        ? notices
-        : derivedNotices.length > 0
-          ? derivedNotices
-          : baseServer.overview.notices
-  };
+function resolveApiSection(page: DashboardServerRoutePage): DashboardApiSectionPage {
+  switch (page) {
+    case "overview": return "overview";
+    case "general":
+    case "access":
+    case "localization": return "settings";
+    case "branding": return "modules";
+    case "license": return "licenses";
+    case "status": return "status";
+    default: return "overview";
+  }
 }
 
-function mapBranding(value: unknown): DashboardServer["branding"] {
-  const payload = getSectionPayload(value, "branding");
-  const assets = mapBrandAssets(pickPathValue(payload, [["assets"], ["items"]]));
-  const fields = mapIdentityFields(pickPathValue(payload, [["fields"], ["identity"]]));
-  const note = pickString(payload, [["note"], ["summary"], ["description"]]) ?? "";
-
-  const derivedAssets: DashboardBrandAsset[] = [];
-  const pushAsset = (label: string, assetValue: string | null, assetNote = "") => {
-    if (!assetValue) {
-      return;
-    }
-
-    derivedAssets.push({
-      label,
-      value: assetValue,
-      note: assetNote
-    });
-  };
-
-  pushAsset(
-    "Logo",
-    pickString(payload, [["logo_state"]]) ??
-      (pickString(payload, [["logo_url"]]) ? "Configured" : null),
-    pickString(payload, [["logo_url"]]) ?? ""
-  );
-  pushAsset(
-    "Wordmark",
-    pickString(payload, [["wordmark_state"]]) ??
-      (pickString(payload, [["wordmark_url"]]) ? "Configured" : null),
-    pickString(payload, [["wordmark_url"]]) ?? ""
-  );
-  pushAsset(
-    "Accent color",
-    pickString(payload, [["accent_color"], ["accentColor"]]),
-    ""
-  );
-
-  const derivedFields: DashboardIdentityField[] = [];
-  const pushField = (label: string, fieldValue: string | null) => {
-    if (!fieldValue) {
-      return;
-    }
-
-    derivedFields.push({
-      label,
-      value: fieldValue
-    });
-  };
-
-  pushField("Display name", pickString(payload, [["display_name"], ["displayName"], ["name"]]));
-  pushField(
-    "Support",
-    pickString(payload, [["support_invite_url"], ["support_url"], ["contact_email"]])
-  );
-
-  return {
-    assets: assets.length > 0 ? assets : derivedAssets,
-    fields: fields.length > 0 ? fields : derivedFields,
-    note
-  };
+function getSectionPayload(value: unknown, section: DashboardApiSectionPage): unknown {
+  return pickPathValue(value, [[section], ["data", section], ["payload", section], ["data"]]) ?? value;
 }
 
-function mapLicenses(value: unknown): DashboardServer["licenses"] {
-  const payload =
-    pickRecord(value, [["licenses"], ["license"], ["data", "licenses"], ["data"]]) ?? value;
-  const plan = buildPlanLabel(payload);
-  const seats = pickNumber(payload, [["active_license", "seats"], ["activeLicense", "seats"]]);
-  const entitlements = mapEntitlements(
-    pickPathValue(payload, [["entitlements"], ["items"]])
-  );
-  const activeStatus = pickString(payload, [["active_license", "status"], ["activeLicense", "status"]]);
-  const activeTier = pickString(payload, [["active_license", "tier"], ["activeLicense", "tier"]]);
-  const derivedEntitlements: DashboardEntitlement[] = [];
-  const pushEntitlement = (
-    label: string,
-    entitlementValue: string | null,
-    tone: DashboardTone = "info"
-  ) => {
-    if (!entitlementValue) {
-      return;
-    }
-
-    derivedEntitlements.push({
-      label,
-      value: entitlementValue,
-      tone
-    });
-  };
-
-  pushEntitlement(
-    "Tier",
-    activeTier ? toTitleCase(activeTier) : null,
-    activeStatus ? normalizeTone(activeStatus, "info") : "info"
-  );
-  pushEntitlement(
-    "Status",
-    activeStatus ? toTitleCase(activeStatus) : null,
-    activeStatus ? normalizeTone(activeStatus, "info") : "info"
-  );
-  pushEntitlement("Seats", seats !== null ? `${seats} seats` : null, "info");
-
-  return {
-    currentPlan:
-      pickString(payload, [["current_plan"], ["currentPlan"], ["plan"]]) ?? plan,
-    availableLevel:
-      pickString(payload, [["available_level"], ["availableLevel"], ["level"]]) ??
-      (seats !== null ? `${seats} seats` : ""),
-    entitlementSummary:
-      pickString(payload, [["entitlement_summary"], ["entitlementSummary"], ["summary"]]) ??
-      [plan || null, seats !== null ? `${seats} seats` : null]
-        .filter((item): item is string => Boolean(item))
-        .join(" · "),
-    entitlements: entitlements.length > 0 ? entitlements : derivedEntitlements
-  };
+function ensureServerMatch(value: unknown, serverId: string, path: string) {
+  const payloadId = pickString(value, [["server", "id"], ["id"], ["server_id"], ["serverId"]]);
+  if (payloadId && payloadId !== serverId) {
+    throw new DashboardApiError("contract", "Dashboard API returned a mismatched server payload.", { path });
+  }
 }
 
-function mapServerPagePayload(
-  page: DashboardServerRoutePage,
-  baseServer: DashboardServer,
-  value: unknown
-): DashboardServer {
-  const sectionServerPayload =
-    pickPathValue(value, [["server"], ["data", "server"]]) ?? undefined;
-  const mergedServer = mergeDashboardServerSummary(
-    baseServer,
-    sectionServerPayload
-      ? mapDashboardServerSummary(sectionServerPayload, { expectedServerId: baseServer.id })
-      : null
-  );
-
+function mapServerPagePayload(page: DashboardServerRoutePage, baseServer: DashboardServer, value: unknown): DashboardServer {
+  const sectionServerPayload = pickPathValue(value, [["server"], ["data", "server"]]);
+  const merged = mergeSummary(baseServer, sectionServerPayload ? mapSummaryServer(sectionServerPayload, { expectedServerId: baseServer.id }) : null);
   switch (page) {
     case "overview":
+      return { ...merged, overview: mapOverview(merged, value) };
+    case "general":
+    case "access":
+    case "localization": {
+      const payload = getSectionPayload(value, "settings");
+      const general = buildGeneralSettings(payload, merged);
+      const access = buildAccessSettings(payload, merged);
+      const localization = buildLocalizationSettings(payload, merged);
+      return { ...merged, settings: [...general, ...access, ...localization], general, access, localization };
+    }
+    case "branding": {
+      const payload = getSectionPayload(value, "modules");
+      const modules = mapModules(payload);
+      const brandingModules = mapBrandingModules(payload, merged.modules);
       return {
-        ...mergedServer,
-        overview: mapOverview(mergedServer, value)
-      };
-    case "settings":
-      return {
-        ...mergedServer,
-        settings: mapSettings(getSectionPayload(value, "settings"))
-      };
-    case "modules": {
-      const modules = mapModules(getSectionPayload(value, "modules"));
-
-      return {
-        ...mergedServer,
-        modules,
-        overview: {
-          ...mergedServer.overview,
-          moduleSummary: modules.length > 0 ? modules : mergedServer.overview.moduleSummary
-        }
+        ...merged,
+        modules: modules.length > 0 ? modules : merged.modules,
+        brandingModules,
+        overview: { ...merged.overview, moduleSummary: modules.length > 0 ? modules : merged.overview.moduleSummary },
+        branding: { ...merged.branding, note: "Branding stays a module catalog in this pass." }
       };
     }
-    case "branding":
-      return {
-        ...mergedServer,
-        branding: mapBranding(value)
-      };
-    case "licenses":
-      return {
-        ...mergedServer,
-        licenses: mapLicenses(value)
-      };
+    case "license":
+      return { ...merged, licenses: mapLicenses(getSectionPayload(value, "licenses"), merged) };
     case "status":
-      return {
-        ...mergedServer,
-        status: mapStatusGroups(getSectionPayload(value, "status"))
-      };
+      return { ...merged, status: mapStatusGroups(getSectionPayload(value, "status"), merged) };
     default:
-      return mergedServer;
+      return merged;
   }
 }
 
-function mapDashboardServerList(value: unknown, path: string): DashboardServer[] {
-  const itemsSource =
-    asArray(value) ??
-    pickPathValue(value, [["items"], ["servers"], ["data", "items"], ["data", "servers"]]);
-  const items = asRecordArray(itemsSource);
-
+function mapServerList(value: unknown, path: string): DashboardServer[] {
+  const itemsSource = asArray(value) ?? pickPathValue(value, [["items"], ["servers"], ["data", "items"], ["data", "servers"]]);
   if (!itemsSource || !Array.isArray(itemsSource)) {
-    throw new DashboardApiError(
-      "contract",
-      "Dashboard API servers payload is missing an items array.",
-      { path }
-    );
+    throw new DashboardApiError("contract", "Dashboard API servers payload is missing an items array.", { path });
   }
-
-  return items.map((item) => mapDashboardServerSummary(item, { path }));
+  return asRecordArray(itemsSource).map((item) => mapSummaryServer(item, { path }));
 }
 
 export function shouldUseDashboardFallback(error: DashboardApiError | null): boolean {
-  if (!error) {
-    return false;
-  }
-
-  if (error.kind === "config" || error.kind === "network") {
-    return true;
-  }
-
-  if (error.kind === "http") {
-    return (error.status ?? 0) >= 500;
-  }
-
-  return false;
+  if (!error) return false;
+  if (error.kind === "config" || error.kind === "network") return true;
+  return error.kind === "http" && (error.status ?? 0) >= 500;
 }
 
-export function isDashboardUnauthorizedError(
-  error: DashboardApiError | null | undefined
-): boolean {
+export function isDashboardUnauthorizedError(error: DashboardApiError | null | undefined): boolean {
   return error?.kind === "http" && error.status === 401;
 }
 
-export async function fetchDashboardServers(signal?: AbortSignal) {
+export async function fetchDashboardServers(signal?: AbortSignal): Promise<DashboardServer[]> {
   const response = await fetchDashboardJson<unknown>("servers", signal);
-  return mapDashboardServerList(response.data, response.path);
+  return mapServerList(response.data, response.path);
 }
 
-export async function fetchDashboardServerPage(
-  serverId: string,
-  page: DashboardServerRoutePage,
-  signal?: AbortSignal
-): Promise<DashboardServer> {
+export async function fetchDashboardServerPage(serverId: string, page: DashboardServerRoutePage, signal?: AbortSignal): Promise<DashboardServer> {
   const encodedServerId = encodeURIComponent(serverId);
-  const serverResponse = await fetchDashboardJson<unknown>(
-    `servers/${encodedServerId}`,
-    signal
-  );
-  const baseServer = mapDashboardServerSummary(serverResponse.data, {
-    expectedServerId: serverId,
-    path: serverResponse.path
-  });
-
-  if (baseServer.accessLevel === "none") {
-    return baseServer;
-  }
-
+  const serverResponse = await fetchDashboardJson<unknown>(`servers/${encodedServerId}`, signal);
+  const baseServer = mapSummaryServer(serverResponse.data, { expectedServerId: serverId, path: serverResponse.path });
+  if (baseServer.accessLevel === "none") return baseServer;
+  const endpoint = resolveApiSection(page);
   let pageResponse: DashboardApiResponse<unknown>;
-
   try {
-    pageResponse = await fetchDashboardJson<unknown>(
-      `servers/${encodedServerId}/${page}`,
-      signal
-    );
+    pageResponse = await fetchDashboardJson<unknown>(`servers/${encodedServerId}/${endpoint}`, signal);
   } catch (error) {
     if (error instanceof DashboardApiError && error.status === 403) {
-      return {
-        ...baseServer,
-        accessLevel: "none" as const
-      };
+      return { ...baseServer, accessLevel: "none" };
     }
-
     throw error;
   }
-
   ensureServerMatch(pageResponse.data, serverId, pageResponse.path);
-
   return mapServerPagePayload(page, baseServer, pageResponse.data);
 }
-
-

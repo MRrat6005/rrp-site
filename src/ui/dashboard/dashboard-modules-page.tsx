@@ -1,57 +1,12 @@
 import type { Locale } from "@/config/site.config";
-import type { DashboardServer } from "@/lib/dashboard-mock";
-import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
-import {
-  DashboardMessagePanel,
-  DashboardPanel,
-  DashboardSectionHeading,
-  DashboardStatusPill
-} from "@/ui/dashboard/dashboard-primitives";
+import type { DashboardServer } from "@/lib/dashboard-model";
+import { DashboardMessagePanel } from "@/ui/dashboard/dashboard-primitives";
 
-interface DashboardModulesPageProps {
-  locale: Locale;
-  server: DashboardServer;
-}
-
-export function DashboardModulesPage({
-  locale,
-  server
-}: DashboardModulesPageProps) {
-  const copy = getDashboardCopy(locale);
-
-  if (server.modules.length === 0) {
-    return (
-      <DashboardMessagePanel
-        title={copy.modules.emptyTitle}
-        body={copy.modules.emptyBody}
-      />
-    );
-  }
-
+export function DashboardModulesPage({ locale }: { locale: Locale; server: DashboardServer }) {
   return (
-    <DashboardPanel className="p-5 sm:p-6">
-      <div className="space-y-4">
-        <DashboardSectionHeading title={copy.modules.title} body={copy.modules.note} />
-        <div className="divide-y divide-white/[0.05]">
-          {server.modules.map((module) => (
-            <div
-              key={module.key}
-              className="flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between"
-            >
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-sm font-medium text-white/88">{module.name}</p>
-                  <DashboardStatusPill tone={module.tone}>{module.stateLabel}</DashboardStatusPill>
-                </div>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
-                  {module.description}
-                </p>
-              </div>
-              <span className="text-sm text-white/64 md:text-right">{module.actionLabel}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </DashboardPanel>
+    <DashboardMessagePanel
+      title={locale === "en" ? "Modules" : "Модули"}
+      body={locale === "en" ? "Modules are not exposed as a standalone dashboard section in this pass." : "В этот проход модули не выводятся как отдельный dashboard-раздел."}
+    />
   );
 }

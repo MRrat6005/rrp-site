@@ -1,5 +1,5 @@
 import { resolveLocale } from "@/lib/i18n";
-import { getDashboardServers } from "@/lib/dashboard-mock";
+import { getDashboardServers } from "@/lib/dashboard-model";
 import { DashboardServersRoute } from "@/ui/dashboard/dashboard-route-runtime";
 
 interface DashboardServersRoutePageProps {
@@ -8,9 +8,7 @@ interface DashboardServersRoutePageProps {
   };
 }
 
-export default function DashboardServersRoutePage({
-  params
-}: DashboardServersRoutePageProps) {
+export default function DashboardServersRoutePage({ params }: DashboardServersRoutePageProps) {
   const locale = resolveLocale(params.locale);
 
   return (

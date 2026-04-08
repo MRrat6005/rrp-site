@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
-import type { DashboardTone } from "@/lib/dashboard-mock";
+import type { DashboardTone } from "@/lib/dashboard-model";
 
 export function cx(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -10,15 +10,11 @@ interface DashboardPanelProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-export function DashboardPanel({
-  className,
-  children,
-  ...props
-}: DashboardPanelProps) {
+export function DashboardPanel({ className, children, ...props }: DashboardPanelProps) {
   return (
     <section
       className={cx(
-        "rounded-[1.25rem] border border-white/[0.05] bg-[rgba(13,14,16,0.84)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-sm",
+        "rounded-[1.25rem] border border-white/[0.06] bg-[rgba(13,14,16,0.84)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-sm",
         className
       )}
       {...props}
@@ -34,50 +30,24 @@ interface DashboardStatusPillProps {
 }
 
 const toneClasses: Record<DashboardTone, string> = {
-  positive: "border-white/[0.06] bg-white/[0.04] text-white/72",
-  warning: "border-white/[0.05] bg-white/[0.028] text-white/64",
-  info: "border-white/[0.05] bg-white/[0.024] text-white/60",
-  muted: "border-white/[0.05] bg-white/[0.015] text-white/44"
+  positive: "border-emerald-400/20 bg-emerald-400/10 text-emerald-100/90",
+  warning: "border-amber-300/18 bg-amber-300/10 text-amber-100/85",
+  info: "border-sky-300/16 bg-sky-300/10 text-sky-100/82",
+  muted: "border-white/[0.05] bg-white/[0.03] text-white/48"
 };
 
-export function DashboardStatusPill({
-  tone,
-  children
-}: DashboardStatusPillProps) {
+export function DashboardStatusPill({ tone, children }: DashboardStatusPillProps) {
   return (
-    <span
-      className={cx(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium tracking-[0.14em] uppercase",
-        toneClasses[tone]
-      )}
-    >
+    <span className={cx("inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium tracking-[0.14em] uppercase", toneClasses[tone])}>
       {children}
     </span>
   );
 }
 
-interface DashboardLockGlyphProps {
-  className?: string;
-}
-
-export function DashboardLockGlyph({ className }: DashboardLockGlyphProps) {
+export function DashboardLockGlyph({ className }: { className?: string }) {
   return (
-    <span
-      aria-hidden="true"
-      className={cx(
-        "inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-white/58",
-        className
-      )}
-    >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        className="h-3.5 w-3.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
+    <span aria-hidden="true" className={cx("inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-white/58", className)}>
+      <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M8.5 10V7.75a3.5 3.5 0 1 1 7 0V10" />
         <rect x="6.5" y="10" width="11" height="8.5" rx="2.2" />
         <path d="M12 13.25v2.25" />
@@ -86,34 +56,16 @@ export function DashboardLockGlyph({ className }: DashboardLockGlyphProps) {
   );
 }
 
-interface DashboardSectionHeadingProps {
-  title: string;
-  body?: string;
-}
-
-export function DashboardSectionHeading({
-  title,
-  body
-}: DashboardSectionHeadingProps) {
+export function DashboardSectionHeading({ title, body }: { title: string; body?: string }) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <h2 className="text-sm font-medium text-white/88">{title}</h2>
       {body ? <p className="text-sm leading-6 text-white/52">{body}</p> : null}
     </div>
   );
 }
 
-interface DashboardMessagePanelProps {
-  body: string;
-  className?: string;
-  title: string;
-}
-
-export function DashboardMessagePanel({
-  body,
-  className,
-  title
-}: DashboardMessagePanelProps) {
+export function DashboardMessagePanel({ body, className, title }: { body: string; className?: string; title: string }) {
   return (
     <DashboardPanel className={cx("p-6 sm:p-8", className)}>
       <div className="space-y-2">
