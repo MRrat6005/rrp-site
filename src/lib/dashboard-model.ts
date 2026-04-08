@@ -66,6 +66,41 @@ export interface DashboardSettingGroup {
   note: string;
 }
 
+export interface DashboardGeneralSettings {
+  id: string;
+  guildId: string;
+  slug: string;
+  name: string;
+  iconUrl: string | null;
+  isActive: boolean | null;
+  contactEmail: string | null;
+  supportUrl: string | null;
+  dashboardEnabled: boolean | null;
+  botSyncEnabled: boolean | null;
+  notes: string | null;
+}
+
+export interface DashboardAccessSettings {
+  ownerAccess: string | null;
+  adminAccess: string | null;
+  ownerCount: number | null;
+  adminCount: number | null;
+  dashboardAdminRoles: string[];
+  botManagerRoles: string[];
+  allowDashboardWrite: boolean | null;
+  allowBotWrite: boolean | null;
+  policyVersion: number | null;
+}
+
+export interface DashboardLocalizationSettings {
+  timezone: string | null;
+  preferredLocale: string | null;
+  defaultLocale: string | null;
+  fallbackLocale: string | null;
+  supportedLocales: string[];
+  translationsVersion: string | null;
+}
+
 export interface DashboardBrandAsset {
   label: string;
   value: string;
@@ -108,6 +143,11 @@ export interface DashboardServer {
   general: DashboardSettingGroup[];
   access: DashboardSettingGroup[];
   localization: DashboardSettingGroup[];
+  settingsData?: {
+    general: DashboardGeneralSettings | null;
+    access: DashboardAccessSettings | null;
+    localization: DashboardLocalizationSettings | null;
+  };
   modules: DashboardModule[];
   brandingModules: DashboardBrandingModule[];
   branding: {
@@ -478,3 +518,4 @@ export function getDashboardServer(id: string, locale: Locale = "en"): Dashboard
   const seed = seeds.find((item) => item.id === id);
   return seed ? materializeServer(locale, seed) : null;
 }
+

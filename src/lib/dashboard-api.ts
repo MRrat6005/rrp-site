@@ -1,7 +1,10 @@
 import type {
   DashboardAccessLevel,
+  DashboardAccessSettings,
   DashboardBrandingModule,
+  DashboardGeneralSettings,
   DashboardIdentityField,
+  DashboardLocalizationSettings,
   DashboardModule,
   DashboardModuleKey,
   DashboardNotice,
@@ -26,6 +29,7 @@ type DashboardApiSectionPage = "overview" | "settings" | "modules" | "licenses" 
 export type DashboardApiErrorKind = "config" | "network" | "http" | "parse" | "contract";
 type DashboardRawRecord = Record<string, unknown>;
 interface DashboardApiResponse<T> { data: T; path: string; }
+type DashboardSettingsData = NonNullable<DashboardServer["settingsData"]>;
 
 declare global {
   interface Window { __RRP_RUNTIME_CONFIG__?: { dashboardApiBaseUrl?: string }; }
@@ -265,38 +269,181 @@ function mapBrandingModules(value: unknown, fallbackModules: DashboardModule[]):
     note: module.tone === "positive" ? "Module is present on the server, but its branding editor is not connected yet." : module.tone === "warning" ? "Module remains visible as a future branding category." : "Module branding is kept as a scaffold until module editors are connected."
   }));
 }
-function buildGeneralSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
-  const locale = formatLocaleLabel(pickPathValue(value, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"]])) ?? baseServer.environment;
-  const displayName = pickString(value, [["branding", "display_name"], ["server", "name"], ["name"]]) ?? baseServer.name;
-  const plan = pickString(value, [["active_license", "tier"], ["activeLicense", "tier"], ["plan"], ["plan_name"], ["planName"]]) ?? baseServer.plan;
-  return [
-    { label: "Server ID", value: baseServer.id, note: "Uses the current backend server record." },
-    { label: "Display name", value: displayName, note: "Shown without a server-wide branding editor." },
-    { label: "Plan", value: toTitleCase(plan), note: "Detailed separately on the License page." },
-    { label: "Primary locale", value: locale, note: "Part of the server-level dashboard summary." }
-  ].filter((item) => item.value.trim().length > 0);
+function asStringArray(value: unknown): string[] {
+  return (asArray(value) ?? []).map((item) => asString(item)).filter((item): item is string => Boolean(item));
 }
 
-function buildAccessSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
-  const accessLevel = resolveAccessLevel(value);
-  const dashboardWrite = asBoolean(pickPathValue(value, [["permissions", "allow_dashboard_write"], ["allow_dashboard_write"]]));
-  const botWrite = asBoolean(pickPathValue(value, [["permissions", "allow_bot_write"], ["allow_bot_write"]]));
-  const policyVersion = pickNumber(value, [["permissions", "policy_version"], ["policy_version"]]);
+function normalizeLocaleCode(value: unknown): string | null {
+  return asString(value)?.replace(/_/g, "-") ?? null;
+}
+
+function normalizeLocaleCodes(value: unknown): string[] {
+  return (asArray(value) ?? []).map((item) => normalizeLocaleCode(item)).filter((item): item is string => Boolean(item));
+}
+
+function normalizeSettingsPolicy(value: unknown): string | null {
+  return asString(value)?.toLowerCase().replace(/[\s-]+/g, "_") ?? null;
+}
+
+function formatOptionalValue(value: string | number | null | undefined, emptyValue = "Not set"): string {
+  if (value === null || value === undefined) return emptyValue;
+  const normalized = `${value}`.trim();
+  return normalized.length > 0 ? normalized : emptyValue;
+}
+
+function formatBooleanValue(value: boolean | null, trueLabel = "Enabled", falseLabel = "Disabled", emptyValue = "Not provided"): string {
+  if (value === true) return trueLabel;
+  if (value === false) return falseLabel;
+  return emptyValue;
+}
+
+function formatPolicyValue(value: string | null): string {
+  switch (normalizeSettingsPolicy(value)) {
+    case "read_write": return "Read & write";
+    case "read_only": return "Read only";
+    case "none": return "No access";
+    default: return value ? toTitleCase(value) : "Not provided";
+  }
+}
+
+function formatListValue(values: string[], emptyValue = "None"): string {
+  return values.length > 0 ? values.join(", ") : emptyValue;
+}
+
+function formatLocaleValue(value: string | null, emptyValue = "Not set"): string {
+  return value ?? emptyValue;
+}
+
+function formatLocaleNote(value: string | null, fallback: string): string {
+  if (!value) return fallback;
+  const label = formatLocaleLabel(value);
+  return label && label !== value ? `Resolved label: ${label}.` : fallback;
+}
+
+function buildGeneralSettingsSection(value: unknown): DashboardGeneralSettings | null {
+  const section = asRecord(value);
+  if (!section) return null;
+  const general: DashboardGeneralSettings = {
+    id: pickString(section, [["id"]]) ?? "",
+    guildId: pickString(section, [["guild_id"], ["guildId"]]) ?? "",
+    slug: pickString(section, [["slug"]]) ?? "",
+    name: pickString(section, [["name"]]) ?? "",
+    iconUrl: pickString(section, [["icon_url"], ["iconUrl"]]),
+    isActive: asBoolean(pickPathValue(section, [["is_active"], ["isActive"]])),
+    contactEmail: pickString(section, [["contact_email"], ["contactEmail"]]),
+    supportUrl: pickString(section, [["support_url"], ["supportUrl"]]),
+    dashboardEnabled: asBoolean(pickPathValue(section, [["dashboard_enabled"], ["dashboardEnabled"]])),
+    botSyncEnabled: asBoolean(pickPathValue(section, [["bot_sync_enabled"], ["botSyncEnabled"]])),
+    notes: pickString(section, [["notes"]])
+  };
+  return Object.values(general).some((item) => item !== null && item !== "") ? general : null;
+}
+
+function buildAccessSettingsSection(value: unknown): DashboardAccessSettings | null {
+  const section = asRecord(value);
+  if (!section) return null;
+  const access: DashboardAccessSettings = {
+    ownerAccess: pickString(section, [["owner_access"], ["ownerAccess"]]),
+    adminAccess: pickString(section, [["admin_access"], ["adminAccess"]]),
+    ownerCount: pickNumber(section, [["owner_count"], ["ownerCount"]]),
+    adminCount: pickNumber(section, [["admin_count"], ["adminCount"]]),
+    dashboardAdminRoles: asStringArray(pickPathValue(section, [["dashboard_admin_roles"], ["dashboardAdminRoles"]])),
+    botManagerRoles: asStringArray(pickPathValue(section, [["bot_manager_roles"], ["botManagerRoles"]])),
+    allowDashboardWrite: asBoolean(pickPathValue(section, [["allow_dashboard_write"], ["allowDashboardWrite"]])),
+    allowBotWrite: asBoolean(pickPathValue(section, [["allow_bot_write"], ["allowBotWrite"]])),
+    policyVersion: pickNumber(section, [["policy_version"], ["policyVersion"]])
+  };
+  return Object.values(access).some((item) => Array.isArray(item) ? item.length > 0 : item !== null && item !== "") ? access : null;
+}
+
+function buildLocalizationSettingsSection(value: unknown): DashboardLocalizationSettings | null {
+  const section = asRecord(value);
+  if (!section) return null;
+  const localization: DashboardLocalizationSettings = {
+    timezone: pickString(section, [["timezone"]]),
+    preferredLocale: normalizeLocaleCode(pickPathValue(section, [["preferred_locale"], ["preferredLocale"]])),
+    defaultLocale: normalizeLocaleCode(pickPathValue(section, [["default_locale"], ["defaultLocale"]])),
+    fallbackLocale: normalizeLocaleCode(pickPathValue(section, [["fallback_locale"], ["fallbackLocale"]])),
+    supportedLocales: normalizeLocaleCodes(pickPathValue(section, [["supported_locales"], ["supportedLocales"]])),
+    translationsVersion: pickString(section, [["translations_version"], ["translationsVersion"]])
+  };
+  return Object.values(localization).some((item) => Array.isArray(item) ? item.length > 0 : item !== null && item !== "") ? localization : null;
+}
+
+function buildSettingsData(value: unknown): DashboardSettingsData {
+  const payload = asRecord(value);
+  return {
+    general: buildGeneralSettingsSection(payload?.general),
+    access: buildAccessSettingsSection(payload?.access),
+    localization: buildLocalizationSettingsSection(payload?.localization)
+  };
+}
+
+function getSettingsEnvironment(localization: DashboardLocalizationSettings | null): string {
+  const locale = localization?.preferredLocale ?? localization?.defaultLocale ?? localization?.fallbackLocale;
+  return locale ? formatLocaleLabel(locale) ?? locale : "";
+}
+
+function applySettingsData(server: DashboardServer, settingsData: DashboardSettingsData): DashboardServer {
+  const general = buildGeneralSettings(settingsData.general);
+  const access = buildAccessSettings(settingsData.access);
+  const localization = buildLocalizationSettings(settingsData.localization);
+  return {
+    ...server,
+    name: settingsData.general?.name || server.name,
+    iconUrl: settingsData.general?.iconUrl ?? server.iconUrl,
+    description: settingsData.general?.notes ?? server.description,
+    environment: getSettingsEnvironment(settingsData.localization) || server.environment,
+    region: settingsData.localization?.timezone ?? server.region,
+    settingsData,
+    settings: [...general, ...access, ...localization],
+    general,
+    access,
+    localization
+  };
+}
+
+function buildGeneralSettings(general: DashboardGeneralSettings | null): DashboardSettingGroup[] {
+  if (!general) return [];
   return [
-    { label: "Dashboard scope", value: accessLevel === "owner" ? "Owner access" : accessLevel === "admin" ? "Admin access" : "Locked", note: baseServer.accessLevel === "none" ? "This workspace is list-visible but locked." : "Read surfaces are open for this account." },
-    { label: "Write path", value: dashboardWrite === true || botWrite === true ? "Partially available" : dashboardWrite === false || botWrite === false ? "Limited" : "Not in scope", note: policyVersion !== null ? `Policy v${policyVersion}` : "Heavy forms and write actions stay disabled in this pass." }
+    { label: "ID", value: formatOptionalValue(general.id), note: "Settings record id returned by settings.general.id." },
+    { label: "Guild ID", value: formatOptionalValue(general.guildId), note: "Discord guild id returned by settings.general.guild_id." },
+    { label: "Slug", value: formatOptionalValue(general.slug), note: "Stable workspace slug from settings.general.slug." },
+    { label: "Name", value: formatOptionalValue(general.name), note: "Current server name from settings.general.name." },
+    { label: "Icon URL", value: formatOptionalValue(general.iconUrl), note: general.iconUrl ? "Current icon URL returned by settings.general.icon_url." : "Backend returned no icon URL." },
+    { label: "Active", value: formatBooleanValue(general.isActive, "Active", "Inactive"), note: "Mirrors settings.general.is_active." },
+    { label: "Contact email", value: formatOptionalValue(general.contactEmail), note: "Primary contact from settings.general.contact_email." },
+    { label: "Support URL", value: formatOptionalValue(general.supportUrl), note: "Support entry point from settings.general.support_url." },
+    { label: "Dashboard enabled", value: formatBooleanValue(general.dashboardEnabled), note: "Mirrors settings.general.dashboard_enabled." },
+    { label: "Bot sync enabled", value: formatBooleanValue(general.botSyncEnabled), note: "Mirrors settings.general.bot_sync_enabled." },
+    { label: "Notes", value: formatOptionalValue(general.notes, "No notes"), note: "Read-only notes from settings.general.notes." }
   ];
 }
 
-function buildLocalizationSettings(value: unknown, baseServer: DashboardServer): DashboardSettingGroup[] {
-  const primaryLocale = formatLocaleLabel(pickPathValue(value, [["profile", "preferred_locale"], ["preferred_locale"], ["localization", "default_locale"], ["localization", "fallback_locale"]])) ?? baseServer.environment;
-  const supportedLocales = (asArray(pickPathValue(value, [["localization", "supported_locales"]])) ?? []).map((item) => formatLocaleLabel(item)).filter((item): item is string => Boolean(item)).join(", ");
-  const timezone = pickString(value, [["profile", "timezone"], ["timezone"]]) ?? baseServer.region;
-  const translationsVersion = pickString(value, [["localization", "translations_version"]]);
+function buildAccessSettings(access: DashboardAccessSettings | null): DashboardSettingGroup[] {
+  if (!access) return [];
   return [
-    { label: "Primary locale", value: primaryLocale, note: "Main dashboard locale for the server." },
-    { label: "Supported locales", value: supportedLocales || "Not provided", note: translationsVersion ? `Translations ${translationsVersion}` : "Shown as a light scaffold when payloads are partial." },
-    { label: "Timezone", value: timezone, note: "Part of the server-level localization context." }
+    { label: "Owner access", value: formatPolicyValue(access.ownerAccess), note: "Policy from settings.access.owner_access." },
+    { label: "Admin access", value: formatPolicyValue(access.adminAccess), note: "Policy from settings.access.admin_access." },
+    { label: "Owner count", value: access.ownerCount !== null ? String(access.ownerCount) : "Not provided", note: "Summary count from settings.access.owner_count." },
+    { label: "Admin count", value: access.adminCount !== null ? String(access.adminCount) : "Not provided", note: "Summary count from settings.access.admin_count." },
+    { label: "Dashboard admin roles", value: formatListValue(access.dashboardAdminRoles), note: "Role list from settings.access.dashboard_admin_roles." },
+    { label: "Bot manager roles", value: formatListValue(access.botManagerRoles), note: "Role list from settings.access.bot_manager_roles." },
+    { label: "Dashboard write", value: formatBooleanValue(access.allowDashboardWrite, "Allowed", "Blocked"), note: "Write gate from settings.access.allow_dashboard_write." },
+    { label: "Bot write", value: formatBooleanValue(access.allowBotWrite, "Allowed", "Blocked"), note: "Write gate from settings.access.allow_bot_write." },
+    { label: "Policy version", value: access.policyVersion !== null ? String(access.policyVersion) : "Not provided", note: "Policy revision from settings.access.policy_version." }
+  ];
+}
+
+function buildLocalizationSettings(localization: DashboardLocalizationSettings | null): DashboardSettingGroup[] {
+  if (!localization) return [];
+  return [
+    { label: "Timezone", value: formatOptionalValue(localization.timezone), note: "IANA timezone from settings.localization.timezone." },
+    { label: "Preferred locale", value: formatLocaleValue(localization.preferredLocale), note: formatLocaleNote(localization.preferredLocale, "Mirrors settings.localization.preferred_locale.") },
+    { label: "Default locale", value: formatLocaleValue(localization.defaultLocale), note: formatLocaleNote(localization.defaultLocale, "Mirrors settings.localization.default_locale.") },
+    { label: "Fallback locale", value: formatLocaleValue(localization.fallbackLocale), note: formatLocaleNote(localization.fallbackLocale, "Mirrors settings.localization.fallback_locale.") },
+    { label: "Supported locales", value: formatListValue(localization.supportedLocales), note: localization.translationsVersion ? `Translations version ${localization.translationsVersion}.` : "List returned by settings.localization.supported_locales." },
+    { label: "Translations version", value: formatOptionalValue(localization.translationsVersion), note: "Mirrors settings.localization.translations_version." }
   ];
 }
 
@@ -376,22 +523,23 @@ function mapSummaryServer(value: unknown, options?: { expectedServerId?: string;
     general: [],
     access: [],
     localization: [],
+    settingsData: { general: null, access: null, localization: null },
     modules,
     brandingModules: [],
     branding: { assets: [], fields: [], note: "" },
     licenses: { currentPlan: plan ? toTitleCase(plan) : "", availableLevel: "", entitlementSummary: "", entitlements: [] },
     status: []
   };
-  base.general = buildGeneralSettings(payload, base);
-  base.access = buildAccessSettings(payload, base);
-  base.localization = buildLocalizationSettings(payload, base);
-  base.settings = [...base.general, ...base.access, ...base.localization];
-  base.overview = { identity: buildOverviewIdentity(payload, base), systemStatus: buildOverviewStatus(payload, base), moduleSummary: base.modules, notices: buildOverviewNotices(payload) };
-  base.brandingModules = mapBrandingModules(payload, base.modules);
-  base.branding.note = "Branding stays a module catalog in this pass.";
-  base.licenses = mapLicenses(payload, base);
-  base.status = mapStatusGroups(payload, base);
-  return base;
+  base.general = [];
+  base.access = [];
+  base.localization = [];
+  const withSettings = applySettingsData(base, buildSettingsData(payload));
+  withSettings.overview = { identity: buildOverviewIdentity(payload, withSettings), systemStatus: buildOverviewStatus(payload, withSettings), moduleSummary: withSettings.modules, notices: buildOverviewNotices(payload) };
+  withSettings.brandingModules = mapBrandingModules(payload, withSettings.modules);
+  withSettings.branding.note = "Branding stays a module catalog in this pass.";
+  withSettings.licenses = mapLicenses(payload, withSettings);
+  withSettings.status = mapStatusGroups(payload, withSettings);
+  return withSettings;
 }
 function mergeSummary(primary: DashboardServer, secondary: DashboardServer | null): DashboardServer {
   if (!secondary) return primary;
@@ -419,6 +567,11 @@ function mergeSummary(primary: DashboardServer, secondary: DashboardServer | nul
     general: primary.general.length > 0 ? primary.general : secondary.general,
     access: primary.access.length > 0 ? primary.access : secondary.access,
     localization: primary.localization.length > 0 ? primary.localization : secondary.localization,
+    settingsData: {
+      general: primary.settingsData?.general ?? secondary.settingsData?.general ?? null,
+      access: primary.settingsData?.access ?? secondary.settingsData?.access ?? null,
+      localization: primary.settingsData?.localization ?? secondary.settingsData?.localization ?? null
+    },
     modules: primary.modules.length > 0 ? primary.modules : secondary.modules,
     brandingModules: primary.brandingModules.length > 0 ? primary.brandingModules : secondary.brandingModules,
     branding: {
@@ -454,7 +607,7 @@ function getSectionPayload(value: unknown, section: DashboardApiSectionPage): un
 }
 
 function ensureServerMatch(value: unknown, serverId: string, path: string) {
-  const payloadId = pickString(value, [["server", "id"], ["id"], ["server_id"], ["serverId"]]);
+  const payloadId = pickString(value, [["server", "id"], ["id"], ["server_id"], ["serverId"], ["general", "id"]]);
   if (payloadId && payloadId !== serverId) {
     throw new DashboardApiError("contract", "Dashboard API returned a mismatched server payload.", { path });
   }
@@ -470,10 +623,7 @@ function mapServerPagePayload(page: DashboardServerRoutePage, baseServer: Dashbo
     case "access":
     case "localization": {
       const payload = getSectionPayload(value, "settings");
-      const general = buildGeneralSettings(payload, merged);
-      const access = buildAccessSettings(payload, merged);
-      const localization = buildLocalizationSettings(payload, merged);
-      return { ...merged, settings: [...general, ...access, ...localization], general, access, localization };
+      return applySettingsData(merged, buildSettingsData(payload));
     }
     case "branding": {
       const payload = getSectionPayload(value, "modules");
@@ -537,3 +687,4 @@ export async function fetchDashboardServerPage(serverId: string, page: Dashboard
   ensureServerMatch(pageResponse.data, serverId, pageResponse.path);
   return mapServerPagePayload(page, baseServer, pageResponse.data);
 }
+

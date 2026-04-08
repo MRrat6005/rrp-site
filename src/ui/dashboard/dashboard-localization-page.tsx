@@ -7,9 +7,16 @@ function renderRows(rows: DashboardSettingGroup[]) {
   return <div className="divide-y divide-white/[0.05]">{rows.map((row) => <div key={row.label} className="py-4"><p className="text-[11px] uppercase tracking-[0.2em] text-white/32">{row.label}</p><p className="mt-2 text-sm font-medium text-white/82">{row.value}</p><p className="mt-1 text-sm leading-6 text-white/50">{row.note}</p></div>)}</div>;
 }
 
+function renderCard(label: string, value: string) {
+  return <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-white/32">{label}</p><p className="mt-2 text-sm text-white/78">{value}</p></div>;
+}
+
 export function DashboardLocalizationPage({ locale, server }: { locale: Locale; server: DashboardServer }) {
   const copy = getDashboardCopy(locale);
+  const localization = server.settingsData?.localization;
+
   if (server.localization.length === 0) return <DashboardMessagePanel title={copy.localizationPage.emptyTitle} body={copy.localizationPage.emptyBody} />;
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
       <DashboardPanel className="p-5 sm:p-6">
@@ -21,9 +28,21 @@ export function DashboardLocalizationPage({ locale, server }: { locale: Locale; 
       <DashboardPanel className="p-5 sm:p-6">
         <div className="space-y-4">
           <DashboardSectionHeading title={copy.localizationPage.noteTitle} body={copy.localizationPage.note} />
-          <div className="border-t border-white/[0.05] pt-4 text-sm leading-6 text-white/54">{copy.localizationPage.note}</div>
+          <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+            {renderCard("Timezone", localization?.timezone ?? "-")}
+            {renderCard("Preferred", localization?.preferredLocale ?? "-")}
+            {renderCard("Default", localization?.defaultLocale ?? "-")}
+            {renderCard("Fallback", localization?.fallbackLocale ?? "-")}
+            {renderCard("Locales", localization?.supportedLocales?.length ? String(localization.supportedLocales.length) : "0")}
+            {renderCard("Translations", localization?.translationsVersion ?? "-")}
+          </div>
+          <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4 text-sm leading-6 text-white/64">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Supported locales</p>
+            <p className="mt-3">{localization?.supportedLocales?.join(", ") || "-"}</p>
+          </div>
         </div>
       </DashboardPanel>
     </div>
   );
 }
+

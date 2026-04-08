@@ -18,9 +18,9 @@ const dashboardCopy = {
     descriptions: {
       servers: "Select a server to open its workspace.",
       overview: "Identity, health, license, and a compact server summary.",
-      general: "Base server record and dashboard-level summary.",
-      access: "Who can operate the dashboard and what stays locked.",
-      localization: "Locale and timezone scaffold from current backend data.",
+      general: "Normalized server identity and dashboard flags from backend settings.",
+      access: "Owner and admin policies, role groups, and write gates from backend settings.",
+      localization: "Timezone, locale chain, and supported locales from backend settings.",
       branding: "Module-based branding catalog. No server-wide branding editor.",
       license: "License summary and visible entitlements.",
       status: "Backend, bot, and workspace signals in one view."
@@ -80,22 +80,22 @@ const dashboardCopy = {
     },
     general: {
       title: "General",
-      noteTitle: "Summary",
-      note: "This page stays intentionally light and read-only.",
+      noteTitle: "Backend summary",
+      note: "Normalized fields from settings.general are shown here in read-only form.",
       emptyTitle: "No general data yet",
       emptyBody: "General server data will appear here when the backend returns it."
     },
     accessPage: {
       title: "Access",
-      noteTitle: "Current scope",
-      note: "Access is shown without management flows in this pass.",
+      noteTitle: "Policies",
+      note: "Owner and admin policies are shown directly from settings.access without write flows.",
       emptyTitle: "No access data yet",
       emptyBody: "Access details will appear here when the backend returns them."
     },
     localizationPage: {
       title: "Localization",
-      noteTitle: "Scaffold",
-      note: "Locale-related data is kept compact until fuller backend payloads arrive.",
+      noteTitle: "Locale chain",
+      note: "Timezone and locale fields are shown directly from settings.localization.",
       emptyTitle: "No localization data yet",
       emptyBody: "Localization details will appear here when the backend returns them."
     },
@@ -134,9 +134,9 @@ const dashboardCopy = {
     descriptions: {
       servers: "Выберите сервер, чтобы открыть его рабочее пространство.",
       overview: "Идентичность, состояние, лицензия и краткая серверная сводка.",
-      general: "Базовая server-запись и dashboard-level summary.",
-      access: "Кто может работать с dashboard и что остается locked.",
-      localization: "Locale и timezone scaffold из текущих backend-данных.",
+      general: "Нормализованные server identity и dashboard-флаги из backend settings.",
+      access: "Owner/admin policies, role groups и write-gates из backend settings.",
+      localization: "Timezone, locale chain и supported locales из backend settings.",
       branding: "Модульный branding-каталог. Без server-wide branding editor.",
       license: "Сводка лицензии и видимые права доступа.",
       status: "Сигналы backend, bot и workspace в одном месте."
@@ -196,22 +196,22 @@ const dashboardCopy = {
     },
     general: {
       title: "General",
-      noteTitle: "Summary",
-      note: "Страница намеренно остается легкой и read-only.",
+      noteTitle: "Backend summary",
+      note: "Здесь в read-only виде показаны нормализованные поля из settings.general.",
       emptyTitle: "Данных General пока нет",
       emptyBody: "Базовые данные сервера появятся здесь, когда backend их вернет."
     },
     accessPage: {
       title: "Access",
-      noteTitle: "Current scope",
-      note: "Доступ показывается без management-flow в этот проход.",
+      noteTitle: "Policies",
+      note: "Owner/admin policies показываются напрямую из settings.access без write-flow.",
       emptyTitle: "Данных Access пока нет",
       emptyBody: "Детали доступа появятся здесь, когда backend их вернет."
     },
     localizationPage: {
       title: "Localization",
-      noteTitle: "Scaffold",
-      note: "Locale-related data остается компактной, пока backend не вернет более полный payload.",
+      noteTitle: "Locale chain",
+      note: "Timezone и locale-поля показываются напрямую из settings.localization.",
       emptyTitle: "Данных Localization пока нет",
       emptyBody: "Детали локализации появятся здесь, когда backend их вернет."
     },
@@ -271,3 +271,4 @@ export function getDashboardToneLabel(locale: Locale, tone: DashboardTone): stri
   } as const;
   return labels[locale][tone];
 }
+
