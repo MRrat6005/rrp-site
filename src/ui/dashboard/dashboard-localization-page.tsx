@@ -3,10 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { Locale } from "@/config/site.config";
-import { DashboardApiError, patchDashboardServerSettings } from "@/lib/dashboard-api";
-import type { DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
+import {
+  createDashboardPendingProgress,
+  DashboardApiError,
+  DashboardProgressError,
+  patchDashboardServerSettingsWithProgress
+} from "@/lib/dashboard-api";
+import type { DashboardProgressJob, DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import { DashboardDiscordSyncPanel } from "@/ui/dashboard/dashboard-discord-structure";
+import { DashboardPageApplyOverlay } from "@/ui/dashboard/dashboard-progress";
 import {
   DashboardEditActions,
   DashboardField,
@@ -70,6 +76,7 @@ export function DashboardLocalizationPage({ locale, onServerChange, server }: Da
   const discord = useDashboardDiscordStructure(server.id, server.accessLevel !== "none");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [applyProgress, setApplyProgress] = useState<DashboardProgressJob | null>(null);
   const [message, setMessage] = useState<{ tone: "error" | "success"; value: string } | null>(null);
   const initialForm = useMemo(() => createLocalizationForm(server), [server]);
   const [form, setForm] = useState<LocalizationFormState>(initialForm);
@@ -85,98 +92,112 @@ export function DashboardLocalizationPage({ locale, onServerChange, server }: Da
   const startEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(false);
   };
 
   const saveChanges = async () => {
     setIsSaving(true);
     setMessage(null);
+    setApplyProgress(createDashboardPendingProgress("apply"));
     try {
-      const nextServer = await patchDashboardServerSettings(server, { localization: currentPatch });
+      const nextServer = await patchDashboardServerSettingsWithProgress(server, "localization", { localization: currentPatch }, { onProgress: setApplyProgress });
       onServerChange(nextServer);
+      setApplyProgress(null);
       setIsEditing(false);
       setMessage({ tone: "success", value: editorCopy.saved });
     } catch (error) {
       if (error instanceof DashboardApiError && error.status === 403) {
         onServerChange({ ...server, accessLevel: "none" });
+        setApplyProgress(null);
         return;
       }
-      setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      if (error instanceof DashboardProgressError) {
+        setApplyProgress(error.progress);
+        setMessage({ tone: "error", value: error.progress.detail ?? editorCopy.saveError });
+      } else {
+        setApplyProgress(null);
+        setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <DashboardPanel className="p-5 sm:p-6">
-        <div className="space-y-4">
-          <DashboardSectionHeading title={copy.localizationPage.title} />
-          {server.localization.length > 0 ? renderRows(server.localization) : <p className="text-sm leading-6 text-white/52">{copy.localizationPage.emptyBody}</p>}
-        </div>
-      </DashboardPanel>
-      <div className="space-y-4">
-        <DashboardPanel className="p-5 sm:p-6">
-          <DashboardDiscordSyncPanel
-            locale={locale}
-            structure={discord.data}
-            isLoading={discord.isLoading}
-            isRefreshing={discord.isRefreshing}
-            error={discord.error}
-            onRefresh={discord.requestRefresh}
-            body="Localization keeps the current small edit flow. Discord structure is exposed here only as sync context, not as extra selectors."
-          />
-        </DashboardPanel>
+    <div className="relative">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
-            <DashboardSectionHeading title={copy.localizationPage.noteTitle} body={copy.localizationPage.note} />
-            {isEditing ? (
-              <div className="grid gap-4 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-                <DashboardField label="Timezone" hint="IANA timezone used for server defaults.">
-                  <DashboardTextInput value={form.timezone} placeholder="Europe/Kaliningrad" onChange={(event) => setForm((current) => ({ ...current, timezone: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Preferred locale" hint="Primary locale surfaced to the dashboard.">
-                  <DashboardTextInput value={form.preferredLocale} placeholder="en-US" onChange={(event) => setForm((current) => ({ ...current, preferredLocale: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Default locale" hint="Server default when no explicit preference exists.">
-                  <DashboardTextInput value={form.defaultLocale} placeholder="en-US" onChange={(event) => setForm((current) => ({ ...current, defaultLocale: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Fallback locale" hint="Last fallback when a translation is missing.">
-                  <DashboardTextInput value={form.fallbackLocale} placeholder="en" onChange={(event) => setForm((current) => ({ ...current, fallbackLocale: event.target.value }))} />
-                </DashboardField>
-                <div className="sm:col-span-2">
-                  <DashboardField label="Supported locales" hint="Comma-separated locale list kept intentionally lightweight.">
-                    <DashboardTextInput value={form.supportedLocales} placeholder="en-US, ru-RU" onChange={(event) => setForm((current) => ({ ...current, supportedLocales: event.target.value }))} />
-                  </DashboardField>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-                  {renderCard("Timezone", localization?.timezone ?? "-")}
-                  {renderCard("Preferred", localization?.preferredLocale ?? "-")}
-                  {renderCard("Default", localization?.defaultLocale ?? "-")}
-                  {renderCard("Fallback", localization?.fallbackLocale ?? "-")}
-                  {renderCard("Locales", localization?.supportedLocales?.length ? String(localization.supportedLocales.length) : "0")}
-                  {renderCard("Translations", localization?.translationsVersion ?? "-")}
-                </div>
-                <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4 text-sm leading-6 text-white/64">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Supported locales</p>
-                  <p className="mt-3">{localization?.supportedLocales?.join(", ") || "-"}</p>
-                </div>
-              </>
-            )}
-            {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
-            <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+            <DashboardSectionHeading title={copy.localizationPage.title} />
+            {server.localization.length > 0 ? renderRows(server.localization) : <p className="text-sm leading-6 text-white/52">{copy.localizationPage.emptyBody}</p>}
           </div>
         </DashboardPanel>
+        <div className="space-y-4">
+          <DashboardPanel className="p-5 sm:p-6">
+            <DashboardDiscordSyncPanel
+              locale={locale}
+              structure={discord.data}
+              isLoading={discord.isLoading}
+              isRefreshing={discord.isRefreshing}
+              error={discord.error}
+              onRefresh={discord.requestRefresh}
+              body="Localization keeps the current small edit flow. Discord structure is exposed here only as sync context, not as extra selectors."
+            />
+          </DashboardPanel>
+          <DashboardPanel className="p-5 sm:p-6">
+            <div className="space-y-4">
+              <DashboardSectionHeading title={copy.localizationPage.noteTitle} body={copy.localizationPage.note} />
+              {isEditing ? (
+                <div className="grid gap-4 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+                  <DashboardField label="Timezone" hint="IANA timezone used for server defaults.">
+                    <DashboardTextInput value={form.timezone} placeholder="Europe/Kaliningrad" onChange={(event) => setForm((current) => ({ ...current, timezone: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Preferred locale" hint="Primary locale surfaced to the dashboard.">
+                    <DashboardTextInput value={form.preferredLocale} placeholder="en-US" onChange={(event) => setForm((current) => ({ ...current, preferredLocale: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Default locale" hint="Server default when no explicit preference exists.">
+                    <DashboardTextInput value={form.defaultLocale} placeholder="en-US" onChange={(event) => setForm((current) => ({ ...current, defaultLocale: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Fallback locale" hint="Last fallback when a translation is missing.">
+                    <DashboardTextInput value={form.fallbackLocale} placeholder="en" onChange={(event) => setForm((current) => ({ ...current, fallbackLocale: event.target.value }))} />
+                  </DashboardField>
+                  <div className="sm:col-span-2">
+                    <DashboardField label="Supported locales" hint="Comma-separated locale list kept intentionally lightweight.">
+                      <DashboardTextInput value={form.supportedLocales} placeholder="en-US, ru-RU" onChange={(event) => setForm((current) => ({ ...current, supportedLocales: event.target.value }))} />
+                    </DashboardField>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+                    {renderCard("Timezone", localization?.timezone ?? "-")}
+                    {renderCard("Preferred", localization?.preferredLocale ?? "-")}
+                    {renderCard("Default", localization?.defaultLocale ?? "-")}
+                    {renderCard("Fallback", localization?.fallbackLocale ?? "-")}
+                    {renderCard("Locales", localization?.supportedLocales?.length ? String(localization.supportedLocales.length) : "0")}
+                    {renderCard("Translations", localization?.translationsVersion ?? "-")}
+                  </div>
+                  <div className="rounded-[1rem] border border-white/[0.05] bg-white/[0.02] p-4 text-sm leading-6 text-white/64">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-white/32">Supported locales</p>
+                    <p className="mt-3">{localization?.supportedLocales?.join(", ") || "-"}</p>
+                  </div>
+                </>
+              )}
+              {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
+              <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+            </div>
+          </DashboardPanel>
+        </div>
       </div>
+      {applyProgress ? <DashboardPageApplyOverlay locale={locale} progress={applyProgress} onRetry={applyProgress.isFailure ? saveChanges : undefined} onDismiss={applyProgress.isFailure ? () => setApplyProgress(null) : undefined} /> : null}
     </div>
   );
 }

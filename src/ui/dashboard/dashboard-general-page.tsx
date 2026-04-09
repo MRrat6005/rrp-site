@@ -3,10 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { Locale } from "@/config/site.config";
-import { DashboardApiError, patchDashboardServerSettings } from "@/lib/dashboard-api";
-import type { DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
+import {
+  createDashboardPendingProgress,
+  DashboardApiError,
+  DashboardProgressError,
+  patchDashboardServerSettingsWithProgress
+} from "@/lib/dashboard-api";
+import type { DashboardProgressJob, DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import { DashboardDiscordSyncPanel } from "@/ui/dashboard/dashboard-discord-structure";
+import { DashboardPageApplyOverlay } from "@/ui/dashboard/dashboard-progress";
 import {
   DashboardEditActions,
   DashboardField,
@@ -72,6 +78,7 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
   const discord = useDashboardDiscordStructure(server.id, server.accessLevel !== "none");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [applyProgress, setApplyProgress] = useState<DashboardProgressJob | null>(null);
   const [message, setMessage] = useState<{ tone: "error" | "success"; value: string } | null>(null);
   const initialForm = useMemo(() => createGeneralForm(server), [server]);
   const [form, setForm] = useState<GeneralFormState>(initialForm);
@@ -87,12 +94,14 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
   const startEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(false);
   };
 
@@ -104,75 +113,87 @@ export function DashboardGeneralPage({ locale, onServerChange, server }: Dashboa
 
     setIsSaving(true);
     setMessage(null);
+    setApplyProgress(createDashboardPendingProgress("apply"));
     try {
-      const nextServer = await patchDashboardServerSettings(server, { general: currentPatch });
+      const nextServer = await patchDashboardServerSettingsWithProgress(server, "general", { general: currentPatch }, { onProgress: setApplyProgress });
       onServerChange(nextServer);
+      setApplyProgress(null);
       setIsEditing(false);
       setMessage({ tone: "success", value: editorCopy.saved });
     } catch (error) {
       if (error instanceof DashboardApiError && error.status === 403) {
         onServerChange({ ...server, accessLevel: "none" });
+        setApplyProgress(null);
         return;
       }
-      setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      if (error instanceof DashboardProgressError) {
+        setApplyProgress(error.progress);
+        setMessage({ tone: "error", value: error.progress.detail ?? editorCopy.saveError });
+      } else {
+        setApplyProgress(null);
+        setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <DashboardPanel className="p-5 sm:p-6">
-        <div className="space-y-4">
-          <DashboardSectionHeading title={copy.general.title} />
-          {server.general.length > 0 ? renderRows(server.general) : <p className="text-sm leading-6 text-white/52">{copy.general.emptyBody}</p>}
-        </div>
-      </DashboardPanel>
-      <div className="space-y-4">
-        <DashboardPanel className="p-5 sm:p-6">
-          <DashboardDiscordSyncPanel
-            locale={locale}
-            structure={discord.data}
-            isLoading={discord.isLoading}
-            isRefreshing={discord.isRefreshing}
-            error={discord.error}
-            onRefresh={discord.requestRefresh}
-            body="General keeps the existing clean edit flow. Discord structure is shown here only as sync context."
-          />
-        </DashboardPanel>
+    <div className="relative">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <DashboardPanel className="p-5 sm:p-6">
           <div className="space-y-4">
-            <DashboardSectionHeading title={copy.general.noteTitle} body={copy.general.note} />
-            {isEditing ? (
-              <div className="grid gap-4 border-t border-white/[0.05] pt-4">
-                <DashboardField label="Name" hint="Primary server label shown in the dashboard.">
-                  <DashboardTextInput value={form.name} maxLength={120} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Contact email" hint="A simple contact point for ops or support.">
-                  <DashboardTextInput type="email" value={form.contactEmail} placeholder="ops@example.com" onChange={(event) => setForm((current) => ({ ...current, contactEmail: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Support URL" hint="Optional link to support docs or a contact surface.">
-                  <DashboardTextInput type="url" value={form.supportUrl} placeholder="https://" onChange={(event) => setForm((current) => ({ ...current, supportUrl: event.target.value }))} />
-                </DashboardField>
-                <DashboardField label="Notes" hint="Short internal context shown in the dashboard summary.">
-                  <DashboardTextarea value={form.notes} placeholder="Operational note" onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} />
-                </DashboardField>
-              </div>
-            ) : (
-              <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
-                {renderCard("Name", general?.name || server.name || "-")}
-                {renderCard("Contact", general?.contactEmail ?? "-")}
-                {renderCard("Support", general?.supportUrl ?? "-")}
-                {renderCard("Notes", general?.notes ?? "-")}
-                {renderCard("Dashboard", formatFlag(general?.dashboardEnabled, "Enabled", "Disabled"))}
-                {renderCard("Bot sync", formatFlag(general?.botSyncEnabled, "Enabled", "Disabled"))}
-              </div>
-            )}
-            {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
-            <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+            <DashboardSectionHeading title={copy.general.title} />
+            {server.general.length > 0 ? renderRows(server.general) : <p className="text-sm leading-6 text-white/52">{copy.general.emptyBody}</p>}
           </div>
         </DashboardPanel>
+        <div className="space-y-4">
+          <DashboardPanel className="p-5 sm:p-6">
+            <DashboardDiscordSyncPanel
+              locale={locale}
+              structure={discord.data}
+              isLoading={discord.isLoading}
+              isRefreshing={discord.isRefreshing}
+              error={discord.error}
+              onRefresh={discord.requestRefresh}
+              body="General keeps the existing clean edit flow. Discord structure is shown here only as sync context."
+            />
+          </DashboardPanel>
+          <DashboardPanel className="p-5 sm:p-6">
+            <div className="space-y-4">
+              <DashboardSectionHeading title={copy.general.noteTitle} body={copy.general.note} />
+              {isEditing ? (
+                <div className="grid gap-4 border-t border-white/[0.05] pt-4">
+                  <DashboardField label="Name" hint="Primary server label shown in the dashboard.">
+                    <DashboardTextInput value={form.name} maxLength={120} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Contact email" hint="A simple contact point for ops or support.">
+                    <DashboardTextInput type="email" value={form.contactEmail} placeholder="ops@example.com" onChange={(event) => setForm((current) => ({ ...current, contactEmail: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Support URL" hint="Optional link to support docs or a contact surface.">
+                    <DashboardTextInput type="url" value={form.supportUrl} placeholder="https://" onChange={(event) => setForm((current) => ({ ...current, supportUrl: event.target.value }))} />
+                  </DashboardField>
+                  <DashboardField label="Notes" hint="Short internal context shown in the dashboard summary.">
+                    <DashboardTextarea value={form.notes} placeholder="Operational note" onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} />
+                  </DashboardField>
+                </div>
+              ) : (
+                <div className="grid gap-3 border-t border-white/[0.05] pt-4 sm:grid-cols-2">
+                  {renderCard("Name", general?.name || server.name || "-")}
+                  {renderCard("Contact", general?.contactEmail ?? "-")}
+                  {renderCard("Support", general?.supportUrl ?? "-")}
+                  {renderCard("Notes", general?.notes ?? "-")}
+                  {renderCard("Dashboard", formatFlag(general?.dashboardEnabled, "Enabled", "Disabled"))}
+                  {renderCard("Bot sync", formatFlag(general?.botSyncEnabled, "Enabled", "Disabled"))}
+                </div>
+              )}
+              {message ? <DashboardInlineState tone={message.tone}>{message.value}</DashboardInlineState> : null}
+              <DashboardEditActions locale={locale} isDirty={isDirty} isEditing={isEditing} isSaving={isSaving} onCancel={cancelEditing} onEdit={startEditing} onSave={saveChanges} />
+            </div>
+          </DashboardPanel>
+        </div>
       </div>
+      {applyProgress ? <DashboardPageApplyOverlay locale={locale} progress={applyProgress} onRetry={applyProgress.isFailure ? saveChanges : undefined} onDismiss={applyProgress.isFailure ? () => setApplyProgress(null) : undefined} /> : null}
     </div>
   );
 }

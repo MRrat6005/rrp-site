@@ -155,6 +155,33 @@ export interface DashboardDiscordStructure {
   sync: DashboardDiscordSyncState;
 }
 
+export type DashboardProgressKind = "entry" | "apply";
+export type DashboardProgressStatus = "queued" | "running" | "ready" | "completed" | "failed" | "timeout";
+export type DashboardProgressPhaseState = "pending" | "active" | "complete" | "error";
+
+export interface DashboardProgressPhase {
+  key: string;
+  label: string;
+  state: DashboardProgressPhaseState;
+}
+
+export interface DashboardProgressJob {
+  kind: DashboardProgressKind;
+  status: DashboardProgressStatus;
+  statusLabel: string;
+  title: string;
+  detail: string | null;
+  currentPhaseKey: string | null;
+  phases: DashboardProgressPhase[];
+  pollPath: string | null;
+  pollIntervalMs: number | null;
+  startedAt: string | null;
+  updatedAt: string | null;
+  canRetry: boolean;
+  isTerminal: boolean;
+  isFailure: boolean;
+}
+
 export interface DashboardBrandAsset {
   label: string;
   value: string;
@@ -572,5 +599,6 @@ export function getDashboardServer(id: string, locale: Locale = "en"): Dashboard
   const seed = seeds.find((item) => item.id === id);
   return seed ? materializeServer(locale, seed) : null;
 }
+
 
 

@@ -12,6 +12,11 @@ import type {
   DashboardGeneralSettings,
   DashboardIdentityField,
   DashboardLocalizationSettings,
+  DashboardProgressJob,
+  DashboardProgressKind,
+  DashboardProgressPhase,
+  DashboardProgressPhaseState,
+  DashboardProgressStatus,
   DashboardModule,
   DashboardModuleKey,
   DashboardNotice,
@@ -35,8 +40,30 @@ export type DashboardServerRoutePage =
 type DashboardApiSectionPage = "overview" | "settings" | "modules" | "licenses" | "status";
 export type DashboardApiErrorKind = "config" | "network" | "http" | "parse" | "contract";
 type DashboardRawRecord = Record<string, unknown>;
-interface DashboardApiResponse<T> { data: T; path: string; }
+interface DashboardApiResponse<T> {
+  data: T;
+  path: string;
+  status: number;
+}
+interface DashboardRequestOptions {
+  acceptedErrorStatuses?: number[];
+  body?: unknown;
+  method: "GET" | "PATCH" | "POST";
+  signal?: AbortSignal;
+}
 type DashboardSettingsData = NonNullable<DashboardServer["settingsData"]>;
+
+export interface DashboardServerPageLoadResult {
+  entryProgress: DashboardProgressJob | null;
+  server: DashboardServer | null;
+}
+
+export interface DashboardProgressOptions {
+  onProgress?: (progress: DashboardProgressJob) => void;
+  pollIntervalMs?: number;
+  signal?: AbortSignal;
+  timeoutMs?: number;
+}
 
 export interface DashboardGeneralSettingsPatch {
   name: string;
@@ -85,6 +112,36 @@ export class DashboardApiError extends Error {
   }
 }
 
+export class DashboardProgressError extends DashboardApiError {
+  progress: DashboardProgressJob;
+
+  constructor(progress: DashboardProgressJob, message?: string) {
+    super("contract", message ?? progress.detail ?? "Dashboard operation did not complete.", { path: progress.pollPath ?? undefined });
+    this.name = "DashboardProgressError";
+    this.progress = progress;
+  }
+}
+
+const DASHBOARD_PROGRESS_HTTP_STATUSES = [202, 409, 423, 425];
+const DASHBOARD_ENTRY_POLL_INTERVAL_MS = 1200;
+const DASHBOARD_ENTRY_TIMEOUT_MS = 90000;
+const DASHBOARD_APPLY_POLL_INTERVAL_MS = 900;
+const DASHBOARD_APPLY_TIMEOUT_MS = 45000;
+const dashboardEntryPhaseTemplate = [
+  { key: "requesting_sync", label: "Requesting sync" },
+  { key: "waiting_for_bot", label: "Waiting for bot" },
+  { key: "syncing_discord_structure", label: "Syncing Discord structure" },
+  { key: "updating_dashboard_cache", label: "Updating dashboard cache" },
+  { key: "ready", label: "Ready" }
+] as const;
+const dashboardApplyPhaseTemplate = [
+  { key: "queued", label: "Queued" },
+  { key: "claimed", label: "Claimed" },
+  { key: "applying_changes", label: "Applying changes" },
+  { key: "updating_state", label: "Updating state" },
+  { key: "done", label: "Done" }
+] as const;
+
 function normalizeBaseUrl(value?: string | null): string | null {
   const normalized = value?.trim();
   return normalized ? normalized.replace(/\/+$/, "") : null;
@@ -116,92 +173,57 @@ function buildDashboardApiUrl(baseUrl: string, path: string): string {
   return url.toString();
 }
 
-async function fetchDashboardJson<T>(path: string, signal?: AbortSignal): Promise<DashboardApiResponse<T>> {
+async function requestDashboardJson<T>(path: string, options: DashboardRequestOptions): Promise<DashboardApiResponse<T | null>> {
   const baseUrl = getDashboardApiBaseUrl();
   if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
   let response: Response;
   try {
     response = await fetch(buildDashboardApiUrl(baseUrl, path), {
-      method: "GET",
-      headers: { Accept: "application/json" },
+      method: options.method,
+      headers: options.method === "GET"
+        ? { Accept: "application/json" }
+        : {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
       credentials: "include",
       cache: "no-store",
-      signal
+      body: options.method === "GET" ? undefined : JSON.stringify(options.body ?? {}),
+      signal: options.signal
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
   }
-  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
-  try {
-    return { data: (await response.json()) as T, path };
-  } catch {
-    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
-  }
-}
 
-async function patchDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<DashboardApiResponse<T | null>> {
-  const baseUrl = getDashboardApiBaseUrl();
-  if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
-  let response: Response;
-  try {
-    response = await fetch(buildDashboardApiUrl(baseUrl, path), {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      cache: "no-store",
-      body: JSON.stringify(body),
-      signal
-    });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") throw error;
-    throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
+  const acceptedErrorStatuses = new Set(options.acceptedErrorStatuses ?? []);
+  if (!response.ok && !acceptedErrorStatuses.has(response.status)) {
+    throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
   }
-  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
-  if (response.status === 204 || response.status === 205) return { data: null, path };
+
+  if (response.status === 204 || response.status === 205) return { data: null, path, status: response.status };
   const raw = await response.text();
-  if (!raw.trim()) return { data: null, path };
+  if (!raw.trim()) return { data: null, path, status: response.status };
   try {
-    return { data: JSON.parse(raw) as T, path };
+    return { data: JSON.parse(raw) as T, path, status: response.status };
   } catch {
-    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
+    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path, status: response.status });
   }
 }
 
-async function postDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal): Promise<DashboardApiResponse<T | null>> {
-  const baseUrl = getDashboardApiBaseUrl();
-  if (!baseUrl) throw new DashboardApiError("config", "Dashboard API base URL is not configured.", { path });
-  let response: Response;
-  try {
-    response = await fetch(buildDashboardApiUrl(baseUrl, path), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      cache: "no-store",
-      body: JSON.stringify(body),
-      signal
-    });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") throw error;
-    throw new DashboardApiError("network", "Dashboard API is unreachable.", { path });
-  }
-  if (!response.ok) throw new DashboardApiError("http", "Dashboard API request failed.", { path, status: response.status });
-  if (response.status === 204 || response.status === 205) return { data: null, path };
-  const raw = await response.text();
-  if (!raw.trim()) return { data: null, path };
-  try {
-    return { data: JSON.parse(raw) as T, path };
-  } catch {
-    throw new DashboardApiError("parse", "Dashboard API returned invalid JSON.", { path });
-  }
+async function fetchDashboardJson<T>(path: string, signal?: AbortSignal, acceptedErrorStatuses?: number[]): Promise<DashboardApiResponse<T>> {
+  const response = await requestDashboardJson<T>(path, { method: "GET", signal, acceptedErrorStatuses });
+  if (response.data === null) throw new DashboardApiError("contract", "Dashboard API returned an empty response body.", { path, status: response.status });
+  return { data: response.data, path: response.path, status: response.status };
 }
 
+async function patchDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal, acceptedErrorStatuses?: number[]): Promise<DashboardApiResponse<T | null>> {
+  return requestDashboardJson<T>(path, { method: "PATCH", body, signal, acceptedErrorStatuses });
+}
+
+async function postDashboardJson<T>(path: string, body: unknown, signal?: AbortSignal, acceptedErrorStatuses?: number[]): Promise<DashboardApiResponse<T | null>> {
+  return requestDashboardJson<T>(path, { method: "POST", body, signal, acceptedErrorStatuses });
+}
 function asArray(value: unknown): unknown[] | null { return Array.isArray(value) ? value : null; }
 function asRecord(value: unknown): DashboardRawRecord | null {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as DashboardRawRecord) : null;
@@ -1095,6 +1117,438 @@ function mapServerList(value: unknown, path: string): DashboardServer[] {
   return asRecordArray(itemsSource).map((item) => mapSummaryServer(item, { path }));
 }
 
+const dashboardProgressRecordPaths: Record<DashboardProgressKind, readonly (readonly string[])[]> = {
+  entry: [
+    ["entry"],
+    ["entry", "job"],
+    ["readiness"],
+    ["readiness", "job"],
+    ["live_readiness"],
+    ["liveReadiness"],
+    ["urgent_sync"],
+    ["urgentSync"],
+    ["sync_job"],
+    ["syncJob"],
+    ["meta", "entry"],
+    ["meta", "readiness"],
+    ["meta", "job"],
+    ["data", "entry"],
+    ["data", "readiness"],
+    ["data", "job"],
+    ["job"]
+  ],
+  apply: [
+    ["apply"],
+    ["apply", "job"],
+    ["apply_job"],
+    ["applyJob"],
+    ["mutation"],
+    ["mutation", "job"],
+    ["operation"],
+    ["operation", "job"],
+    ["meta", "apply"],
+    ["meta", "job"],
+    ["data", "apply"],
+    ["data", "job"],
+    ["settings", "apply"],
+    ["settings", "job"],
+    ["job"]
+  ]
+};
+
+function normalizeDashboardApiPath(value: string | null | undefined): string | null {
+  const normalized = value?.trim();
+  if (!normalized) return null;
+  if (/^https?:\/\//i.test(normalized)) {
+    try {
+      return normalizeDashboardApiPath(new URL(normalized).pathname);
+    } catch {
+      return null;
+    }
+  }
+  return normalized.replace(/^\/+/, "").replace(/^api\/v1\//i, "").replace(/^api\//i, "");
+}
+
+function normalizeDashboardProgressKey(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+function formatDashboardProgressLabel(value: string): string {
+  return value
+    .replace(/[_-]+/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((item) => item[0]?.toUpperCase() + item.slice(1))
+    .join(" ");
+}
+
+function buildDashboardProgressStatusLabel(status: DashboardProgressStatus): string {
+  switch (status) {
+    case "queued":
+      return "Queued";
+    case "running":
+      return "In progress";
+    case "ready":
+      return "Ready";
+    case "completed":
+      return "Done";
+    case "failed":
+      return "Failed";
+    case "timeout":
+      return "Timed out";
+    default:
+      return "In progress";
+  }
+}
+
+function normalizeDashboardProgressStatus(value: unknown, currentPhaseKey: string | null): DashboardProgressStatus {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "queued":
+    case "queue":
+    case "pending":
+    case "requested":
+      return "queued";
+    case "running":
+    case "in_progress":
+    case "processing":
+    case "claimed":
+    case "syncing":
+    case "applying":
+    case "updating":
+    case "waiting":
+      return "running";
+    case "ready":
+      return "ready";
+    case "completed":
+    case "complete":
+    case "done":
+    case "success":
+    case "succeeded":
+      return "completed";
+    case "failed":
+    case "failure":
+    case "error":
+    case "cancelled":
+    case "canceled":
+      return "failed";
+    case "timeout":
+    case "timed_out":
+    case "expired":
+      return "timeout";
+    default:
+      if (currentPhaseKey === "ready") return "ready";
+      if (currentPhaseKey === "done") return "completed";
+      return "running";
+  }
+}
+
+function normalizeDashboardProgressPhaseState(value: unknown): DashboardProgressPhaseState {
+  const normalized = asString(value)?.toLowerCase().replace(/[\s-]+/g, "_");
+  switch (normalized) {
+    case "complete":
+    case "completed":
+    case "done":
+    case "success":
+    case "succeeded":
+    case "ready":
+      return "complete";
+    case "failed":
+    case "failure":
+    case "error":
+    case "timeout":
+    case "timed_out":
+      return "error";
+    case "active":
+    case "current":
+    case "running":
+    case "in_progress":
+    case "queued":
+    case "claimed":
+    case "pending":
+      return "active";
+    default:
+      return "pending";
+  }
+}
+
+function getDashboardProgressTemplate(kind: DashboardProgressKind) {
+  return kind === "entry" ? dashboardEntryPhaseTemplate : dashboardApplyPhaseTemplate;
+}
+
+function buildDashboardTemplatePhases(kind: DashboardProgressKind, status: DashboardProgressStatus, currentPhaseKey: string | null): DashboardProgressPhase[] {
+  const template = getDashboardProgressTemplate(kind);
+  const activeIndex = currentPhaseKey
+    ? template.findIndex((phase) => phase.key === currentPhaseKey || normalizeDashboardProgressKey(phase.label) === currentPhaseKey)
+    : -1;
+  const resolvedIndex = activeIndex >= 0 ? activeIndex : status === "ready" || status === "completed" ? template.length - 1 : 0;
+
+  return template.map((phase, index) => {
+    let state: DashboardProgressPhaseState = "pending";
+    if (status === "ready" || status === "completed") state = "complete";
+    else if (status === "failed" || status === "timeout") state = index < resolvedIndex ? "complete" : index === resolvedIndex ? "error" : "pending";
+    else state = index < resolvedIndex ? "complete" : index === resolvedIndex ? "active" : "pending";
+    return { ...phase, state };
+  });
+}
+
+function buildDashboardExplicitPhases(kind: DashboardProgressKind, value: unknown, status: DashboardProgressStatus, currentPhaseKey: string | null): DashboardProgressPhase[] {
+  const phaseRecords = asRecordArray(value);
+  if (phaseRecords.length === 0) return buildDashboardTemplatePhases(kind, status, currentPhaseKey);
+
+  const phases = phaseRecords.map((item, index) => {
+    const rawLabel = pickString(item, [["label"], ["name"], ["title"], ["phase"], ["key"], ["id"]]) ?? `${index + 1}`;
+    const key = normalizeDashboardProgressKey(pickString(item, [["key"], ["id"], ["phase_key"], ["phaseKey"], ["phase"]]) ?? rawLabel);
+    return {
+      key,
+      label: pickString(item, [["label"], ["name"], ["title"], ["phase"]]) ?? formatDashboardProgressLabel(rawLabel),
+      state: normalizeDashboardProgressPhaseState(pickString(item, [["state"], ["status"], ["result"]]))
+    } satisfies DashboardProgressPhase;
+  });
+
+  const currentIndex = currentPhaseKey ? phases.findIndex((phase) => phase.key === currentPhaseKey) : -1;
+  const hasActiveState = phases.some((phase) => phase.state === "active" || phase.state === "error");
+
+  if (status === "ready" || status === "completed") {
+    return phases.map((phase) => ({ ...phase, state: "complete" }));
+  }
+
+  if (status === "failed" || status === "timeout") {
+    return phases.map((phase, index) => ({
+      ...phase,
+      state: index < (currentIndex >= 0 ? currentIndex : 0) ? "complete" : index === (currentIndex >= 0 ? currentIndex : 0) ? "error" : "pending"
+    }));
+  }
+
+  if (!hasActiveState && currentIndex >= 0) {
+    return phases.map((phase, index) => ({
+      ...phase,
+      state: index < currentIndex ? "complete" : index === currentIndex ? "active" : "pending"
+    }));
+  }
+
+  return phases;
+}
+
+function buildDashboardProgressTitle(kind: DashboardProgressKind, status: DashboardProgressStatus, record: DashboardRawRecord | null): string {
+  const explicit = record ? pickString(record, [["title"], ["headline"], ["summary"], ["label"]]) : null;
+  if (explicit) return explicit;
+  if (kind === "entry") {
+    switch (status) {
+      case "ready":
+      case "completed":
+        return "Workspace ready";
+      case "failed":
+        return "Workspace sync failed";
+      case "timeout":
+        return "Workspace sync timed out";
+      default:
+        return "Preparing workspace";
+    }
+  }
+  switch (status) {
+    case "ready":
+    case "completed":
+      return "Changes applied";
+    case "failed":
+      return "Changes could not be applied";
+    case "timeout":
+      return "Apply timed out";
+    default:
+      return "Applying changes";
+  }
+}
+
+function isDashboardProgressRecord(value: unknown): value is DashboardRawRecord {
+  const record = asRecord(value);
+  if (!record) return false;
+  return [
+    "status",
+    "state",
+    "phase",
+    "current_phase",
+    "currentPhase",
+    "phases",
+    "job_id",
+    "jobId",
+    "ready",
+    "completed",
+    "done",
+    "failed",
+    "error",
+    "poll_path",
+    "pollPath",
+    "status_path",
+    "statusPath"
+  ].some((key) => key in record);
+}
+
+function findDashboardProgressRecord(value: unknown, kind: DashboardProgressKind): DashboardRawRecord | null {
+  if (isDashboardProgressRecord(value)) return asRecord(value);
+  for (const path of dashboardProgressRecordPaths[kind]) {
+    const candidate = getPathValue(value, path);
+    if (isDashboardProgressRecord(candidate)) return asRecord(candidate);
+  }
+  return null;
+}
+
+function buildDashboardProgress(kind: DashboardProgressKind, status: DashboardProgressStatus, options?: {
+  canRetry?: boolean;
+  currentPhaseKey?: string | null;
+  detail?: string | null;
+  phases?: DashboardProgressPhase[];
+  pollIntervalMs?: number | null;
+  pollPath?: string | null;
+  startedAt?: string | null;
+  title?: string;
+  updatedAt?: string | null;
+}): DashboardProgressJob {
+  const phases = options?.phases ?? buildDashboardTemplatePhases(kind, status, options?.currentPhaseKey ?? null);
+  return {
+    kind,
+    status,
+    statusLabel: buildDashboardProgressStatusLabel(status),
+    title: options?.title ?? buildDashboardProgressTitle(kind, status, null),
+    detail: options?.detail ?? null,
+    currentPhaseKey: options?.currentPhaseKey ?? phases.find((phase) => phase.state === "active" || phase.state === "error")?.key ?? phases.at(-1)?.key ?? null,
+    phases,
+    pollPath: normalizeDashboardApiPath(options?.pollPath ?? null),
+    pollIntervalMs: options?.pollIntervalMs ?? null,
+    startedAt: options?.startedAt ?? null,
+    updatedAt: options?.updatedAt ?? null,
+    canRetry: options?.canRetry ?? (status === "failed" || status === "timeout"),
+    isTerminal: status === "ready" || status === "completed" || status === "failed" || status === "timeout",
+    isFailure: status === "failed" || status === "timeout"
+  };
+}
+
+function buildDashboardProgressFromRecord(kind: DashboardProgressKind, record: DashboardRawRecord, fallbackPath: string): DashboardProgressJob {
+  const explicitPhaseKey = pickString(record, [["current_phase"], ["currentPhase"], ["phase"], ["phase_key"], ["phaseKey"], ["current_step"], ["currentStep"], ["step"]]);
+  const currentPhaseKey = explicitPhaseKey ? normalizeDashboardProgressKey(explicitPhaseKey) : null;
+  const isTimedOut = asBoolean(pickPathValue(record, [["timed_out"], ["timedOut"], ["timeout"], ["is_timeout"], ["isTimeout"]])) === true;
+  const isFailed = asBoolean(pickPathValue(record, [["failed"], ["is_failed"], ["isFailed"], ["has_error"], ["hasError"]])) === true || pickString(record, [["error"], ["failure"]]) !== null;
+  const isCompleted = asBoolean(pickPathValue(record, [["completed"], ["is_completed"], ["isCompleted"], ["done"]])) === true;
+  const isReady = asBoolean(pickPathValue(record, [["ready"], ["is_ready"], ["isReady"], ["live_ready"], ["liveReady"]])) === true;
+  const rawStatus = pickString(record, [["status"], ["state"], ["job_status"], ["jobStatus"], ["result"]]);
+  const status = isTimedOut
+    ? "timeout"
+    : isFailed
+      ? "failed"
+      : kind === "entry" && isReady
+        ? "ready"
+        : isCompleted || (kind === "apply" && isReady)
+          ? "completed"
+          : normalizeDashboardProgressStatus(rawStatus, currentPhaseKey);
+  const phases = buildDashboardExplicitPhases(
+    kind,
+    pickPathValue(record, [["phases"], ["progress", "phases"], ["job", "phases"], ["steps"], ["items"]]),
+    status,
+    currentPhaseKey
+  );
+  return buildDashboardProgress(kind, status, {
+    canRetry: asBoolean(pickPathValue(record, [["can_retry"], ["canRetry"], ["retryable"]])) ?? undefined,
+    currentPhaseKey,
+    detail: pickString(record, [["detail"], ["message"], ["note"], ["reason"], ["error"]]),
+    phases,
+    pollIntervalMs: pickNumber(record, [["poll_interval_ms"], ["pollIntervalMs"], ["retry_after_ms"], ["retryAfterMs"], ["poll_after_ms"], ["pollAfterMs"]]),
+    pollPath: pickString(record, [["poll_path"], ["pollPath"], ["status_path"], ["statusPath"], ["links", "status"], ["links", "poll"], ["urls", "status"], ["urls", "poll"]]) ?? fallbackPath,
+    startedAt: pickString(record, [["started_at"], ["startedAt"], ["created_at"], ["createdAt"]]),
+    title: buildDashboardProgressTitle(kind, status, record),
+    updatedAt: pickString(record, [["updated_at"], ["updatedAt"], ["captured_at"], ["capturedAt"]])
+  });
+}
+
+function resolveDashboardProgressFromResponseData(value: unknown, httpStatus: number, kind: DashboardProgressKind, fallbackPath: string): DashboardProgressJob | null {
+  const record = findDashboardProgressRecord(value, kind);
+  if (record) return buildDashboardProgressFromRecord(kind, record, fallbackPath);
+  if (DASHBOARD_PROGRESS_HTTP_STATUSES.includes(httpStatus)) {
+    return buildDashboardProgress(kind, kind === "apply" ? "queued" : "running", {
+      currentPhaseKey: kind === "apply" ? "queued" : "requesting_sync",
+      pollIntervalMs: kind === "entry" ? DASHBOARD_ENTRY_POLL_INTERVAL_MS : DASHBOARD_APPLY_POLL_INTERVAL_MS,
+      pollPath: fallbackPath,
+      title: buildDashboardProgressTitle(kind, kind === "apply" ? "queued" : "running", null)
+    });
+  }
+  return null;
+}
+
+export function createDashboardPendingProgress(kind: DashboardProgressKind): DashboardProgressJob {
+  return buildDashboardProgress(kind, kind === "apply" ? "queued" : "running", {
+    currentPhaseKey: kind === "apply" ? "queued" : "requesting_sync",
+    pollIntervalMs: kind === "entry" ? DASHBOARD_ENTRY_POLL_INTERVAL_MS : DASHBOARD_APPLY_POLL_INTERVAL_MS
+  });
+}
+
+export function createDashboardTimeoutProgress(kind: DashboardProgressKind, previous?: DashboardProgressJob | null): DashboardProgressJob {
+  return buildDashboardProgress(kind, "timeout", {
+    currentPhaseKey: previous?.currentPhaseKey ?? (kind === "apply" ? "applying_changes" : "syncing_discord_structure"),
+    detail: previous?.detail,
+    phases: previous?.phases,
+    pollIntervalMs: previous?.pollIntervalMs ?? null,
+    pollPath: previous?.pollPath ?? null,
+    startedAt: previous?.startedAt ?? null,
+    title: previous?.title
+  });
+}
+
+export function isDashboardProgressSuccess(progress: DashboardProgressJob | null | undefined): boolean {
+  return Boolean(progress && progress.isTerminal && !progress.isFailure && (progress.status === "ready" || progress.status === "completed"));
+}
+
+async function waitForDashboardDelay(ms: number, signal?: AbortSignal): Promise<void> {
+  if (ms <= 0) return;
+  await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timeout);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    if (signal) signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function fetchDashboardProgressSnapshot(path: string, kind: DashboardProgressKind, signal?: AbortSignal): Promise<DashboardProgressJob | null> {
+  const normalizedPath = normalizeDashboardApiPath(path) ?? path;
+  const response = await requestDashboardJson<unknown>(normalizedPath, {
+    method: "GET",
+    signal,
+    acceptedErrorStatuses: DASHBOARD_PROGRESS_HTTP_STATUSES
+  });
+  if (response.data === null) {
+    if (response.status === 204 || response.status === 205) {
+      return buildDashboardProgress(kind, kind === "entry" ? "ready" : "completed", {
+        currentPhaseKey: kind === "entry" ? "ready" : "done",
+        pollPath: normalizedPath
+      });
+    }
+    return null;
+  }
+  return resolveDashboardProgressFromResponseData(response.data, response.status, kind, normalizedPath);
+}
+
+
+export async function fetchDashboardProgressStatus(path: string, kind: DashboardProgressKind, signal?: AbortSignal): Promise<DashboardProgressJob | null> {
+  return fetchDashboardProgressSnapshot(path, kind, signal);
+}
+function mergePatchedDashboardServer(server: DashboardServer, patch: DashboardSettingsPatch, response: DashboardApiResponse<unknown | null>): DashboardServer {
+  const fallbackServer = applySettingsPatch(server, patch);
+  if (response.data === null) return fallbackServer;
+
+  ensureServerMatch(response.data, server.id, response.path);
+  const sectionServerPayload = pickPathValue(response.data, [["server"], ["data", "server"]]);
+  const mergedServer = mergeSummary(
+    fallbackServer,
+    sectionServerPayload ? mapSummaryServer(sectionServerPayload, { expectedServerId: server.id, path: response.path }) : null
+  );
+  const responseSettings = buildSettingsData(getSectionPayload(response.data, "settings"));
+  return hasSettingsData(responseSettings)
+    ? applySettingsData(mergedServer, mergeSettingsData(cloneSettingsData(mergedServer.settingsData), responseSettings))
+    : mergedServer;
+}
+
 export function shouldUseDashboardFallback(error: DashboardApiError | null): boolean {
   if (!error) return false;
   if (error.kind === "config" || error.kind === "network") return true;
@@ -1110,27 +1564,143 @@ export async function fetchDashboardServers(signal?: AbortSignal): Promise<Dashb
   return mapServerList(response.data, response.path);
 }
 
-export async function fetchDashboardServerPage(serverId: string, page: DashboardServerRoutePage, signal?: AbortSignal): Promise<DashboardServer> {
+export async function fetchDashboardServerPageLoad(serverId: string, page: DashboardServerRoutePage, signal?: AbortSignal): Promise<DashboardServerPageLoadResult> {
   const encodedServerId = encodeURIComponent(serverId);
-  const serverResponse = await fetchDashboardJson<unknown>(`servers/${encodedServerId}`, signal);
-  const baseServer = mapSummaryServer(serverResponse.data, { expectedServerId: serverId, path: serverResponse.path });
-  if (baseServer.accessLevel === "none") return baseServer;
+  const serverPath = `servers/${encodedServerId}`;
+  const serverResponse = await requestDashboardJson<unknown>(serverPath, {
+    method: "GET",
+    signal,
+    acceptedErrorStatuses: DASHBOARD_PROGRESS_HTTP_STATUSES
+  });
+  const serverProgress = resolveDashboardProgressFromResponseData(serverResponse.data, serverResponse.status, "entry", serverPath);
+  let baseServer: DashboardServer | null = null;
+
+  if (serverResponse.data !== null) {
+    try {
+      baseServer = mapSummaryServer(serverResponse.data, { expectedServerId: serverId, path: serverResponse.path });
+    } catch (error) {
+      if (!(error instanceof DashboardApiError) || !serverProgress) throw error;
+    }
+  }
+
+  if (serverProgress && !isDashboardProgressSuccess(serverProgress)) {
+    return { server: baseServer, entryProgress: serverProgress };
+  }
+
+  if (!baseServer) {
+    return { server: null, entryProgress: serverProgress };
+  }
+
+  if (baseServer.accessLevel === "none") return { server: baseServer, entryProgress: null };
+
   const endpoint = resolveApiSection(page);
-  let pageResponse: DashboardApiResponse<unknown>;
+  const pagePath = `servers/${encodedServerId}/${endpoint}`;
+  let pageResponse: DashboardApiResponse<unknown | null>;
   try {
-    pageResponse = await fetchDashboardJson<unknown>(`servers/${encodedServerId}/${endpoint}`, signal);
+    pageResponse = await requestDashboardJson<unknown>(pagePath, {
+      method: "GET",
+      signal,
+      acceptedErrorStatuses: DASHBOARD_PROGRESS_HTTP_STATUSES
+    });
   } catch (error) {
     if (error instanceof DashboardApiError && error.status === 403) {
-      return { ...baseServer, accessLevel: "none" };
+      return { server: { ...baseServer, accessLevel: "none" }, entryProgress: null };
     }
     throw error;
   }
+
+  const pageProgress = resolveDashboardProgressFromResponseData(pageResponse.data, pageResponse.status, "entry", pagePath);
+  if (pageProgress && !isDashboardProgressSuccess(pageProgress)) {
+    return { server: baseServer, entryProgress: pageProgress };
+  }
+
+  if (pageResponse.data === null) {
+    return { server: baseServer, entryProgress: pageProgress };
+  }
+
   ensureServerMatch(pageResponse.data, serverId, pageResponse.path);
-  return mapServerPagePayload(page, baseServer, pageResponse.data);
+  return {
+    server: mapServerPagePayload(page, baseServer, pageResponse.data),
+    entryProgress: null
+  };
 }
 
+export async function fetchDashboardServerPage(serverId: string, page: DashboardServerRoutePage, signal?: AbortSignal): Promise<DashboardServer> {
+  const result = await fetchDashboardServerPageLoad(serverId, page, signal);
+  if (result.entryProgress && !isDashboardProgressSuccess(result.entryProgress)) {
+    throw new DashboardProgressError(result.entryProgress, result.entryProgress.detail ?? "Workspace is not ready yet.");
+  }
+  if (!result.server) {
+    throw new DashboardApiError("contract", "Dashboard API returned no server payload for this route.");
+  }
+  return result.server;
+}
 
+export async function patchDashboardServerSettingsWithProgress(
+  server: DashboardServer,
+  page: DashboardServerRoutePage,
+  patch: DashboardSettingsPatch,
+  options: DashboardProgressOptions = {}
+): Promise<DashboardServer> {
+  const path = `servers/${encodeURIComponent(server.id)}/settings`;
+  const body = buildSettingsPatchBody(patch);
+  if (Object.keys(body).length === 0) return server;
 
+  const response = await patchDashboardJson<unknown>(path, body, options.signal, DASHBOARD_PROGRESS_HTTP_STATUSES);
+  const mergedServer = mergePatchedDashboardServer(server, patch, response);
+  let progress = resolveDashboardProgressFromResponseData(response.data, response.status, "apply", path);
+
+  if (!progress) {
+    return mergedServer;
+  }
+
+  options.onProgress?.(progress);
+
+  if (progress.isFailure) {
+    throw new DashboardProgressError(progress);
+  }
+
+  if (isDashboardProgressSuccess(progress)) {
+    return fetchDashboardServerPage(server.id, page, options.signal);
+  }
+
+  const timeoutMs = options.timeoutMs ?? DASHBOARD_APPLY_TIMEOUT_MS;
+  const pollIntervalMs = options.pollIntervalMs ?? DASHBOARD_APPLY_POLL_INTERVAL_MS;
+  const startedAt = Date.now();
+
+  while (!progress.isTerminal) {
+    if (Date.now() - startedAt >= timeoutMs) {
+      const timedOut = createDashboardTimeoutProgress("apply", progress);
+      options.onProgress?.(timedOut);
+      throw new DashboardProgressError(timedOut);
+    }
+
+    await waitForDashboardDelay(progress.pollIntervalMs ?? pollIntervalMs, options.signal);
+
+    const nextProgress = await fetchDashboardProgressSnapshot(progress.pollPath ?? path, "apply", options.signal);
+    if (!nextProgress) {
+      return fetchDashboardServerPage(server.id, page, options.signal);
+    }
+
+    progress = nextProgress;
+    options.onProgress?.(progress);
+
+    if (progress.isFailure) {
+      throw new DashboardProgressError(progress);
+    }
+  }
+
+  return fetchDashboardServerPage(server.id, page, options.signal);
+}
+
+export async function patchDashboardServerSettings(server: DashboardServer, patch: DashboardSettingsPatch, signal?: AbortSignal): Promise<DashboardServer> {
+  const path = `servers/${encodeURIComponent(server.id)}/settings`;
+  const body = buildSettingsPatchBody(patch);
+  if (Object.keys(body).length === 0) return server;
+
+  const response = await patchDashboardJson<unknown>(path, body, signal, DASHBOARD_PROGRESS_HTTP_STATUSES);
+  return mergePatchedDashboardServer(server, patch, response);
+}
 
 export async function fetchDashboardDiscordStructure(serverId: string, signal?: AbortSignal): Promise<DashboardDiscordStructure> {
   const path = `servers/${encodeURIComponent(serverId)}/discord-structure`;
@@ -1146,30 +1716,3 @@ export async function refreshDashboardDiscordStructure(serverId: string, signal?
   ensureServerMatch(response.data, serverId, response.path);
   return mapDiscordStructure(response.data);
 }
-
-export async function patchDashboardServerSettings(server: DashboardServer, patch: DashboardSettingsPatch, signal?: AbortSignal): Promise<DashboardServer> {
-  const path = `servers/${encodeURIComponent(server.id)}/settings`;
-  const body = buildSettingsPatchBody(patch);
-  if (Object.keys(body).length === 0) return server;
-
-  const fallbackServer = applySettingsPatch(server, patch);
-  const response = await patchDashboardJson<unknown>(path, body, signal);
-  if (response.data === null) return fallbackServer;
-
-  ensureServerMatch(response.data, server.id, response.path);
-
-  const sectionServerPayload = pickPathValue(response.data, [["server"], ["data", "server"]]);
-  const mergedServer = mergeSummary(
-    fallbackServer,
-    sectionServerPayload ? mapSummaryServer(sectionServerPayload, { expectedServerId: server.id, path: response.path }) : null
-  );
-  const responseSettings = buildSettingsData(getSectionPayload(response.data, "settings"));
-  return hasSettingsData(responseSettings)
-    ? applySettingsData(mergedServer, mergeSettingsData(cloneSettingsData(mergedServer.settingsData), responseSettings))
-    : mergedServer;
-}
-
-
-
-
-

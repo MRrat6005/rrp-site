@@ -5,8 +5,19 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 
 import { siteConfig, type Locale } from "@/config/site.config";
-import { DashboardApiError, fetchDashboardServerPage, fetchDashboardServers, isDashboardUnauthorizedError, shouldUseDashboardFallback, type DashboardServerRoutePage } from "@/lib/dashboard-api";
-import { getDashboardServer, type DashboardServer } from "@/lib/dashboard-model";
+import {
+  DashboardApiError,
+  createDashboardPendingProgress,
+  createDashboardTimeoutProgress,
+  fetchDashboardProgressStatus,
+  fetchDashboardServerPageLoad,
+  fetchDashboardServers,
+  isDashboardProgressSuccess,
+  isDashboardUnauthorizedError,
+  shouldUseDashboardFallback,
+  type DashboardServerRoutePage
+} from "@/lib/dashboard-api";
+import { getDashboardServer, type DashboardProgressJob, type DashboardServer } from "@/lib/dashboard-model";
 import { getLocalizedPath } from "@/lib/i18n";
 import { DashboardAccessPage } from "@/ui/dashboard/dashboard-access-page";
 import { DashboardBrandingPage } from "@/ui/dashboard/dashboard-branding-page";
@@ -15,6 +26,7 @@ import { DashboardGeneralPage } from "@/ui/dashboard/dashboard-general-page";
 import { DashboardLicensesPage } from "@/ui/dashboard/dashboard-licenses-page";
 import { DashboardLocalizationPage } from "@/ui/dashboard/dashboard-localization-page";
 import { DashboardOverviewPage } from "@/ui/dashboard/dashboard-overview-page";
+import { DashboardServerEntryGate } from "@/ui/dashboard/dashboard-progress";
 import { DashboardLockGlyph, DashboardMessagePanel, DashboardPanel } from "@/ui/dashboard/dashboard-primitives";
 import { resolveDashboardServerRoutePage } from "@/ui/dashboard/dashboard-routing";
 import { DashboardServerShell } from "@/ui/dashboard/dashboard-server-shell";
@@ -27,6 +39,15 @@ interface DashboardResourceState<T> {
   isLoading: boolean;
   isFallback: boolean;
 }
+
+interface DashboardServerPageState {
+  data: DashboardServer | null;
+  entryProgress: DashboardProgressJob | null;
+  error: DashboardApiError | null;
+  isLoading: boolean;
+}
+
+const ENTRY_TIMEOUT_MS = 90000;
 
 function useDashboardResource<T>(enabled: boolean, fallbackData: T | null, load: (signal?: AbortSignal) => Promise<T>) {
   const [state, setState] = useState<DashboardResourceState<T>>({ data: null, error: null, isLoading: enabled, isFallback: false });
@@ -51,6 +72,98 @@ function useDashboardResource<T>(enabled: boolean, fallbackData: T | null, load:
 
     return () => controller.abort();
   }, [enabled, fallbackData, load]);
+
+  return state;
+}
+
+function useDashboardServerPageState(enabled: boolean, page: DashboardServerRoutePage, serverId: string, retryKey: number) {
+  const [state, setState] = useState<DashboardServerPageState>({
+    data: null,
+    entryProgress: enabled ? createDashboardPendingProgress("entry") : null,
+    error: null,
+    isLoading: enabled
+  });
+
+  useEffect(() => {
+    if (!enabled || !serverId) {
+      setState({ data: null, entryProgress: null, error: null, isLoading: false });
+      return;
+    }
+
+    const controller = new AbortController();
+    let cancelled = false;
+    let pollTimeout: ReturnType<typeof setTimeout> | null = null;
+    const startedAt = Date.now();
+
+    const clearPoll = () => {
+      if (!pollTimeout) return;
+      clearTimeout(pollTimeout);
+      pollTimeout = null;
+    };
+
+    const schedulePoll = (progress: DashboardProgressJob, server: DashboardServer | null) => {
+      const timeoutReached = Date.now() - startedAt >= ENTRY_TIMEOUT_MS;
+      if (timeoutReached) {
+        setState({ data: server, entryProgress: createDashboardTimeoutProgress("entry", progress), error: null, isLoading: false });
+        return;
+      }
+      pollTimeout = setTimeout(run, progress.pollIntervalMs ?? 1200, progress, server);
+    };
+
+    const run = async (progressOverride?: DashboardProgressJob | null, serverOverride?: DashboardServer | null) => {
+      try {
+        if (!progressOverride?.pollPath) {
+          const result = await fetchDashboardServerPageLoad(serverId, page, controller.signal);
+          if (cancelled) return;
+          if (result.entryProgress && !isDashboardProgressSuccess(result.entryProgress)) {
+            setState({ data: result.server, entryProgress: result.entryProgress, error: null, isLoading: false });
+            schedulePoll(result.entryProgress, result.server);
+            return;
+          }
+          setState({ data: result.server, entryProgress: null, error: null, isLoading: false });
+          return;
+        }
+
+        const progress = await fetchDashboardProgressStatus(progressOverride.pollPath, "entry", controller.signal);
+        if (cancelled) return;
+        if (!progress) {
+          const result = await fetchDashboardServerPageLoad(serverId, page, controller.signal);
+          if (cancelled) return;
+          if (result.entryProgress && !isDashboardProgressSuccess(result.entryProgress)) {
+            setState({ data: result.server ?? serverOverride ?? null, entryProgress: result.entryProgress, error: null, isLoading: false });
+            schedulePoll(result.entryProgress, result.server ?? serverOverride ?? null);
+            return;
+          }
+          setState({ data: result.server ?? serverOverride ?? null, entryProgress: null, error: null, isLoading: false });
+          return;
+        }
+
+        if (isDashboardProgressSuccess(progress)) {
+          const result = await fetchDashboardServerPageLoad(serverId, page, controller.signal);
+          if (cancelled) return;
+          setState({ data: result.server ?? serverOverride ?? null, entryProgress: null, error: null, isLoading: false });
+          return;
+        }
+
+        setState({ data: serverOverride ?? null, entryProgress: progress, error: null, isLoading: false });
+        schedulePoll(progress, serverOverride ?? null);
+      } catch (error) {
+        if (cancelled) return;
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        const apiError = error instanceof DashboardApiError ? error : new DashboardApiError("contract", "Dashboard API returned an invalid resource payload.");
+        setState((current) => ({ ...current, error: apiError, isLoading: false }));
+      }
+    };
+
+    setState({ data: null, entryProgress: createDashboardPendingProgress("entry"), error: null, isLoading: true });
+    void run();
+
+    return () => {
+      cancelled = true;
+      clearPoll();
+      controller.abort();
+    };
+  }, [enabled, page, retryKey, serverId]);
 
   return state;
 }
@@ -118,6 +231,7 @@ export function DashboardAppRoute({ locale }: { locale: Locale }) {
   const serverId = rawServerId?.trim() ?? "";
   const page = resolveDashboardServerRoutePage(searchParams.get("section"));
   const fallbackServer = serverId ? getDashboardServer(serverId, locale) : null;
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const nextSearchParams = new URLSearchParams(rawSearch);
@@ -134,8 +248,7 @@ export function DashboardAppRoute({ locale }: { locale: Locale }) {
     router.replace(nextSearch ? `${pathname}?${nextSearch}` : pathname, { scroll: false });
   }, [page, pathname, rawSearch, router, serverId]);
 
-  const load = useCallback((signal?: AbortSignal) => serverId ? fetchDashboardServerPage(serverId, page, signal) : Promise.resolve<DashboardServer | null>(null), [page, serverId]);
-  const state = useDashboardResource<DashboardServer | null>(Boolean(serverId), fallbackServer, load);
+  const state = useDashboardServerPageState(Boolean(serverId), page, serverId, retryKey);
 
   useEffect(() => {
     if (!state.isLoading && isDashboardUnauthorizedError(state.error)) router.replace(getDashboardLoginPath(locale));
@@ -148,13 +261,17 @@ export function DashboardAppRoute({ locale }: { locale: Locale }) {
   }, [page, serverId, state.data]);
 
   const server = serverOverride ?? state.data ?? fallbackServer;
+  const entryProgress = state.entryProgress ?? (serverId && state.isLoading ? createDashboardPendingProgress("entry") : null);
+
+  if (serverId && entryProgress) {
+    return <DashboardServerEntryGate locale={locale} progress={entryProgress} server={server} onRetry={() => setRetryKey((current) => current + 1)} />;
+  }
 
   return (
-    <DashboardServerShell activePage={serverId ? page : "servers"} isFallback={state.isFallback} locale={locale} server={server ?? undefined} serverId={serverId || undefined}>
-      {serverId ? <DashboardRouteNotice locale={locale} error={state.error} isFallback={state.isFallback} isLoading={state.isLoading} /> : null}
+    <DashboardServerShell activePage={serverId ? page : "servers"} isFallback={false} locale={locale} server={server ?? undefined} serverId={serverId || undefined}>
+      {serverId ? <DashboardRouteNotice locale={locale} error={state.error} isFallback={false} isLoading={false} /> : null}
       {!serverId ? <DashboardMessagePanel title={copy.runtime.selectServerTitle} body={copy.runtime.selectServerBody} /> : server ? renderDashboardServerPage(page, locale, server, setServerOverride) : state.isLoading ? <DashboardMessagePanel title={copy.runtime.loadingTitle} body={copy.runtime.loading} /> : <DashboardMessagePanel title={copy.runtime.unavailableTitle} body={copy.runtime.unavailableBody} />}
     </DashboardServerShell>
   );
 }
-
 

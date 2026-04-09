@@ -3,11 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { Locale } from "@/config/site.config";
-import { DashboardApiError, patchDashboardServerSettings } from "@/lib/dashboard-api";
-import type { DashboardDiscordResolvedEntity, DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
+import {
+  createDashboardPendingProgress,
+  DashboardApiError,
+  DashboardProgressError,
+  patchDashboardServerSettingsWithProgress
+} from "@/lib/dashboard-api";
+import type { DashboardDiscordResolvedEntity, DashboardProgressJob, DashboardServer, DashboardSettingGroup } from "@/lib/dashboard-model";
 import { DashboardAuthProfileCard } from "@/ui/dashboard/dashboard-auth-profile-card";
 import { getDashboardCopy } from "@/ui/dashboard/dashboard-copy";
 import { DashboardDiscordEntitySelector, DashboardDiscordSyncPanel } from "@/ui/dashboard/dashboard-discord-structure";
+import { DashboardPageApplyOverlay } from "@/ui/dashboard/dashboard-progress";
 import {
   DashboardEditActions,
   DashboardField,
@@ -114,6 +120,7 @@ export function DashboardAccessPage({ locale, onServerChange, server }: Dashboar
   const discord = useDashboardDiscordStructure(server.id, server.accessLevel !== "none");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [applyProgress, setApplyProgress] = useState<DashboardProgressJob | null>(null);
   const [message, setMessage] = useState<{ tone: "error" | "success"; value: string } | null>(null);
   const initialForm = useMemo(() => createAccessForm(server), [server]);
   const [form, setForm] = useState<AccessFormState>(initialForm);
@@ -136,36 +143,47 @@ export function DashboardAccessPage({ locale, onServerChange, server }: Dashboar
   const startEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
     setForm(initialForm);
     setMessage(null);
+    setApplyProgress(null);
     setIsEditing(false);
   };
 
   const saveChanges = async () => {
     setIsSaving(true);
     setMessage(null);
+    setApplyProgress(createDashboardPendingProgress("apply"));
     try {
-      const nextServer = await patchDashboardServerSettings(server, { access: currentPatch });
+      const nextServer = await patchDashboardServerSettingsWithProgress(server, "access", { access: currentPatch }, { onProgress: setApplyProgress });
       onServerChange(nextServer);
+      setApplyProgress(null);
       setIsEditing(false);
       setMessage({ tone: "success", value: editorCopy.saved });
     } catch (error) {
       if (error instanceof DashboardApiError && error.status === 403) {
         onServerChange({ ...server, accessLevel: "none" });
+        setApplyProgress(null);
         return;
       }
-      setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      if (error instanceof DashboardProgressError) {
+        setApplyProgress(error.progress);
+        setMessage({ tone: "error", value: error.progress.detail ?? editorCopy.saveError });
+      } else {
+        setApplyProgress(null);
+        setMessage({ tone: "error", value: error instanceof DashboardApiError && error.status === 403 ? editorCopy.locked : editorCopy.saveError });
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-4">
       <DashboardAuthProfileCard locale={locale} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
         <DashboardPanel className="p-5 sm:p-6">
@@ -279,6 +297,7 @@ export function DashboardAccessPage({ locale, onServerChange, server }: Dashboar
           </DashboardPanel>
         </div>
       </div>
+      {applyProgress ? <DashboardPageApplyOverlay locale={locale} progress={applyProgress} onRetry={applyProgress.isFailure ? saveChanges : undefined} onDismiss={applyProgress.isFailure ? () => setApplyProgress(null) : undefined} /> : null}
     </div>
   );
 }
